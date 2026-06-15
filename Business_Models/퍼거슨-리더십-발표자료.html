@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퍼거슨 리더십 — 위대한 팀을 만드는 비밀</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --black: #111111; /* Dark Gray/Black */
+    --accent: #DA291C; /* Manchester United Red */
+    --accent-light: #F2C94C; /* Gold */
+    --cream: #FAF9F6;
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-light: #E9ECEF;
+    --bg-dark: #111111; /* Pitch Black */
+    --danger: #DA291C; /* Red */
+    --success: #27AE60; /* Green */
+    --warning: #F2994A; /* Orange */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--bg-dark);
+    color: var(--black);
+    overflow: hidden; /* 가로, 세로 스크롤 방지 */
+  }
+
+  /* ─── SLIDE WRAPPER ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+  .nav-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    z-index: 999;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  .nav-bar:hover {
+    opacity: 1;
+  }
+  .nav-num {
+    font-size: 14px;
+    font-weight: 400;
+    color: #666;
+    margin: 0 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #555; cursor: pointer; transition: all 0.3s;
+    border: none;
+  }
+  .nav-dot:hover { 
+    background: #888;
+  }
+  .nav-dot.active { 
+    background: var(--accent); 
+    width: 16px; height: 6px; border-radius: 3px;
+  }
+
+  .nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    opacity: 0.3;
+  }
+  .nav-arrow:hover {
+    color: var(--white);
+    opacity: 0.8;
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 24px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(38px, 5vw, 72px);
+    font-weight: 900;
+    line-height: 1.2;
+    color: var(--black);
+    word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--accent); }
+  .big-headline .accent-light { color: var(--accent-light); }
+  .big-headline .danger { color: var(--danger); }
+  
+  .slide-divider {
+    width: 48px; height: 4px;
+    background: var(--accent);
+    margin: 24px 0;
+  }
+  .body-text {
+    font-size: 19px;
+    line-height: 1.75;
+    color: #333;
+    max-width: 750px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1.2; min-width: 400px; }
+  .col-img { flex: 0.8; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+  .col-img img {
+    max-width: 100%;
+    max-height: 55vh;
+    object-fit: contain;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+  }
+  .col-img img:hover {
+    transform: scale(1.02);
+  }
+  .img-caption {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    max-width: 90%;
+    word-break: keep-all;
+    line-height: 1.4;
+  }
+
+  /* ─── SLIDE 01: COVER (압도적 맨유 엠블럼 & 검은색 디퓨전) ─── */
+  .slide-01 {
+    background-color: #050505; /* 완전한 검은색 표지 */
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* 올드 트래포드 경기장을 아주 미세하게(Opacity 3%) 어둠 속에 뭍어둠 */
+  .slide-01::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('https://c.longblack.co/image/note/260611/260611-191520-29862757.webp');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.03;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* 텍스트 영역의 확실한 가독성과 검은 배경을 지지하기 위한 가로 오버레이 마스크 */
+  .s01-text-mask {
+    position: absolute;
+    top: 0; left: 0; width: 65%; height: 100%;
+    background: linear-gradient(90deg, #050505 50%, rgba(5, 5, 5, 0.85) 75%, rgba(5, 5, 5, 0) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .s01-brand {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .s01-brand::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .s01-tag {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(54px, 7vw, 92px); /* 너무 비대했던 크기를 살짝 줄여 밸런스 조정 */
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 32px;
+    word-break: keep-all;
+    letter-spacing: -0.04em; /* 타이트한 자간으로 밀도 높임 */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  }
+  .s01-headline span {
+    display: block; /* 줄바꿈을 강제하여 무조건 퍼거슨 리더십 아래에 위치하도록 수정 */
+    width: fit-content; /* 배경색이 텍스트 길이에만 딱 맞도록 설정 */
+    font-size: clamp(28px, 4vw, 50px); /* 메인 타이틀에 종속되도록 크기 밸런스 조정 */
+    font-weight: 900;
+    color: var(--white);
+    background: var(--accent); /* 맨유 레드 배경으로 강렬함 유지 */
+    padding: 6px 24px 10px 24px;
+    margin-top: 56px; /* 겹침을 완전히 피하고 안정감을 주기 위해 여백을 56px로 추가 확보 */
+    margin-left: 0; /* 좌측 정렬 유지 */
+    letter-spacing: -0.01em;
+    transform-origin: left center; /* 좌측을 축으로 단단히 고정 */
+    transform: rotate(-2deg) skewX(-10deg); /* 과감한 엣지는 살리되 안정적으로 종속되게 */
+    box-shadow: 8px 8px 0px var(--accent-light); /* 옐로우 솔리드 섀도우 임팩트 유지 */
+  }
+  .s01-sub {
+    font-size: 19px;
+    line-height: 1.7;
+    color: #b0b0b0;
+    font-weight: 400;
+    margin-bottom: 40px;
+    max-width: 650px;
+  }
+  .s01-stat-row { 
+    display: flex; 
+    gap: 24px; 
+    margin-top: 24px; 
+  }
+  .s01-stat { 
+    text-align: left; 
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 16px 24px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+  .s01-stat:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+  }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--accent-light);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: #888;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* 수직으로는 중앙, 수평으로는 오른쪽으로 배치된 엠블럼 영역 */
+  .s01-logo-container {
+    position: absolute;
+    right: 12vw; /* 기존 4vw에서 12vw로 늘려 로고를 더 왼쪽으로 이동 */
+    top: 0; /* 슬라이드 전체 높이 기준 */
+    width: 35vw; /* 크기를 35vw로 축소 */
+    height: 100vh; 
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  /* 검은 배경과 엠블럼 경계를 완전히 스며들게 지워주는 방사형 그라데이션 필터 오버레이 */
+  .s01-logo-container::after {
+    content: '';
+    position: absolute;
+    top: -10%; left: -10%; right: -10%; bottom: -10%;
+    /* 디퓨전 중심 유지 */
+    background: radial-gradient(circle at center, rgba(5, 5, 5, 0) 25%, rgba(5, 5, 5, 0.6) 60%, rgba(5, 5, 5, 1) 85%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .s01-logo-img {
+    width: 100%;
+    height: 100%;
+    background-image: url('https://c.longblack.co/image/note/260611/260611-191521-b7294f37.webp');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: zoom-in;
+    transition: transform 0.4s ease;
+    mix-blend-mode: screen; /* 검은색 경계를 자연스럽게 스며들게 블렌딩 */
+    opacity: 0.85;
+  }
+
+  .s01-logo-img:hover {
+    transform: scale(1.02);
+  }
+
+  /* ─── SLIDE 02: THE LEGEND ─── */
+  .slide-02 { background: var(--cream); }
+  .highlight-quote {
+    font-style: italic;
+    color: #444;
+    margin-top: 20px;
+    font-size: 17px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 03: 5 PRINCIPLES ─── */
+  .slide-03 { background: var(--bg-dark); color: var(--cream); }
+  .slide-03 .big-headline { color: var(--cream); }
+  .slide-03 .section-tag { color: var(--accent-light); }
+  .hh-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .hh-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .hh-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-light);
+  }
+  .hh-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.2); }
+  .hh-card.p1::before { background: var(--accent-light); }
+  .hh-card.p2::before { background: var(--accent); }
+  .hh-card.p3::before { background: var(--warning); }
+  .hh-card.p4::before { background: var(--success); }
+  .hh-card.p5::before { background: #3498db; }
+  
+  .hh-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; opacity: 0.2; margin-bottom: 12px; }
+  .hh-title { font-size: 17px; font-weight: 800; color: var(--cream); margin-bottom: 12px; word-break: keep-all; }
+  .hh-desc { font-size: 14px; color: #bbb; line-height: 1.6; word-break: keep-all; }
+
+  /* ─── SLIDE 04 & 05: TWO-COL CARDS ─── */
+  .slide-04 { background: var(--cream); }
+  .slide-05 { background: var(--bg-dark); color: var(--cream); }
+  .slide-05 .big-headline { color: var(--cream); }
+  .slide-05 .section-tag { color: var(--accent-light); }
+  
+  .case-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 32px;
+  }
+  .case-card {
+    flex: 1;
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  }
+  .slide-05 .case-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+  }
+  .case-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    letter-spacing: 0.1em;
+  }
+  .case-badge.red { background: rgba(218, 41, 28, 0.1); color: var(--accent); }
+  .case-badge.gold { background: rgba(242, 201, 76, 0.2); color: var(--accent-light); }
+  .slide-05 .case-badge.red { background: rgba(218, 41, 28, 0.2); color: #ff6b6b; }
+  
+  .case-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--black);
+  }
+  .slide-05 .case-title { color: var(--cream); }
+  .case-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    word-break: keep-all;
+  }
+  .slide-05 .case-desc { color: #ccc; }
+
+  /* ─── SLIDE 06: DELEGATION ─── */
+  .slide-06 { background: var(--cream); }
+  .insight-card {
+    background: var(--bg-dark);
+    color: var(--cream);
+    padding: 32px;
+    border-radius: 12px;
+    margin-top: 32px;
+    max-width: 800px;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.15);
+  }
+  .insight-title { font-size: 20px; font-weight: 800; color: var(--accent-light); margin-bottom: 12px; }
+  .insight-desc { font-size: 16px; line-height: 1.6; color: #ddd; word-break: keep-all; }
+  .insight-quote-bottom {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ─── SLIDE 07: MATRIX ─── */
+  .slide-07 { background: var(--bg-dark); color: var(--cream); }
+  .slide-07 .big-headline { color: var(--cream); }
+  .slide-07 .section-tag { color: var(--accent-light); }
+  .matrix-table { width: 100%; max-width: 950px; border-collapse: collapse; margin-top: 32px; }
+  .matrix-table th { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-light); text-align: left; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+  .matrix-table td { padding: 18px 16px; font-size: 15px; color: #ddd; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: top; line-height: 1.5; word-break: keep-all; }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .cycle-badge { font-weight: 800; font-size: 14px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+  .cycle-badge.c1 { background: rgba(242, 201, 76, 0.2); color: var(--accent-light); }
+  .cycle-badge.c2 { background: rgba(218, 41, 28, 0.2); color: #ff6b6b; }
+  .cycle-badge.c3 { background: rgba(39, 174, 96, 0.2); color: #2ecc71; }
+
+  /* ─── SLIDE 08: AI & BUSINESS OPPORTUNITY ─── */
+  .slide-08 { background: var(--cream); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; max-width: 950px; }
+  .opp-card { background: var(--white); padding: 24px; border-radius: 12px; border: 1px solid var(--gray-light); box-shadow: 0 10px 20px rgba(0,0,0,0.03); transition: transform 0.3s, border-color 0.3s; }
+  .opp-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .opp-icon { display: flex; margin-bottom: 12px; width: 32px; height: 32px; color: var(--accent); }
+  .opp-title { font-size: 17px; font-weight: 800; color: var(--black); margin-bottom: 8px; }
+  .opp-desc { font-size: 14px; color: #555; line-height: 1.6; word-break: keep-all; }
+
+  /* ─── SLIDE 09: CONCLUSION ─── */
+  .slide-09 { background: var(--bg-dark); color: var(--cream); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 900; line-height: 1.25; color: var(--cream); max-width: 1050px; margin: 24px 0; word-break: keep-all; }
+  .conclusion-headline .accent-light { color: var(--accent-light); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 40px; }
+  .lesson { border-top: 2px solid rgba(255,255,255,0.2); padding-top: 20px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; color: var(--accent-light); margin-bottom: 8px; }
+  .lesson-title { font-size: 17px; font-weight: 800; color: var(--cream); margin-bottom: 8px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 14px; color: #aaa; line-height: 1.6; word-break: keep-all; }
+  .bg-watermark { position: absolute; right: -50px; bottom: -50px; font-family: 'Playfair Display'; font-size: 160px; font-weight:900; opacity: 0.02; color: var(--white); line-height: 1; pointer-events: none; }
+  
+  /* ─── SLIDE 10: APPENDIX & CAROUSEL ─── */
+  .slide-10 { background: var(--cream); }
+  .app-grid { display: flex; gap: 40px; margin-top: 24px; align-items: stretch; width: 100%; }
+  .app-left-card {
+    flex: 0.8;
+    background: var(--white);
+    border: 2px solid var(--gray-light);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    text-decoration: none;
+    color: var(--black);
+  }
+  .app-left-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+  }
+  .app-right-card {
+    flex: 1.2;
+    background: var(--white);
+    border: 2px solid var(--gray-light);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Carousel Inner Elements */
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .carousel-slide {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .carousel-slide.active {
+    display: flex;
+  }
+  .carousel-img-wrapper {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .carousel-img-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  .carousel-img-wrapper img:hover {
+    transform: scale(1.05);
+  }
+  .carousel-caption {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    padding: 0 20px;
+    line-height: 1.4;
+    word-break: keep-all;
+    font-weight: 500;
+  }
+  .carousel-btn-container {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .carousel-btn {
+    background: #f1f1f1;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #444;
+    transition: all 0.2s;
+  }
+  .carousel-btn:hover {
+    background: var(--accent);
+    color: var(--white);
+  }
+
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #888; letter-spacing: 0.1em; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; }
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #888; letter-spacing: 0.15em; }
+
+  /* ─── LIGHTBOX MODAL ─── */
+  .lightbox-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000; /* Must be higher than nav-bar/arrows */
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.95);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .lightbox-modal.active {
+    display: flex;
+    opacity: 1;
+  }
+  .lightbox-content {
+    position: relative;
+    max-width: 80%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10005;
+  }
+  .lightbox-content img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+  }
+  #lightbox-caption {
+    margin-top: 24px;
+    color: var(--cream);
+    font-size: 18px;
+    text-align: center;
+    max-width: 700px;
+    line-height: 1.6;
+    word-break: keep-all;
+    font-family: 'Pretendard', sans-serif;
+    background: rgba(0,0,0,0.6);
+    padding: 12px 24px;
+    border-radius: 8px;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    user-select: none;
+    z-index: 10020;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--white);
+    transform: scale(1.05) rotate(90deg);
+  }
+  .lightbox-close svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Lightbox Navigation Arrows */
+  .lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ffffff;
+    font-size: 60px;
+    font-weight: 300;
+    cursor: pointer;
+    user-select: none;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s, transform 0.2s;
+    z-index: 10015;
+    border-radius: 50%;
+  }
+  .lightbox-arrow:hover {
+    color: var(--accent-light);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-50%) scale(1.05);
+  }
+  .lb-prev { left: 40px; }
+  .lb-next { right: 40px; }
+  
+  /* Lightbox Counter HUD */
+  #lightbox-counter {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ccc;
+    font-size: 16px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    background: rgba(0,0,0,0.7);
+    padding: 6px 20px;
+    border-radius: 20px;
+    z-index: 10006;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+
+  /* ─── DRAMATIC LOGO ANIMATION ─── */
+  @keyframes dramaticLogoReveal {
+    0% { transform: scale(2.5); filter: blur(30px) brightness(3); opacity: 0; }
+    20% { transform: scale(1.6); filter: blur(15px) brightness(2); opacity: 0.4; }
+    50% { transform: scale(1.1); filter: blur(5px) brightness(1.5); opacity: 0.7; }
+    80% { transform: scale(0.97); filter: blur(0px) brightness(1); opacity: 1; }
+    90% { transform: scale(1.02); }
+    100% { transform: scale(1); filter: blur(0px) brightness(1); opacity: 0.85; }
+  }
+  .slide-01.active .dramatic-logo {
+    animation: dramaticLogoReveal 2.5s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+  }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <!-- 가독성을 보장하는 가로 그라데이션 마스크 -->
+      <div class="s01-text-mask"></div>
+
+      <div class="content-wrapper" style="position: relative; z-index: 2;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">LEADERSHIP & MANAGEMENT</div>
+        <h1 class="s01-headline anim anim-d2">
+          퍼거슨 리더십
+          <span>위대한 팀을 만드는 비밀</span>
+        </h1>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          27년간 38개의 트로피를 들어올린 축구 전설의 인재 육성법<br>
+          조직의 비전, 타협 없는 규율, 그리고 과감한 위임의 공식
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">27년</div>
+            <div class="s01-stat-label">맨유 최장 재임 기간</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">38개</div>
+            <div class="s01-stat-label">우승 트로피</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">59.7%</div>
+            <div class="s01-stat-label">통산 경기 승률 (895승)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 압도적 크기의 맨유 로고 & 방사형 디퓨전 마스크 -->
+      <div class="s01-logo-container">
+        <div class="s01-logo-img dramatic-logo" onclick="openLightbox(7)" title="맨체스터 유나이티드 로고 (클릭 시 크게 보기)"></div>
+      </div>
+
+      <div class="slide-num">01 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — THE LEGEND
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">THE LEGEND</div>
+            <div class="big-headline anim anim-d2">
+              조선공의 아들에서<br>
+              <span class="accent">축구 역사의 전설로</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              스코틀랜드 고반의 가난한 집안에서 태어나 공구 공장 노동자 생활과 파트타임 선수를 병행하던 소년 알렉스 퍼거슨. 그는 34세에 세인트 미렌 감독으로 데뷔한 이래, 애버딘 FC를 거쳐 27년간 맨체스터 유나이티드의 황금기를 직조했습니다.<br><br>
+              하버드 비즈니스 스쿨에서 그의 조직 관리 역량을 단독 케이스 스터디로 다룰 만큼, 그의 리더십은 경영자들에게 깊은 시사점을 줍니다.
+            </div>
+            <div class="highlight-quote anim anim-d4">
+              "리더의 진정한 역할은 직접 문제를 푸는 것이 아니라, 문제를 해결할 만한 사람을 키우는 데 있다."
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="cursor: zoom-in;" onclick="openLightbox(10)">
+            <!-- 원본 5번 이미지 (퍼거슨 데뷔 시절) 활용 -->
+            <img src="https://c.longblack.co/image/note/260611/260611-191526-56d8441f.webp" alt="알렉스 퍼거슨 감독 데뷔 시절">
+            <div class="img-caption">34세에 처음 지휘봉을 잡은 알렉스 퍼거슨. 그는 통산 49개의 우승 트로피를 얻은 전설적인 리더로 성장합니다. (클릭 시 확대)</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">02 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — 5 PRINCIPLES
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">FERGUSON'S FORMULA</div>
+        <div class="big-headline anim anim-d2">
+          위대한 팀을 만드는 <span class="accent-light">5가지 원칙</span>
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <div class="body-text anim anim-d3" style="color:#ddd">
+          퍼거슨 감독이 하버드 비즈니스 리뷰(HBR) 연구 및 실제 무대에서 증명한 5가지 핵심 경영 방식입니다.
+        </div>
+        
+        <div class="hh-grid anim anim-d4">
+          <div class="hh-card p1">
+            <div class="hh-num">01</div>
+            <div class="hh-title">조직보다 꿈을 팔아라</div>
+            <div class="hh-desc">인재를 영입할 땐 화려한 배경 대신 함께 성장할 비전과 미래를 제시합니다.</div>
+          </div>
+          <div class="hh-card p2">
+            <div class="hh-num">02</div>
+            <div class="hh-title">규율 없는 재능은 무의미</div>
+            <div class="hh-desc">단기적 성과보다 일관된 기강과 원칙이 지속 가능한 팀을 만듭니다.</div>
+          </div>
+          <div class="hh-card p3">
+            <div class="hh-num">03</div>
+            <div class="hh-title">인기 대신 존경을</div>
+            <div class="hh-desc">선수들과 철저한 사적 거리를 두며 공정을 수호하되, 위기엔 방패가 됩니다.</div>
+          </div>
+          <div class="hh-card p4">
+            <div class="hh-num">04</div>
+            <div class="hh-title">정상에서 리빌딩하라</div>
+            <div class="hh-desc">성공에 도취되는 순간이 가장 위험합니다. 3~4년 전제적 세대교체를 단행합니다.</div>
+          </div>
+          <div class="hh-card p5">
+            <div class="hh-num">05</div>
+            <div class="hh-title">통제 대신 과감한 위임</div>
+            <div class="hh-desc">마이크로매니징을 포기하고 실무를 전문가에게 넘길 때 비로소 전체 판세가 보입니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#666">03 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — PRINCIPLES 1 & 2 (DREAM & DISCIPLINE)
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLES 1 & 2</div>
+            <div class="big-headline anim anim-d2">
+              마음을 얻는 비전 세일즈와<br><span class="accent">타협 없는 원칙</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              훌륭한 인재는 단순히 명성과 자금력만으로 움직이지 않습니다. 리더가 주는 신뢰와 미래 가치가 마음을 열며, 그들이 온 이후에는 조직을 통제할 엄격한 뼈대가 필요합니다.
+            </div>
+            
+            <div class="case-container anim anim-d4">
+              <div class="case-card">
+                <div class="case-badge red">Vision Sales</div>
+                <div class="case-title">17세 유망주 호날두 영입</div>
+                <div class="case-desc">
+                  타 구단들이 주전 보장이나 높은 계약금을 앞세울 때, 퍼거슨은 "내가 책임지고 널 세계 최고의 선수로 키워주겠다"고 선언하며 마음을 샀습니다.
+                </div>
+              </div>
+              <div class="case-card">
+                <div class="case-badge red">Strict Rule</div>
+                <div class="case-title">크리스마스 무단 파티 징계</div>
+                <div class="case-desc">
+                  2011년 박싱데이를 앞두고 밤늦게 파티를 즐긴 주축 선수 3명을 다음 경기 명단에서 제외했습니다. 경기는 패배하고 우승 타이틀을 뺏겼지만, 리더의 원칙은 손해 앞에서도 일관되어야 함을 증명했습니다.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="cursor: zoom-in;" onclick="openLightbox(8)">
+            <!-- 원본 3번 이미지 (Leading 도서) 활용 -->
+            <img src="https://c.longblack.co/image/note/260611/260611-191523-3637b0c1.webp" alt="리더십 전략서 Leading">
+            <div class="img-caption">퍼거슨의 경영학적 원칙을 고스란히 담아낸 리더십 북 『Leading』 (클릭 시 확대)</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">04 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — PRINCIPLES 3 & 4 (RESPECT & REBUILDING)
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLES 3 & 4</div>
+            <div class="big-headline anim anim-d2">
+              인기 대신 얻은 존경과<br><span class="accent-light">정상에서의 과감한 리빌딩</span>
+            </div>
+            <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+            <div class="body-text anim anim-d3" style="color:#ddd">
+              리더는 조직을 편애하지 않는 공정성을 지키기 위해 구성원과 사적 밀착을 지양하되, 외부 비난 앞에서는 보호막이 됩니다. 그리고 가장 잘 나갈 때 3~4년 미래를 그리고 팀을 해체해야 조직의 타성을 막을 수 있습니다.
+            </div>
+            
+            <div class="case-container anim anim-d4">
+              <div class="case-card">
+                <div class="case-badge gold">Shield & Distance</div>
+                <div class="case-title" style="color:var(--white)">베컴 보호와 공정한 격리</div>
+                <div class="case-desc" style="color:#ccc">
+                  1998년 월드컵 퇴장으로 온 영국 여론의 살해 협박을 받던 베컴에게 맨 먼저 전화해 "우리는 널 믿는다"며 방패막이를 자처했습니다. 단, 공정성을 지키고자 평소 선수들의 결혼식에는 절대 참석치 않고 일관된 태도를 취했습니다.
+                </div>
+              </div>
+              <div class="case-card">
+                <div class="case-badge gold">Rebuilding</div>
+                <div class="case-title" style="color:var(--white)">1999년 트레블 후 해체</div>
+                <div class="case-desc" style="color:#ccc">
+                  역사적인 3관왕(트레블) 달성 직후, 3년 만에 주축 선수 18명 중 베컴을 포함한 10명을 과감히 내보냈습니다. 그리고 호날두와 루니라는 파릇한 핵심 동력으로 세대교체를 다시금 단행해 제2의 도약을 맞았습니다.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="cursor: zoom-in;" onclick="openLightbox(9)">
+            <!-- 원본 4번 이미지 (자서전) 활용 -->
+            <img src="https://c.longblack.co/image/note/260611/260611-191523-40117d27.webp" alt="자서전 My Autobiography">
+            <div class="img-caption">은퇴 직후 퍼거슨의 비하인드 스토리와 리빌딩 결단을 생생히 다룬 자서전 『My Autobiography』 (클릭 시 확대)</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#666">05 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — PRINCIPLE 5 (DELEGATION & OBSERVATION)
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLE 5</div>
+            <div class="big-headline anim anim-d2">
+              마이크로매니징을 버릴 때<br><span class="accent">보이는 것들</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              초기 퍼거슨 감독은 경기장 잔디 비료 브랜드까지 본인이 직접 고르고 통제해야 성에 차는 강박적 마이크로매니저였습니다. 그러나 한 수석 코치의 조언을 듣고 훈련의 실행권을 전문가에게 완전히 이관했습니다.
+            </div>
+            
+            <div class="insight-card anim anim-d4">
+              <div class="insight-title">관망의 힘 (The Power of Observation)</div>
+              <div class="insight-desc">
+                훈련을 수석코치에게 위임하고 한 발짝 물러서서 팔짱을 꼈을 때, 비로소 선수들의 미세한 피로 상태, 태도 변화, 조직 역학(Team Dynamics)이 보이기 시작했습니다. 스포츠 과학, 의료, 안과 전문의(검안) 검사 전권을 담당자에게 통째로 넘김으로써 거시적인 통찰의 깊이를 획득할 수 있었습니다.
+              </div>
+              <div class="insight-quote-bottom">
+                <i class="ph-duotone ph-info" style="font-size: 22px; color: var(--accent-light);"></i>
+                <span>"위임하지 않으면, 조직은 오직 리더 한 명의 그릇만큼만 자랍니다."</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="cursor: zoom-in;" onclick="openLightbox(12)">
+            <!-- 원본 7번 이미지 (우승 트로피를 든 퍼거슨) 활용 -->
+            <img src="https://c.longblack.co/image/note/260611/260611-191530-d96598fa.webp" alt="우승 트로피를 들어올리는 퍼거슨">
+            <div class="img-caption">"리더의 진정한 에너지는 실무 실행이 아니라, 팀의 상태를 관망하고 큰 방향타를 쥐는 데 집중되어야 합니다." (클릭 시 확대)</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">06 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — THE REBUILDING TIMELINE / MATRIX
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">REBUILDING HISTORY</div>
+        <div class="big-headline anim anim-d2">
+          퍼거슨의 <span class="accent-light">3대 세대교체(Rebuilding) 사이클</span>
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <table class="matrix-table anim anim-d4">
+          <thead>
+            <tr>
+              <th style="width: 15%;">시기</th>
+              <th style="width: 30%;">주요 방출 선수 (베테랑)</th>
+              <th style="width: 30%;">주요 영입 & 콜업 (미래 동력)</th>
+              <th style="width: 25%;">리빌딩 결과 및 성과</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="cycle-badge c1">1차 (1995)</span></td>
+              <td>폴 인스, 마크 휴즈, 안드레이 칸첼스키</td>
+              <td>데이비드 베컴, 폴 스콜스, 개리 네빌 (Class of '92)</td>
+              <td>1995-96 더블 달성 및 <strong>1998-99 트레블(3관왕) 대위업</strong></td>
+            </tr>
+            <tr>
+              <td><span class="cycle-badge c2">2차 (2001~2003)</span></td>
+              <td>야프 스탐 (수비의 핵심), 데이비드 베컴</td>
+              <td>크리스티아누 호날두, 웨인 루니, 리오 퍼디난드</td>
+              <td>스쿼드 내 속도 및 기동성 강화, <strong>2007-08 UCL 우승 및 리그 3연패</strong></td>
+            </tr>
+            <tr>
+              <td><span class="cycle-badge c3">3차 (2005~2006)</span></td>
+              <td>로이 킨 (주장), 루드 반 니스텔루이 (주포)</td>
+              <td><strong>박지성</strong>, 마이클 캐릭, 네마냐 비디치, 파트리스 에브라</td>
+              <td>하드워커 중심의 이타적 플레이 도입, 전술적 유연성과 안정성 극대화</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="body-text anim anim-d5" style="color: #bbb; margin-top: 24px; font-size: 16px;">
+          * 핵심 인사이트: 팀의 전성기가 최고조에 이르렀을 때(3~4년차), 퍼거슨은 이미 다음 4년을 대비해 주축을 교체했습니다. 이 끊임없는 폐루프(Loop)가 맨유 27년 독주의 엔진이었습니다.
+        </div>
+      </div>
+      <div class="slide-num" style="color:#666">07 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — AI & BUSINESS OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">BUSINESS & AI VALUE</div>
+        <div class="big-headline anim anim-d2">
+          퍼거슨 공식으로 재설계하는 <span class="accent">AI 비즈니스 리더십</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-trending-up" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">정상에서의 리빌딩 예측</div>
+            <div class="opp-desc">기존 비즈니스 캐시카우의 정체 신호를 사전에 AI 데이터 분석으로 조기 포착, 조직이 최고 실적을 낼 때 차세대 R&D/AI 동력으로 과감히 전사적 자원 배분.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-eye" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">AI 위임과 관망의 실현</div>
+            <div class="opp-desc">리피티티브하고 일상적인 실무 태스크(Tactical)는 AI 에이전트와 자동화 워크플로우에 위임. 리더는 넓은 시야에서 대외 환경과 거시적 방향성(Strategic) 관망에 집중.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-users" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">사내 인재 파이프라인 최적화</div>
+            <div class="opp-desc">외부 경력직 채용에 전적으로 의존하는 대신, 사내 구성원의 성장 패턴 및 스킬 맵을 AI로 트래킹하여 미래 핵심 인재를 선제 양성하는 유소년 아카데미식 내부 육성 가동.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-shield" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">심리적 안전감 지원 도구</div>
+            <div class="opp-desc">조직원의 이견 제기 방해물(허들)을 진단하고, 리더의 무의식적 마이크로매니징 발언을 실시간 체크. 실무진이 이견을 편하게 낼 수 있는 열린 커뮤니케이션 감지 솔루션 구축.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">08 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="bg-watermark">MANCHESTER UTD</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          가장 완벽할 때가<br>
+          <span class="accent-light">조직을 허물고 다시 지어야 할 때다!</span>
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">조직의 이름 대신 비전을 팔 것</div>
+            <div class="lesson-desc">외부 자금력보다 뛰어난 것은 인재를 이끌고 가슴을 뛰게 하는 책임감 있는 미래의 성장 비전입니다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-title" style="margin-top:40px;">02</div>
+            <div class="lesson-title">원칙을 지키고 보호막이 될 것</div>
+            <div class="lesson-desc">내부 규율 앞에서는 냉정하리만큼 공정해야 하지만, 대외적인 위기 상황 속에서는 내 사람의 든든한 방패막이가 되어주어야 합니다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-title" style="margin-top:40px;">03</div>
+            <div class="lesson-title">위임하고 한 발짝 물러설 것</div>
+            <div class="lesson-desc">자질구레한 실무를 전문가에게 믿고 이관할 때, 리더의 눈엔 이전까지 보이지 않던 조직원들의 감정과 다이내믹스가 들어옵니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · SIR ALEX FERGUSON · 롱블랙 2026.06.12</span>
+        <span>AI 신사업 위키 · Wiki-Insight/Business_Models</span>
+      </div>
+      <div class="slide-num" style="color:#666">09 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — APPENDIX
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" id="slide-9">
+      <div class="content-wrapper" style="z-index: 1;">
+        <div class="section-tag anim anim-d1">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 48px; margin-bottom: 16px;">
+          더 깊은 <span style="color:var(--accent)">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        
+        <div class="app-grid anim anim-d4">
+          <!-- Left: Link to Wiki Note -->
+          <a class="app-left-card" href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%ED%8D%BC%EA%B1%B0%EC%8A%A8-%EB%A6%AC%EB%8D%94%EC%8B%AD-%EC%B6%95%EA%B5%AC%EC%A0%84%EC%84%A4%EC%9D%98-%EC%9D%B8%EC%9E%AC-%EC%9C%A1%EC%84%B1%EB%B2%95.md">
+            <i class="ph-duotone ph-file-text" style="font-size: 64px; color: var(--accent); margin-bottom: 20px;"></i>
+            <span style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">위키 원문 읽기</span>
+            <span style="font-size: 15px; color: #666; padding: 0 10px; line-height: 1.4;">✅퍼거슨-리더십-축구전설의-인재-육성법.md</span>
+          </a>
+
+          <!-- Right: Interactive Image Gallery (Carousel) -->
+          <div class="app-right-card">
+            <div style="display: flex; align-items: center; margin-bottom: 12px; color: var(--accent); border-bottom: 1px solid var(--gray-light); padding-bottom: 8px;">
+              <i class="ph-duotone ph-image" style="font-size: 24px; margin-right: 8px;"></i>
+              <span style="font-size: 18px; font-weight: 800;">원본 & 별첨 이미지 통합 갤러리</span>
+            </div>
+            
+            <div class="carousel-container">
+              <!-- Slide 1 (Original 1) -->
+              <div class="carousel-slide active" id="c-slide-0">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(0)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-190817-038d888e.webp" alt="다큐멘터리 99 속 퍼거슨">
+                </div>
+                <div class="carousel-caption">1. 다큐멘터리 속 퍼거슨 (1986~2013년 맨유 지휘) (클릭 시 확대)</div>
+              </div>
+              
+              <!-- Slide 2 (Original 2) -->
+              <div class="carousel-slide" id="c-slide-1">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(1)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-190853-cf52731d.webp" alt="호날두와 퍼거슨">
+                </div>
+                <div class="carousel-caption">2. 애제자 호날두의 영입과 동행 (클릭 시 확대)</div>
+              </div>
+              
+              <!-- Slide 3 (Original 3) -->
+              <div class="carousel-slide" id="c-slide-2">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(2)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-190918-a2448eb6.webp" alt="2009 맨유 스쿼드">
+                </div>
+                <div class="carousel-caption">3. 2009년 UCL 결승 진출 당시 맨유 스쿼드 (박지성 포함) (클릭 시 확대)</div>
+              </div>
+              
+              <!-- Slide 4 (Original 4) -->
+              <div class="carousel-slide" id="c-slide-3">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(3)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-190935-b71e9d26.webp" alt="퍼거슨 마지막 은퇴 경기">
+                </div>
+                <div class="carousel-caption">4. 2013년 5월 12일, 마지막 홈 경기 기립박수 입장 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 5 (Original 5) -->
+              <div class="carousel-slide" id="c-slide-4">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(4)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-190949-e39ba23b.webp" alt="게리 네빌과 퍼거슨">
+                </div>
+                <div class="carousel-caption">5. 애제자 게리 네빌과의 은퇴 후 리더십 인터뷰 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 6 (Original 6) -->
+              <div class="carousel-slide" id="c-slide-5">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(5)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191007-a40cba51.webp" alt="트레블 카 퍼레이드">
+                </div>
+                <div class="carousel-caption">6. 1999년 축구 역사상 전무후무한 트레블 달성 퍼레이드 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 7 (Appendix 1) -->
+              <div class="carousel-slide" id="c-slide-6">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(6)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191520-29862757.webp" alt="올드 트래포드">
+                </div>
+                <div class="carousel-caption">7. 맨유의 홈 구장 올드 트래포드 전경 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 8 (Appendix 2) -->
+              <div class="carousel-slide" id="c-slide-7">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(7)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191521-b7294f37.webp" alt="맨유 로고">
+                </div>
+                <div class="carousel-caption">8. 맨체스터 유나이티드 구단 공식 로고 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 9 (Appendix 3) -->
+              <div class="carousel-slide" id="c-slide-8">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(8)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191523-3637b0c1.webp" alt="Leading 도서">
+                </div>
+                <div class="carousel-caption">9. 퍼거슨 감독의 리더십 경영 가이드북 『Leading』 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 10 (Appendix 4) -->
+              <div class="carousel-slide" id="c-slide-9">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(9)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191523-40117d27.webp" alt="자서전">
+                </div>
+                <div class="carousel-caption">10. 알렉스 퍼거슨 자서전 『My Autobiography』 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 11 (Appendix 5) -->
+              <div class="carousel-slide" id="c-slide-10">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(10)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191526-56d8441f.webp" alt="인터뷰">
+                </div>
+                <div class="carousel-caption">11. 리더십을 회고하는 알렉스 퍼거슨 감독 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 12 (Appendix 6) -->
+              <div class="carousel-slide" id="c-slide-11">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(11)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191529-e7c1dc9c.webp" alt="Managing My Life">
+                </div>
+                <div class="carousel-caption">12. 퍼거슨 최초의 전기/자서전 『Managing My Life』 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 13 (Appendix 7) -->
+              <div class="carousel-slide" id="c-slide-12">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(12)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191530-d96598fa.webp" alt="우승">
+                </div>
+                <div class="carousel-caption">13. 2013년 은퇴 확정 프리미어리그 우승 세레머니 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 14 (Appendix 8) -->
+              <div class="carousel-slide" id="c-slide-13">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(13)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191533-32d1b2cb.webp" alt="동상">
+                </div>
+                <div class="carousel-caption">14. 올드 트래포드 외곽에 헌정된 퍼거슨 청동상 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 15 (Appendix 9) -->
+              <div class="carousel-slide" id="c-slide-14">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(14)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191534-fac0bd42.webp" alt="어워드">
+                </div>
+                <div class="carousel-caption">15. 알렉스 퍼거슨 리더십 어워드 수상자들과 촬영 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 16 (Appendix 10) -->
+              <div class="carousel-slide" id="c-slide-15">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(15)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191534-3d16fa5c.webp" alt="길">
+                </div>
+                <div class="carousel-caption">16. 단장 데이비드 길 CEO와의 영혼의 파트너십 (클릭 시 확대)</div>
+              </div>
+
+              <!-- Slide 17 (Appendix 11) -->
+              <div class="carousel-slide" id="c-slide-16">
+                <div class="carousel-img-wrapper" style="cursor: zoom-in;" onclick="openLightbox(16)">
+                  <img src="https://c.longblack.co/image/note/260611/260611-191534-930b05b6.webp" alt="다큐">
+                </div>
+                <div class="carousel-caption">17. 영화 「알렉스 퍼거슨: 좌절은 없다」 아카이빙 샷 (클릭 시 확대)</div>
+              </div>
+            </div>
+
+            <div class="carousel-btn-container">
+              <button class="carousel-btn" onclick="prevCarouselSlide()">◀ 이전</button>
+              <button class="carousel-btn" onclick="nextCarouselSlide()">다음 ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">10 / 10</div>
+    </section>
+
+  </div><!-- /deck -->
+</div><!-- /deck-container -->
+
+<!-- LIGHTBOX MODAL CONTAINER -->
+<div id="lightbox" class="lightbox-modal" onclick="closeLightbox()">
+  <!-- 좌우 화살표 추가 -->
+  <div class="lightbox-arrow lb-prev" onclick="event.stopPropagation(); prevLightboxSlide();">◀</div>
+  <div class="lightbox-arrow lb-next" onclick="event.stopPropagation(); nextLightboxSlide();">▶</div>
+
+  <div class="lightbox-close" onclick="closeLightbox()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </div>
+  
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-caption"></div>
+  </div>
+
+  <!-- 이미지 순서 번호(네비게이션 카운터) HUD 추가 -->
+  <div id="lightbox-counter">1 / 17</div>
+</div>
+
+<script>
+// ─── SLIDE NAVIGATION LOGIC ───
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const navBar = document.getElementById('navBar');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+
+// Generate Dots
+const startNum = document.createElement('div');
+startNum.className = 'nav-num';
+startNum.textContent = '1';
+navBar.appendChild(startNum);
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  navBar.appendChild(dot);
+}
+
+const endNum = document.createElement('div');
+endNum.className = 'nav-num';
+endNum.textContent = totalSlides.toString();
+navBar.appendChild(endNum);
+const dots = document.querySelectorAll('.nav-dot');
+
+function updateNav() {
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+  slides.forEach((slide, idx) => {
+    if (idx === currentSlide) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  });
+
+  btnPrev.style.opacity = currentSlide === 0 ? '0.3' : '1';
+  btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+  
+  btnNext.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+  btnNext.style.pointerEvents = currentSlide === totalSlides - 1 ? 'none' : 'auto';
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= totalSlides) return;
+  currentSlide = idx;
+  const translateX = -(currentSlide * 100);
+  deck.style.transform = `translateX(${translateX}vw)`;
+  updateNav();
+}
+
+function prevSlide() { goToSlide(currentSlide - 1); }
+function nextSlide() { goToSlide(currentSlide + 1); }
+
+// ─── KEYBOARD & WHEEL EVENT ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    return;
+  }
+  
+  // 라이트박스가 열려있는 동안의 키 조작 (좌우 키로 라이트박스 내부 이미지 전환)
+  if (document.getElementById('lightbox').classList.contains('active')) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      nextLightboxSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      prevLightboxSlide();
+    }
+    return;
+  }
+
+  // 일반 발표 슬라이드 넘김 키 조작
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    prevSlide();
+  }
+});
+
+let isScrolling = false;
+window.addEventListener('wheel', (e) => {
+  if (isScrolling) return;
+  // 라이트박스가 열려있으면 마우스 휠 슬라이드 막기
+  if (document.getElementById('lightbox').classList.contains('active')) return;
+  
+  if (e.deltaY > 50 || e.deltaX > 50) {
+    isScrolling = true;
+    nextSlide();
+    setTimeout(() => isScrolling = false, 800);
+  } else if (e.deltaY < -50 || e.deltaX < -50) {
+    isScrolling = true;
+    prevSlide();
+    setTimeout(() => isScrolling = false, 800);
+  }
+});
+
+// ─── INTERACTIVE IMAGE GALLERY CAROUSEL LOGIC ───
+let currentCIdx = 0;
+const totalCPhotos = 17;
+
+function updateCarousel() {
+  for (let i = 0; i < totalCPhotos; i++) {
+    const slide = document.getElementById('c-slide-' + i);
+    if (i === currentCIdx) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  }
+}
+
+function prevCarouselSlide() {
+  currentCIdx = (currentCIdx - 1 + totalCPhotos) % totalCPhotos;
+  updateCarousel();
+}
+
+function nextCarouselSlide() {
+  currentCIdx = (currentCIdx + 1) % totalCPhotos;
+  updateCarousel();
+}
+
+// ─── LIGHTBOX MODAL FUNCTIONALITY & DATA ───
+let currentLbIdx = 0;
+
+const galleryImages = [
+  { src: "https://c.longblack.co/image/note/260611/260611-190817-038d888e.webp", caption: "1. 다큐멘터리 속 퍼거슨<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>1986년부터 2013년까지 무려 27년간 맨체스터 유나이티드를 이끈 전설적인 감독입니다.<br>그는 축구 전술뿐만 아니라 강력한 규율과 팀 장악력으로 전 세계 스포츠계에 깊은 영감을 주었습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-190853-cf52731d.webp", caption: "2. 애제자 호날두의 영입과 동행<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>포르투갈의 유망주였던 크리스티아누 호날두를 발굴하여 세계 최고의 선수로 육성하던 시절의 모습입니다.<br>퍼거슨은 엄격한 아버지처럼, 때로는 든든한 조력자처럼 선수들의 잠재력을 극한으로 끌어올렸습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-190918-a2448eb6.webp", caption: "3. 2009년 UEFA 챔피언스리그 결승 스쿼드<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>로마에서 열린 챔피언스리그 결승전에 선발 출전한 맨유 선수단의 결연한 단체 사진입니다.<br>우측 끝에 자리한 박지성 선수를 비롯해 웨인 루니, 긱스 등 황금 세대 조직력의 정점을 보여주는 스쿼드입니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-190935-b71e9d26.webp", caption: "4. 2013년 마지막 홈 경기 기립박수<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>2013년 5월 12일, 27년의 장기 집권을 마치고 올드 트래포드에서 마지막 경기를 치르기 위해 입장하는 순간입니다.<br>구단 스태프와 상대 팀 선수들까지 일렬로 도열하여 살아있는 전설에게 깊은 존경을 표했습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-190949-e39ba23b.webp", caption: "5. 애제자 게리 네빌과의 은퇴 후 인터뷰<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>맨유의 원클럽맨이자 주장 출신인 게리 네빌과 은퇴 후 마주 앉아 과거의 리더십 철학을 회고하는 장면입니다.<br>사제지간을 넘어 인생의 멘토로서 깊은 유대감을 나누는 두 사람의 모습이 인상적입니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191007-a40cba51.webp", caption: "6. 1999년 전무후무한 트레블 달성 퍼레이드<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>잉글랜드 축구 역사상 최초로 프리미어리그, FA컵, 챔피언스리그 3관왕(트레블)을 달성한 1999년의 카퍼레이드입니다.<br>수십만 명의 맨체스터 시민들이 거리로 쏟아져 나와 위대한 팀의 탄생을 열광적으로 축하했습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191520-29862757.webp", caption: "7. 맨유의 심장, 올드 트래포드 전경<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>'꿈의 구장(Theatre of Dreams)'으로 불리는 맨체스터 유나이티드의 홈 구장 올드 트래포드의 웅장한 전경입니다.<br>퍼거슨 감독의 수많은 극적인 역전승(퍼기 타임)과 우승의 환희가 서려 있는 성지입니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191521-b7294f37.webp", caption: "8. 맨체스터 유나이티드 구단 공식 엠블럼<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>세계에서 가장 높은 브랜드 가치를 지닌 스포츠 구단 중 하나인 맨체스터 유나이티드의 '붉은 악마' 로고입니다.<br>가운데 삼지창을 든 악마는 상대에게 두려움을 심어주겠다는 강력한 승리 의지를 상징합니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191523-3637b0c1.webp", caption: "9. 퍼거슨의 경영 가이드북 『Leading』<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>글로벌 벤처 투자자 마이클 모리츠와 공저한 이 책은 스포츠를 넘어 기업 경영자들을 위한 바이블로 꼽힙니다.<br>규율, 헌신, 위임, 변화 수용 등 27년간 실전에서 벼려낸 날카로운 리더십 인사이트가 담겨 있습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191523-40117d27.webp", caption: "10. 자서전 『My Autobiography』<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>은퇴 직후인 2013년에 출간되어 전 세계적인 베스트셀러가 된 알렉스 퍼거슨의 두 번째 공식 자서전입니다.<br>호날두, 베컴, 루니 등 스타 플레이어들과의 일화와 드레싱룸의 숨겨진 비화들이 솔직하게 기록되어 있습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191526-56d8441f.webp", caption: "11. 리더십 철학을 회고하는 노년의 알렉스 퍼거슨<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>맨유에서의 27년 장기 집권을 마치고, 수많은 우승의 기억과 자신만의 확고한 경영 철학을 회고하는 인터뷰 모습입니다.<br>수많은 승부의 세계를 견뎌낸 거장의 여유와 연륜이 깊게 묻어납니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191529-e7c1dc9c.webp", caption: "12. 최초의 자서전 『Managing My Life』<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>역사적인 1999년 트레블 달성 직후에 출간되었던 퍼거슨 감독의 첫 번째 자서전입니다.<br>조선공의 아들로 태어난 빈민가 시절부터 세계 최고의 감독이 되기까지의 인생 역경이 담담하게 그려져 있습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191530-d96598fa.webp", caption: "13. 2013년 은퇴 확정 프리미어리그 우승 세레머니<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>구단 역사상 통산 20번째 리그 우승을 확정 지으며, 가장 영광스러운 순간에 박수칠 때 떠난 완벽한 피날레입니다.<br>이 우승 트로피를 마지막으로 맨유는 긴 암흑기에 접어들며 역설적으로 그의 위대함이 더욱 증명되었습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191533-32d1b2cb.webp", caption: "14. 올드 트래포드에 헌정된 퍼거슨 청동상<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>구단에 헌신한 26주년을 기념하여 올드 트래포드 북쪽 스탠드 외곽에 세워진 거대한 퍼거슨 청동상입니다.<br>스탠드 이름 자체도 '알렉스 퍼거슨 경 스탠드'로 명명되며 구단 역사상 최고의 레전드로 영구히 각인되었습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191534-fac0bd42.webp", caption: "15. 리더십 어워드 수상자들과의 기념 촬영<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>매년 자신의 이름을 따서 수여하는 '알렉스 퍼거슨 리더십 어워드' 현장에서 후배 지도자들과 함께한 모습입니다.<br>그는 은퇴 후에도 LMA(리그감독협회) 등에서 후진 양성과 축구계 발전을 위해 끊임없는 영향력을 행사하고 있습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191534-3d16fa5c.webp", caption: "16. 데이비드 길 CEO와의 영혼의 파트너십<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>10년간 맨유의 CEO를 역임하며 퍼거슨과 함께 구단의 최고 전성기를 이끌었던 데이비드 길 단장입니다.<br>현장의 권한을 전적으로 존중하는 경영진과, 성적으로 보답하는 감독 간의 이상적인 신뢰 관계를 보여주었습니다.</span>" },
+  { src: "https://c.longblack.co/image/note/260611/260611-191534-930b05b6.webp", caption: "17. 영화 「알렉스 퍼거슨: 좌절은 없다」 아카이빙<br><span style='font-size:14px; color:#aaa; font-weight:400; display:block; margin-top:8px;'>2018년 뇌출혈로 쓰러진 후 기적적으로 회복한 퍼거슨의 삶을 그의 아들이 직접 연출한 다큐멘터리 영화입니다.<br>기억을 잃을지도 모른다는 두려움 속에서, 자신의 가장 소중한 승리의 기억들을 담담하게 회고하는 수작입니다.</span>" }
+];
+
+function openLightbox(idx) {
+  currentLbIdx = idx;
+  updateLightboxContent();
+  const lightbox = document.getElementById('lightbox');
+  lightbox.style.display = 'flex';
+  
+  // 리플로우 강제 후 active 클래스 추가 (페이드인 효과)
+  setTimeout(() => {
+    lightbox.classList.add('active');
+  }, 10);
+}
+
+function updateLightboxContent() {
+  const lbImg = document.getElementById('lightbox-img');
+  const lbCaption = document.getElementById('lightbox-caption');
+  const lbCounter = document.getElementById('lightbox-counter');
+  
+  const currentImg = galleryImages[currentLbIdx];
+  lbImg.src = currentImg.src;
+  lbCaption.innerHTML = currentImg.caption;
+  lbCounter.textContent = `${currentLbIdx + 1} / ${galleryImages.length}`;
+}
+
+function prevLightboxSlide() {
+  currentLbIdx = (currentLbIdx - 1 + galleryImages.length) % galleryImages.length;
+  updateLightboxContent();
+}
+
+function nextLightboxSlide() {
+  currentLbIdx = (currentLbIdx + 1) % galleryImages.length;
+  updateLightboxContent();
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  lightbox.classList.remove('active');
+  setTimeout(() => {
+    lightbox.style.display = 'none';
+  }, 300);
+}
+
+// 초기 설정
+updateNav();
+updateCarousel();
+lucide.createIcons();
+</script>
+</body>
+</html>

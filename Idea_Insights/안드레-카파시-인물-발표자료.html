@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>안드레 카파시 — AI 패러다임의 나침반</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root {
+  --white: #FFFFFF;
+  --cream: #FAF8F4;
+  --black: #0F0F11;
+  --dark: #16161A;
+  --accent: #E5A93C;
+  --accent-lt: #F7D070;
+  --gray: #8A8D93;
+  --gray-lt: #2A2C35;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Pretendard', sans-serif; background:var(--black); color:var(--cream); overflow:hidden; }
+
+/* ── DECK ── */
+.dc { width:100vw; height:100vh; overflow:hidden; position:relative; }
+.dk { display:flex; width:100vw; height:100vh; transition:transform .6s cubic-bezier(.4,0,.2,1); will-change:transform; }
+.sl { min-width:100vw; height:100vh; position:relative; overflow:hidden; display:flex; flex-direction:column; background:var(--dark); }
+
+/* 하단 장식선 */
+.sl::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg, var(--accent) 0%, var(--accent-lt) 50%, var(--accent) 100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  z-index: 999;
+}
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: transparent; cursor: pointer; transition: all 0.3s;
+  border: 2px solid var(--gray);
+}
+.dot:hover { 
+  border-color: var(--white);
+}
+.dot.on { 
+  background: var(--accent); 
+  border: none;
+  width: 28px; height: 10px; border-radius: 5px;
+}
+.nb { position:fixed; top:50%; transform:translateY(-50%); z-index:998; width:46px; height:46px;
+  border-radius:50%; border:1px solid rgba(229,169,60,.3); background:rgba(255,255,255,.03);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s;
+  color:var(--accent); font-size:18px; backdrop-filter:blur(4px); }
+.nb:hover { background:var(--accent); color:var(--black); }
+#prev { left:28px; } #next { right:28px; }
+
+/* HUD 카운터 */
+.hud-counter {
+  position: absolute;
+  top: 40px;
+  right: 68px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+}
+
+/* ── LABEL ── */
+.lbl { position:absolute; top:40px; left:68px; font-family:'Outfit', sans-serif; font-size:11px; letter-spacing:.25em; text-transform:uppercase; font-weight:800; color:var(--accent); }
+
+/* ── BODY ── */
+.body { flex:1; display:flex; flex-direction:column; justify-content:center; padding:96px 88px 72px; }
+
+/* ── TYPO ── */
+.hl { font-family:'Noto Serif KR', serif; font-weight:900; line-height:1.15; word-break:keep-all; }
+.hl-xl { font-size:clamp(52px, 6.8vw, 84px); }
+.hl-lg { font-size:clamp(40px, 5vw, 68px); }
+.hl-md { font-size:clamp(30px, 4vw, 48px); }
+.acc { color:var(--accent); }
+.acclt { color:var(--accent-lt); }
+
+.desc { font-size:clamp(16px, 1.8vw, 21px); line-height:1.75; word-break:keep-all; color:#D2D4D9; }
+.div-bar { width:48px; height:3px; background:var(--accent); margin:24px 0; }
+
+/* ── GRID/CARDS ── */
+.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:32px; margin-top:20px; }
+.grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; margin-top:20px; }
+.card { padding:28px 24px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; transition:all .3s; }
+.card:hover { border-color:rgba(229,169,60,.4); transform:translateY(-4px); background:rgba(255,255,255,.05); }
+.card-icon { font-size:32px; color:var(--accent); margin-bottom:16px; }
+.card-head { font-size:20px; font-weight:800; margin-bottom:10px; color:var(--white); }
+.card-body { font-size:14.5px; color:#A4A7AE; line-height:1.6; }
+
+/* ── MICRO ANIMATIONS ── */
+.anim { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+.sl.on .anim { opacity:1; transform:none; }
+.d1 { transition-delay:.1s; } .d2 { transition-delay:.2s; } .d3 { transition-delay:.3s; }
+.d4 { transition-delay:.4s; } .d5 { transition-delay:.5s; }
+
+/* ── LIGHTBOX ── */
+#lb { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,15,17,.95); z-index:9999; display:none; align-items:center; justify-content:center; }
+#lb img { max-width:90%; max-height:85%; border:2px solid var(--accent); }
+#lb-close { position:absolute; top:32px; right:32px; font-size:32px; color:var(--white); cursor:pointer; }
+
+/* ── MORE INSIGHTS LAYOUT ── */
+.mi-split { display:grid; grid-template-columns: 1.2fr 1.8fr; gap:48px; height:100%; align-items:center; }
+.mi-left { display:flex; flex-direction:column; gap:24px; }
+.wiki-btn { display:inline-flex; align-items:center; gap:16px; padding:18px 28px; border:2px dashed rgba(229,169,60,.5); border-radius:6px; text-decoration:none; color:var(--accent); transition:all 0.3s; }
+.wiki-btn:hover { background:rgba(229,169,60,.06); border-style:solid; color:var(--white); }
+.wiki-btn i { font-size:28px; }
+.yt-grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+.yt-card { background:rgba(255,255,255,.02); border:1px solid var(--border-color); border-radius:6px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; }
+.yt-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+.yt-thumb { width:100%; aspect-ratio:16/9; background-size:cover; background-position:center; }
+.yt-info { padding:14px; }
+.yt-title { font-size:13.5px; font-weight:700; line-height:1.4; margin-bottom:6px; color:var(--white); }
+.yt-channel { font-size:11.5px; color:var(--gray); }
+</style>
+</head>
+<body>
+
+<div class="dc">
+  <div class="nb" id="prev" onclick="mv(-1)"><i class="ph-duotone ph-caret-left"></i></div>
+  <div class="nb" id="next" onclick="mv(1)"><i class="ph-duotone ph-caret-right"></i></div>
+  <div class="nav-dots" id="dots"></div>
+
+  <div class="dk" id="deck">
+
+    <!-- ══ 01 COVER ══ -->
+    <section class="sl on">
+      <span class="lbl anim d1">THE NAIL IN THE AI PARADIGM</span>
+      <div class="hud-counter">01 / 11</div>
+      <div class="body">
+        <div style="display:flex; align-items:center; gap:36px;" class="anim d2">
+          <img src="https://avatars.githubusercontent.com/u/241138?v=4&size=200" alt="Andrej Karpathy" style="width:110px; height:110px; border-radius:50%; border:3px solid var(--accent); object-fit:cover; cursor:pointer;" onclick="openLb(this.src)">
+          <div>
+            <h1 class="hl hl-xl acc">안드레 카파시</h1>
+            <p style="font-family:'Outfit', sans-serif; font-size:20px; font-weight:300; letter-spacing:0.1em; color:var(--gray); margin-top:8px;">AI 패러다임의 나침반이자 사상가</p>
+          </div>
+        </div>
+        <div class="div-bar anim d3"></div>
+        <p class="desc anim d4" style="max-width:800px;">
+          학문적 뿌리부터 OpenAI 창립과 테슬라 오토파일럿 총괄, 유레카 랩스 창업을 거쳐 2026년 5월 앤스로픽(Anthropic) 합류까지. 
+          그가 주창한 Software 3.0과 에이전틱 엔지니어링 시대의 생존 전략을 분석합니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 02 ACADEMIC ROOT ══ -->
+    <section class="sl">
+      <span class="lbl">ACADEMIC FOUNDATIONS</span>
+      <div class="hud-counter">02 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">학문적 뿌리와 <span class="acc">CS231n</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-student"></i></div>
+            <div class="card-head">글로벌 엘리트 코스</div>
+            <div class="card-body">
+              1986년 슬로바키아 출생 후 토론토로 이주. 토론토 대학교에서 컴퓨터과학 및 물리학 학사(2009)를 마친 후, 브리티시 컬럼비아 대학교(UBC)에서 컴퓨터과학 석사(2011)를 취득하고 스탠퍼드 대학교 컴퓨터비전 박사(2015) 학위를 받았습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-chalkboard-teacher"></i></div>
+            <div class="card-head">스탠퍼드 CS231n의 탄생</div>
+            <div class="card-body">
+              컴퓨터 비전의 대모 '페이페이 리(Fei-Fei Li)' 교수의 지도 하에 최초로 스탠퍼드 딥러닝 강의인 <strong>CS231n</strong>을 설계하고 가르쳤습니다. 이는 현재 전 세계 딥러닝 및 합성곱 신경망(CNN) 교육의 글로벌 표준이 되었습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 03 CAREER MILESTONES ══ -->
+    <section class="sl">
+      <span class="lbl">CAREER TRAJECTORY</span>
+      <div class="hud-counter">03 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">테슬라에서 <span class="acc">앤스로픽(Anthropic)</span>까지</h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-3">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-atom"></i></div>
+            <div class="card-head">OpenAI & Tesla 디렉터</div>
+            <div class="card-body">
+              2015년 OpenAI의 창립 연구 멤버로 연구를 주도했으며, 2017년 테슬라(Tesla)로 이직하여 AI 디렉터로서 자율주행 오토파일럿 컴퓨터 비전 시스템과 거대 '데이터 엔진' 루프를 설계·총괄했습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-graduation-cap"></i></div>
+            <div class="card-head">유레카 랩스 창업 (2024)</div>
+            <div class="card-body">
+              2023년 OpenAI 복귀 후 GPT-4 프로젝트에 기여한 뒤, 2024년 7월 AI 네이티브 학교 '유레카 랩스(Eureka Labs)'를 창업하여 1:1 AI 조교와 인간 교사가 공생하는 교육 패러다임(LLM101n 코스)을 제시했습니다.
+            </div>
+          </div>
+          <div class="card anim d5">
+            <div class="card-icon"><i class="ph-duotone ph-rocket-launch"></i></div>
+            <div class="card-head">앤스로픽 합류 (2026.05)</div>
+            <div class="card-body">
+              <strong>2026년 5월, 앤스로픽(Anthropic)에 전격 합류</strong>했습니다. 현재 사전학습(Pretraining) 팀에서 차세대 클로드(Claude) 핵심 기초 모델의 학습 알고리즘 고도화를 연구 중입니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 04 SOFTWARE PARADIGMS ══ -->
+    <section class="sl">
+      <span class="lbl">SOFTWARE PARADIGM SHIFT</span>
+      <div class="hud-counter">04 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">소프트웨어 패러다임의 진화</h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-3">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-keyboard"></i></div>
+            <div class="card-head">Software 1.0</div>
+            <div class="card-body">
+              인간이 직접 규칙과 조건식(If-else), 알고리즘의 모든 라인을 키보드로 직접 명령하여 작성하는 전통적인 결정론적 프로그래밍 패러다임.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-database"></i></div>
+            <div class="card-head">Software 2.0 (2017)</div>
+            <div class="card-body">
+              카파시가 2017년 정의한 개념. 인간이 목표(손실 함수)와 데이터만 제시하고, 최적화 알고리즘이 신경망의 '가중치(Weight)'라는 새로운 코드를 스스로 생성하는 패러다임.
+            </div>
+          </div>
+          <div class="card anim d5">
+            <div class="card-icon"><i class="ph-duotone ph-chats"></i></div>
+            <div class="card-head">Software 3.0 (2025)</div>
+            <div class="card-body">
+              인간이 자연어로 "목적과 의도(Vibe)"만 표현하면, 지능형 에이전트(Claude Code 등)가 컨텍스트 윈도우를 제어 레버 삼아 스스로 코드를 컴파일하고 작성하는 프롬프트 기반 코딩.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 05 VIBE CODING & THE GROWING GAP ══ -->
+    <section class="sl">
+      <span class="lbl">VIBE CODING ERA</span>
+      <div class="hud-counter">05 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">바이브 코딩과 <span class="acc">격차의 확대</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-magic-wand"></i></div>
+            <div class="card-head">"나는 더 이상 코드를 짜지 않는다"</div>
+            <div class="card-body">
+              2025년 초, 카파시는 코딩 에이전트(Cursor, Claude Code)의 비약적 발전에 힘입어 자연어로 아이디어와 느낌(Vibe)을 주면 코딩은 에이전트가 완수하는 <strong>'바이브 코딩(Vibe Coding)'</strong> 트렌드를 개막하며 수작업 코딩 종말을 고했습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-chart-line-up"></i></div>
+            <div class="card-head">양극화되는 AI 격차 (The Growing Gap)</div>
+            <div class="card-body">
+              2026년 4월 카파시는 AI를 단순 챗봇/검색기로 취급하는 대중과, 에이전트·MCP·커스텀 스크립트를 조율하여 1:N 복리 자동화 업무망을 만드는 파워 유저 사이의 생산성 격차가 기하급수적으로 벌어지고 있음을 경고했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 06 AGENT SKILLS ══ -->
+    <section class="sl">
+      <span class="lbl">COGNITIVE CODE RECONSTRUCTION</span>
+      <div class="hud-counter">06 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">에이전트 제어를 위한 <span class="acc">카파시 코딩 원칙</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2" style="grid-template-columns: 1.1fr 0.9fr;">
+          <div style="display:flex; flex-direction:column; gap:16px;" class="anim d3">
+            <div style="display:flex; gap:16px; align-items:flex-start;">
+              <span style="font-size:24px; font-weight:800; color:var(--accent);">01</span>
+              <div>
+                <h4 style="font-size:17px; font-weight:800; color:var(--white);"> Think Before Coding (코딩 전 사유)</h4>
+                <p style="font-size:14px; color:#A4A7AE; margin-top:4px;">불확실성에 기반해 억측 코딩하지 않고, 모호함을 명시적으로 드러내어 사용자에게 트레이드오프 질문.</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:16px; align-items:flex-start;">
+              <span style="font-size:24px; font-weight:800; color:var(--accent);">02</span>
+              <div>
+                <h4 style="font-size:17px; font-weight:800; color:var(--white);">Simplicity First (단순함 최우선)</h4>
+                <p style="font-size:14px; color:#A4A7AE; margin-top:4px;">오버엔지니어링, 과도한 예외 처리, 불필요한 설정 추가를 금지하고 200줄의 복잡한 구조를 50줄로 다이어트.</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:16px; align-items:flex-start;">
+              <span style="font-size:24px; font-weight:800; color:var(--accent);">03</span>
+              <div>
+                <h4 style="font-size:17px; font-weight:800; color:var(--white);">Surgical Changes (외과 수술식 변경)</h4>
+                <p style="font-size:14px; color:#A4A7AE; margin-top:4px;">주변의 불필요한 포맷이나 스타일을 함부로 교정하지 않고, 오직 요구된 핵심 영역만 정확하고 날카롭게 수정.</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:16px; align-items:flex-start;">
+              <span style="font-size:24px; font-weight:800; color:var(--accent);">04</span>
+              <div>
+                <h4 style="font-size:17px; font-weight:800; color:var(--white);">Goal-Driven Execution (목표 주도 검증)</h4>
+                <p style="font-size:14px; color:#A4A7AE; margin-top:4px;">막연한 요구 대신 단계별 성공 기준을 스스로 정의하고, 단계마다 검증 테스트 루프를 거쳐 전진.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card anim d4" style="display:flex; flex-direction:column; justify-content:center; border-left:3px solid var(--accent);">
+            <div class="card-icon"><i class="ph-duotone ph-brain"></i></div>
+            <div class="card-head" style="font-size:18px;">결정론적 한계 보완 스킬</div>
+            <div class="card-body" style="font-size:13.5px; line-height:1.6;">
+              이 지침은 AI 에이전트가 함부로 넘겨짚고 API를 난잡하게 오버엔지니어링하여 시스템 부채를 증가시키는 고유 결함을 억제하도록 돕는 본 위키(Antigravity)의 핵심 룰셋입니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 07 LLM WIKI ARCHITECTURE ══ -->
+    <section class="sl">
+      <span class="lbl">LLM WIKI METHODOLOGY</span>
+      <div class="hud-counter">07 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">지식의 복리 자산화: <span class="acc">LLM Wiki</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-3">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-stack"></i></div>
+            <div class="card-head">1층: Raw-Data</div>
+            <div class="card-body">
+              수집된 기사, 회의록, 유튜브 대본, 이미지 등 정제되지 않은 상태의 불변 데이터(Immutable Source of Truth) 보관 레이어.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-tree-structure"></i></div>
+            <div class="card-head">2층: Wiki-Pages</div>
+            <div class="card-body">
+              AI가 Raw-Data를 읽고 지식을 컴파일하여 나무위키 형태로 가공, 상호 교차 참조 및 백링크가 연결되어 지속적으로 디벨롭되는 축적의 위키 문서.
+            </div>
+          </div>
+          <div class="card anim d5">
+            <div class="card-icon"><i class="ph-duotone ph-scroll"></i></div>
+            <div class="card-head">3층: Schema (AGENTS)</div>
+            <div class="card-body">
+              위키가 구조화되는 규격과 룰셋(AGENTS.md)을 제공하여 AI를 제멋대로 떠드는 챗봇이 아닌, 정교하고 통제된 위키 관리자로 정의하는 핵심 스키마.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 08 SEQUOIA INTERVIEW ══ -->
+    <section class="sl">
+      <span class="lbl">SEQUOIA AI ASCENT 2026</span>
+      <div class="hud-counter">08 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">사유와 이해의 분리</h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3" style="border-left:4px solid var(--accent); background:rgba(229,169,60,.03);">
+            <div class="card-icon"><i class="ph-duotone ph-quotes"></i></div>
+            <div class="card-head" style="font-family:'Playfair Display', serif; font-style:italic;">"Thinking can be outsourced, Understanding cannot."</div>
+            <div class="card-body" style="font-size:15px; line-height:1.7; color:#D2D4D9;">
+              "정보를 처리하고 유추하는 '사유(Thinking)'의 하위 연산은 에이전트에 아웃소싱해도 된다. 그러나 시스템 전체 아키텍처와 비즈니스 본질에 대한 '이해(Understanding)'는 오직 인간만의 영역이며, 결코 위임해서는 안 된다."
+            </div>
+          </div>
+          <div class="card anim d4" style="display:flex; flex-direction:column; justify-content:center;">
+            <div class="card-icon"><i class="ph-duotone ph-ghost"></i></div>
+            <div class="card-head">동물이 아닌 '유령(Ghosts)'을 제어하라</div>
+            <div class="card-body">
+              LLM은 본능이 있는 동물이 아닙니다. 강화학습(RL)에 의해 동작하며, 오직 채점 가능(수학, 컴파일)한 영역에서만 천재성을 띠고 상식 영역에선 들쭉날쭉한 역량(Jagged Intelligence)을 보입니다. 감정적 프롬프트가 아닌 구조적이고 회로적인 한계를 통제해야 합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 09 TOP-DOWN LEARNING ══ -->
+    <section class="sl">
+      <span class="lbl">ON-DEMAND LEARNING PROOF</span>
+      <div class="hud-counter">09 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">온디맨드 학습과 <span class="acc">탑다운 실증</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-arrows-split"></i></div>
+            <div class="card-head">카파시의 온디맨드 학습 조언</div>
+            <div class="card-body">
+              카파시는 2020년 트윗을 통해 <strong>"기초부터 넓게 배우는 Bottom-up을 피하고, 구체적인 프로젝트를 잡아 깊이 파고들며 필요한 것만 그때그때 배우라(Learning on-demand)"</strong>는 학습 원칙을 선언했습니다. 당시에는 1:1 튜터가 필수적이어서 실행이 어려웠던 이상론이었습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-list-numbers"></i></div>
+            <div class="card-head">가브리엘 피터슨의 탑다운 실증</div>
+            <div class="card-body">
+              이 조언을 챗지피티(ChatGPT) 튜터를 통해 <strong>'탑다운(Top-down) 학습법'</strong>으로 명명하고 실천하여 고졸 학력으로 OpenAI 연구원이 된 인물이 가브리엘 피터슨입니다. 그는 완성형 코드를 복사하는 '바이브 코딩'을 지양하고 작동 원리를 역추적 질문하며 기초를 완벽히 장악했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 10 CONCLUSION ══ -->
+    <section class="sl" style="background: linear-gradient(135deg, #0F0F11 0%, #1A1A22 100%);">
+      <span class="lbl" style="color:var(--accent-lt);">CONCLUSION</span>
+      <div class="hud-counter">10 / 11</div>
+      <div class="body" style="align-items:center; text-align:center;">
+        <div class="anim d1" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(229,169,60,.1); display:flex; align-items:center; justify-content:center; margin-bottom:28px;">
+          <i class="ph-duotone ph-shield-check" style="font-size:48px; color:var(--accent);"></i>
+        </div>
+        <h2 class="hl hl-lg anim d2" style="color:var(--white);">인간에게 남은 유일한 가치</h2>
+        <div class="div-bar c anim d3" style="margin:24px auto;"></div>
+        <p class="desc anim d4" style="max-width:850px; font-size:18px; line-height:1.8; color:#D2D4D9;">
+          "어떻게(How) 구현하고 작성할 것인가"의 가치는 지능형 에이전트가 가져갔습니다. <br>
+          이제 인간은 <strong>"무엇을(What) 만들 것이며, 왜(Why) 해야 하는가"</strong>에 대해 답해야 합니다.<br>
+          AI 시대에 마지막까지 대체되지 않고 살아남는 차별점은 오직 인간만의 <strong>독자적인 취향, 실존적 결단(의지), 그리고 결과에 대한 책임</strong>뿐입니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 11 MORE INSIGHTS (🔚 Rule-08 의무 형식) ══ -->
+    <section class="sl">
+      <span class="lbl">MORE INSIGHTS</span>
+      <div class="hud-counter">11 / 11</div>
+      <div class="body">
+        <div class="mi-split">
+          <div class="mi-left anim d1">
+            <h3 class="hl hl-md acc" style="line-height:1.2;">지식 자산화<br>연계 링크</h3>
+            <p style="font-size:14.5px; color:#A4A7AE; line-height:1.6; margin-bottom:12px;">
+              본 발표자료의 모태가 되는 LLM Wiki의 상세 분석 내용과 원문 문서 정보는 옵시디언 위키 내의 아래 딥링크를 통해 직접 탐색할 수 있습니다.
+            </p>
+            <!-- L1 Rule-08 옵시디언 원문 딥링크 버튼 -->
+            <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=markdown%2FPeople%2F%E2%9C%85%EC%9D%B8%EB%AC%BC%EC%82%AC%EC%A0%84-%EC%95%88%EB%93%9C%EB%A0%88%20%EC%B9%B4%ED%8C%8C%EC%8B%9C%20%28Andrej%20Karpathy%29.md" class="wiki-btn">
+              <i class="ph-duotone ph-file-text"></i>
+              <div style="text-align:left;">
+                <div style="font-size:12px; color:var(--gray); font-weight:800; text-transform:uppercase; letter-spacing:0.05em;">OBSIDIAN DEEPLINK</div>
+                <div style="font-size:15px; font-weight:700; margin-top:2px;">위키 원문 읽기</div>
+                <div style="font-size:11px; color:rgba(255,255,255,.5); font-family:'Outfit',sans-serif; margin-top:4px;">✅인물사전-안드레 카파시 (Andrej Karpathy).md</div>
+              </div>
+            </a>
+          </div>
+          
+          <div class="anim d2">
+            <h4 style="font-size:14px; font-weight:800; letter-spacing:0.1em; color:var(--gray); margin-bottom:18px; text-transform:uppercase;">Related YouTube Insights</h4>
+            <div class="yt-grid">
+              <!-- 유튜브 썸네일 카드 1 -->
+              <a href="https://www.youtube.com/watch?v=vq5WhoPCWQ8" target="_blank" class="yt-card">
+                <div class="yt-thumb" style="background-image: url('https://img.youtube.com/vi/vq5WhoPCWQ8/mqdefault.jpg');"></div>
+                <div class="yt-info">
+                  <div class="yt-title">High School Dropout to OpenAI Researcher</div>
+                  <div class="yt-channel">Gabriel Petersson Interview</div>
+                </div>
+              </a>
+              <!-- 유튜브 썸네일 카드 2 -->
+              <a href="https://www.youtube.com/watch?v=96jN2OCOfLs" target="_blank" class="yt-card">
+                <div class="yt-thumb" style="background-image: url('https://img.youtube.com/vi/96jN2OCOfLs/mqdefault.jpg');"></div>
+                <div class="yt-info">
+                  <div class="yt-title">From Vibe Coding to Agentic Engineering</div>
+                  <div class="yt-channel">Sequoia AI Ascent 2026</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lb" onclick="closeLb()">
+  <span id="lb-close" onclick="closeLb()"><i class="ph-duotone ph-x"></i></span>
+  <img id="lb-img" src="" alt="Enlarged Visual">
+</div>
+
+<script>
+let cur = 0;
+const slides = document.querySelectorAll('.sl');
+const dotsCont = document.getElementById('dots');
+const total = slides.length;
+
+// Generate Navigation Dots
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('div');
+  dot.classList.add('dot');
+  if (i === 0) dot.classList.add('on');
+  dot.addEventListener('click', () => go(i));
+  dotsCont.appendChild(dot);
+}
+const dots = document.querySelectorAll('.dot');
+
+function update() {
+  document.getElementById('deck').style.transform = `translateX(-${cur * 100}vw)`;
+  slides.forEach((s, idx) => {
+    if (idx === cur) s.classList.add('on');
+    else s.classList.remove('on');
+  });
+  dots.forEach((d, idx) => {
+    if (idx === cur) d.classList.add('on');
+    else d.classList.remove('on');
+  });
+}
+
+function go(idx) {
+  cur = idx;
+  update();
+}
+
+function mv(dir) {
+  cur = (cur + dir + total) % total;
+  update();
+}
+
+// Keyboard Navigation
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') mv(1);
+  if (e.key === 'ArrowLeft') mv(-1);
+});
+
+// Lightbox functions
+function openLb(src) {
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  lbImg.src = src;
+  lb.style.display = 'flex';
+}
+function closeLb() {
+  document.getElementById('lb').style.display = 'none';
+}
+</script>
+</body>
+</html>

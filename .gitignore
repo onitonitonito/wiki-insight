@@ -1,0 +1,5 @@
+# Ignore all markdown files in subdirectories
+**/*.md
+
+# Do not ignore markdown files in the root directory (e.g., README.md, MOC.md)
+!/*.md

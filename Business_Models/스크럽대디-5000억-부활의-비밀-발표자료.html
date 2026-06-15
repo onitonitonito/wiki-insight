@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스크럽대디 — 5000억 부활의 비밀</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --black: #111111;
+    --yellow: #FFC800; /* 스크럽대디 시그니처 옐로우 */
+    --yellow-light: #FFE066;
+    --cyan: #00A8E8; /* 찬물 기믹 블루 */
+    --magenta: #FF3366; /* 더운물 기믹 레드/핑크 */
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-dark: #222222;
+    --cream: #F8F9FA;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden; /* 가로, 세로 스크롤 방지 */
+  }
+
+  /* ─── SLIDE WRAPPER ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+  .nav-bar {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    z-index: 999;
+  }
+  .nav-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #aaa;
+    margin: 0 8px;
+    font-family: 'Playfair Display', serif;
+  }
+  .nav-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; cursor: pointer; transition: all 0.3s;
+    border: 3px solid #666;
+  }
+  .nav-dot:hover { 
+    border-color: #aaa;
+  }
+  .nav-dot.active { 
+    background: var(--yellow); 
+    border: none;
+    width: 36px; height: 12px; border-radius: 6px;
+  }
+
+  .nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    color: var(--yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,200,0,0.3);
+  }
+  .nav-arrow:hover {
+    background: var(--yellow);
+    color: var(--black);
+    transform: scale(1.1);
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--yellow);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--white);
+    word-break: keep-all;
+  }
+  .big-headline .yellow { color: var(--yellow); }
+  .slide-divider {
+    width: 60px; height: 6px;
+    background: var(--yellow);
+    border-radius: 3px;
+    margin: 32px 0;
+  }
+  .body-text {
+    font-size: 21px;
+    line-height: 1.75;
+    color: #ccc;
+    max-width: 700px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1; min-width: 400px; z-index: 2; }
+  .col-img { flex: 1; display: flex; justify-content: center; align-items: center; z-index: 1; position: relative;}
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    border-radius: 12px;
+  }
+  .img-caption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    max-width: 80%;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 01: COVER ─── */
+  .slide-01 { background: var(--black); }
+  .s01-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--yellow);
+    font-weight: 700;
+  }
+  .s01-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 24px;
+    word-break: keep-all;
+  }
+  .s01-headline .yellow { color: var(--yellow); }
+  .s01-sub {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #aaa;
+    font-weight: 500;
+    margin-bottom: 60px;
+  }
+  .s01-stat-row { display: flex; gap: 56px; margin-top: 40px; }
+  .s01-stat { text-align: left; }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: #888;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .s01-hero-img {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 600px;
+    z-index: 0;
+  }
+  .s01-hero-img img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: -20px 20px 60px rgba(255,200,0,0.05);
+  }
+
+  /* ─── SLIDE 02: THE FAILURE ─── */
+  .slide-02 { background: var(--gray-dark); }
+  .highlight-box {
+    background: var(--black);
+    color: var(--white);
+    padding: 32px 40px;
+    border-left: 5px solid #555;
+    margin-top: 40px;
+    max-width: 700px;
+    border-radius: 4px;
+  }
+  .highlight-box .quote { font-size: 19px; font-weight: 500; line-height: 1.7; color: #ccc; word-break: keep-all; }
+  .highlight-box .quote-attr { font-size: 13px; color: #888; margin-top: 16px; letter-spacing: 0.1em; }
+
+  /* ─── SLIDE 03: THE PIVOT ─── */
+  .slide-03 { background: var(--black); color: var(--white); }
+  .pivot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 40px;
+  }
+  .pivot-card {
+    background: var(--gray-dark);
+    padding: 40px;
+    border-radius: 12px;
+    border-top: 4px solid var(--yellow);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .pivot-card.before { border-color: #555; opacity: 0.8; }
+  .pivot-card .pc-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(255,200,0,0.2);
+    color: var(--yellow);
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+  }
+  .pivot-card.before .pc-badge { background: rgba(255,255,255,0.1); color: #aaa; }
+  .pivot-title { font-size: 24px; font-weight: 800; margin-bottom: 16px; }
+  .pivot-desc { font-size: 16px; color: #bbb; line-height: 1.6; }
+
+  /* ─── SLIDE 04: THE MAGIC (COLD vs WARM) ─── */
+  .slide-04 { background: var(--black); position: relative; }
+  .split-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    z-index: 0;
+  }
+  .split-left { flex: 1; background: linear-gradient(135deg, #001A29, #004B6B); border-right: 2px solid rgba(255,255,255,0.1); }
+  .split-right { flex: 1; background: linear-gradient(135deg, #330A14, #6B001F); }
+  .magic-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+  .magic-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    text-align: center;
+  }
+  .magic-icon { font-size: 64px; margin-bottom: 24px; }
+  .magic-title { font-size: 32px; font-weight: 900; margin-bottom: 16px; color: var(--white); }
+  .magic-title.cold { color: var(--cyan); }
+  .magic-title.warm { color: var(--magenta); }
+  .magic-desc { font-size: 18px; color: rgba(255,255,255,0.8); line-height: 1.6; word-break: keep-all; max-width: 400px; }
+  .magic-header {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+  }
+  .magic-header .big-headline {
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+
+  /* ─── SLIDE 05: SHARK TANK ─── */
+  .slide-05 { background: var(--gray-dark); }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 48px; }
+  .col-card { border-top: 4px solid var(--yellow); padding-top: 28px; }
+  .col-num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--yellow); line-height: 1; margin-bottom: 16px; }
+  .col-title { font-size: 19px; font-weight: 800; color: var(--white); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .col-desc { font-size: 16px; color: #aaa; line-height: 1.7; word-break: keep-all; }
+  
+  /* ─── YOUTUBE THUMBNAIL COMPONENT ─── */
+  .yt-thumb-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+  }
+  .yt-thumb-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.5);
+  }
+  .yt-thumb-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.3s ease;
+  }
+  .yt-thumb-wrapper:hover img {
+    filter: brightness(0.85);
+  }
+  .yt-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px;
+    height: 48px;
+    background: rgba(229, 9, 20, 0.9);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  .yt-play-btn::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 18px;
+    border-color: transparent transparent transparent var(--white);
+    margin-left: 4px;
+  }
+  .yt-thumb-wrapper:hover .yt-play-btn {
+    background: #FF0000;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  /* ─── SLIDE 06: PREMIUM STRATEGY ─── */
+  .slide-06 { background: var(--black); color: var(--white); }
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+  .strategy-card { background: #1A1A1A; border: 1px solid #333; border-left: 4px solid var(--yellow); padding: 32px; transition: all 0.3s; border-radius: 4px; }
+  .strategy-card:hover { border-left-color: var(--yellow-light); background: #222; transform: translateY(-4px); }
+  .sc-icon { font-size: 32px; margin-bottom: 16px; color: var(--yellow); }
+  .sc-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 12px; letter-spacing: 0.05em; word-break: keep-all; }
+  .sc-body { font-size: 15px; color: #aaa; line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 07: AUTHENTIC FANDOM ─── */
+  .slide-07 { background: var(--cream); color: var(--black); }
+  .slide-07 .big-headline { color: var(--black); }
+  .slide-07 .body-text { color: #444; }
+  .tiktok-frame {
+    width: 320px;
+    height: 568px;
+    background: #000;
+    border-radius: 24px;
+    padding: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .tiktok-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .tiktok-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tiktok-ui {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    color: white;
+    z-index: 10;
+  }
+  .tiktok-username { font-weight: 800; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+  .tiktok-caption { font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+
+  /* ─── SLIDE 08: AI OPPORTUNITY ─── */
+  .slide-08 { background: var(--black); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 48px; }
+  .opp-card { background: var(--gray-dark); color: var(--white); padding: 40px 32px; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 16px 32px rgba(0,0,0,0.3); }
+  .opp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--yellow); }
+  .opp-num { font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900; color: var(--yellow); opacity: 0.1; position: absolute; right: 24px; top: 16px; line-height: 1; }
+  .opp-icon { font-size: 32px; margin-bottom: 20px; color: var(--yellow); }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--yellow); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .opp-desc { font-size: 15px; color: #ccc; line-height: 1.7; word-break: keep-all; font-weight: 400; }
+  .feasibility { display: flex; align-items: center; gap: 4px; margin-top: 24px; border-top: 1px solid #333; padding-top: 16px; }
+  .star { color: var(--yellow); font-size: 14px; }
+  .star.empty { color: #555; }
+
+  /* ─── SLIDE 09: CONCLUSION ─── */
+  .slide-09 { background: var(--gray-dark); color: var(--white); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(40px, 5.5vw, 68px); font-weight: 900; line-height: 1.25; color: var(--white); max-width: 1000px; margin: 32px 0; word-break: keep-all; }
+  .conclusion-headline .yellow { color: var(--yellow); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .lesson { border-top: 3px solid #444; padding-top: 24px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--yellow); margin-bottom: 12px; }
+  .lesson-title { font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 15px; color: #aaa; line-height: 1.7; word-break: keep-all; }
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #666; letter-spacing: 0.1em; border-top: 1px solid #333; padding-top: 16px; }
+  .bg-watermark { position: absolute; right: -50px; bottom: -50px; font-family: 'Playfair Display'; font-size: 250px; font-weight:900; opacity: 0.02; color: var(--white); line-height: 1; pointer-events: none; }
+  
+  /* ─── SLIDE 10: APPENDIX ─── */
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #888; letter-spacing: 0.15em; }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+
+  .key-takeaway-badge {
+    position: absolute;
+    top: 64px;
+    right: 80px;
+    background: var(--yellow);
+    color: var(--black);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">BUSINESS MODELS · PRODUCT INNOVATION</div>
+        <div class="s01-headline anim anim-d2">
+          5년 외면받은 수세미,<br>
+          <span class="yellow">5000억 브랜드</span>가 되다
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          스크럽대디(Scrub Daddy) — 부활의 비밀<br>
+          버핑패드 발명가가 만든 '웃는 얼굴' 수세미가<br>글로벌 주방 시장을 장악한 3가지 전략
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">5000억</div>
+            <div class="s01-stat-label">연간 매출 (약 3.4억 달러)</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">427만</div>
+            <div class="s01-stat-label">틱톡 팬덤 수</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">No.1</div>
+            <div class="s01-stat-label">샤크탱크 역대 최고 성공작</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4">
+        <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/1744193214f9fc59fe503f5e75575bd998b9f45aaa.png" alt="스크럽대디 창업자 애런 크라우스">
+      </div>
+      <div class="slide-num">01 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — THE FAILURE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">THE FAILURE</div>
+            <div class="big-headline anim anim-d2">
+              아무도 원하지 않았던<br>
+              <span class="yellow">'손 닦는 수세미'</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              자동차 광택용 기계를 만들던 발명가 애런 크라우스. 그는 기계 기름으로 더러워진 손을 닦기 위해 거친 스펀지에 구멍을 뚫은 특수 수세미를 개발했습니다.<br><br>
+              하지만 현장 작업자들은 이를 외면했고, 심지어 3M에 회사를 매각할 때 이 제품은 인수 목록에서조차 제외되며 5년 동안 창고에 방치되었습니다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "초기 아이디어가 실패했다고 제품의 가치 자체가 사라진 것은 아니다. 사용 환경(Use Case)이 잘못되었을 뿐이다."
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/174419459532329864292b6eda2a571472a4920ff2.JPG" alt="2004년 기계를 만지는 애런 크라우스">
+            <div class="img-caption">2004년 버핑패드 기계를 만들며 손에 묻은 기름을 닦기 위해 스크럽대디의 원형을 개발했던 애런 크라우스. ⓒ애런 크라우스</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">02 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — THE PIVOT
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">THE PIVOT</div>
+        <div class="big-headline anim anim-d2">
+          실패 지점의 <strong>재정의</strong>,<br>
+          <span class="yellow">웃는 얼굴</span>의 탄생
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="pivot-grid anim anim-d4">
+          <div class="pivot-card before">
+            <div class="pc-badge">BEFORE: 손 닦는 용도</div>
+            <div class="pivot-title">시장의 외면</div>
+            <div class="pivot-desc">작업자들은 손을 닦기 위해 비싼 특수 수세미를 살 이유를 느끼지 못했습니다. 타겟팅의 실패였습니다.</div>
+          </div>
+          <div class="pivot-card">
+            <div class="pc-badge" style="background:var(--yellow); color:var(--black);">AFTER: 주방용으로 피벗</div>
+            <div class="pivot-title">결핍이 만든 혁신</div>
+            <div class="pivot-desc">설거지를 하다 '숟가락이 미끄러지는' 불편함을 발견했습니다. 스펀지 중앙에 '입 모양'을 뚫어 숟가락 양면을 닦게 하자, 기능성과 '웃는 얼굴' 디자인이 동시에 완성되었습니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">03 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — THE MAGIC
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="split-bg anim anim-d1">
+        <div class="split-left"></div>
+        <div class="split-right"></div>
+      </div>
+      
+      <div class="magic-header anim anim-d2">
+        <div class="section-tag" style="margin-bottom: 16px;">TECHNOLOGICAL MOAT</div>
+        <div class="big-headline">특허받은 <span class="yellow">온도 반응성</span> 폴리머</div>
+      </div>
+
+      <div class="magic-content">
+        <div class="magic-col anim anim-d3">
+          <i data-lucide="snowflake" class="magic-icon" style="color:var(--cyan);"></i>
+          <div class="magic-title cold">차가운 물에서는</div>
+          <div class="magic-desc">굳은 소스를 긁어낼 만큼<br><strong>단단한(Firm) 질감</strong>으로 변화</div>
+        </div>
+        <div class="magic-col anim anim-d3">
+          <i data-lucide="flame" class="magic-icon" style="color:var(--magenta);"></i>
+          <div class="magic-title warm">따뜻한 물에서는</div>
+          <div class="magic-desc">유리잔의 굴곡을 따라가는<br><strong>부드러운(Soft) 질감</strong>으로 변화</div>
+        </div>
+      </div>
+      <div class="slide-num" style="z-index: 10;">04 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — SHARK TANK
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">THE MOMENTUM</div>
+            <div class="big-headline anim anim-d2">
+              <span class="yellow">압도적 피칭</span>과<br>모멘텀의 극대화
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="three-col anim anim-d4" style="margin-top: 32px; grid-template-columns: 1fr 1fr;">
+              <div class="col-card">
+                <div class="col-num">01</div>
+                <div class="col-title">샤크탱크 즉석 시연</div>
+                <div class="col-desc">2012년 <샤크탱크> 출연. 온도에 따른 질감 변화와 스크래치 방지 능력을 눈앞에서 증명하며 20만 달러 투자를 유치했습니다.</div>
+              </div>
+              <div class="col-card">
+                <div class="col-num">02</div>
+                <div class="col-title">치밀한 후속 대비</div>
+                <div class="col-desc">방송 직후 폭주를 예상해 백업 서버 3개 구축, 포장 선작업 완료. 방송 24시간 만에 15억 원의 매출을 올렸습니다.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <div class="yt-thumb-wrapper">
+              <a href="https://www.youtube.com/watch?v=F07j9LwE7e8" target="_blank">
+                <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/1744202047adec558af3edc7550fa1c917bae635c8.gif" alt="샤크탱크 출연 모습" style="object-fit: cover; filter: none;">
+                <div class="yt-play-btn"></div>
+              </a>
+            </div>
+            <div class="img-caption">역대 샤크 탱크 출연 브랜드 중 가장 성공한 사례로 꼽히는 스크럽대디의 전설적인 피칭 순간. ⓒ스크럽대디</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">05 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — PREMIUM STRATEGY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">BUSINESS STRATEGY</div>
+            <div class="big-headline anim anim-d2">
+              저가 경쟁을 피하는<br>
+              <span class="yellow">프리미엄 선순환</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="strategy-grid anim anim-d4">
+              <div class="strategy-card">
+                <i data-lucide="lock" class="sc-icon"></i>
+                <div class="sc-title">모방 불가능한 해자(Moat)</div>
+                <div class="sc-body">특허받은 원천 소재 기술을 바탕으로 '나만 만들 수 있는 제품'을 구현, 저가 카피캣의 진입을 원천 차단했습니다.</div>
+              </div>
+              <div class="strategy-card">
+                <i data-lucide="tag" class="sc-icon"></i>
+                <div class="sc-title">제값 받기 (Right Price)</div>
+                <div class="sc-body">경쟁사보다 다소 비싸더라도 품질에 대한 확신으로 프리미엄 가격을 고수했습니다.</div>
+              </div>
+              <div class="strategy-card">
+                <i data-lucide="refresh-cw" class="sc-icon"></i>
+                <div class="sc-title">이윤의 품질 재투자</div>
+                <div class="sc-body">높은 이윤을 바탕으로 원가 절감 대신 품질과 신제품(스크럽마미 등)에 재투자하여 압도적 1위를 지켰습니다.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/17441934764c072db75bc5de29a81f206246ae0579.png" alt="스크럽마미 제품">
+            <div class="img-caption" style="position:absolute; bottom:-30px;">2016년 출시한 스크럽마미. 스펀지 재질을 혼합해 매출 규모를 두 배로 늘렸다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">06 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — AUTHENTIC FANDOM
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1" style="color:var(--black);">MARKETING & FANDOM</div>
+            <div class="big-headline anim anim-d2">
+              완벽한 광고 대신<br>
+              <span class="yellow" style="color:#FF3366;">'날것'의 스토리텔링</span>
+            </div>
+            <div class="slide-divider anim anim-d3" style="background:#FF3366;"></div>
+            <div class="body-text anim anim-d3">
+              화려하게 꾸며진 기존 광고 문법을 버리고, 틱톡에서 창업자와 직원이 직접 우스꽝스럽게 망가지는 '날것(Raw)'의 진정성을 어필했습니다.<br><br>
+              "스크럽엉클은 없나요?" 같은 고객의 장난스러운 댓글에 즉각 숏폼으로 화답하며, 427만 명 이상의 열광적인 글로벌 팬덤(Brand Advocate)을 구축했습니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d4">
+            <div class="tiktok-frame">
+              <div class="tiktok-screen">
+                <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/1744193687e7f5c88f33be7b219eef16c15e5870c9.png" alt="스크럽대디 틱톡 영상 캡처">
+                <div class="tiktok-ui">
+                  <div class="tiktok-username">@scrubdaddy</div>
+                  <div class="tiktok-caption">When the CEO gets involved... 😂 🧽</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#888;">07 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — AI OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="key-takeaway-badge anim anim-d1">KEY TAKEAWAY</div>
+        <div class="section-tag anim anim-d1">AI OPPORTUNITY</div>
+        <div class="big-headline anim anim-d2">
+          스크럽대디 전략을<br>
+          <span class="yellow">AI로 자동화</span>하면
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-num">1</div>
+            <i data-lucide="search" class="opp-icon"></i>
+            <div class="opp-title">실패 지점 역추적 AI</div>
+            <div class="opp-desc">기존 제품의 리뷰 데이터와 사용 패턴을 AI로 분석하여 제품이 원래 목적 외에 다르게 쓰일 수 있는 '새로운 용도(Pivot Point)'를 역제안하는 BI 툴.</div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">2</div>
+            <i data-lucide="smile" class="opp-icon"></i>
+            <div class="opp-title">결핍 기반 디자인 에이전트</div>
+            <div class="opp-desc">"미끄러진다"와 같은 구체적 페인포인트를 입력하면 이를 물리적으로 해결할 수 있는 직관적인 형태(예: 웃는 얼굴)를 3D 모델링으로 자동 생성.</div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span><span class="star empty">★</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">3</div>
+            <i data-lucide="message-circle" class="opp-icon"></i>
+            <div class="opp-title">틱톡 티키타카 봇 (GenAI)</div>
+            <div class="opp-desc">고객의 브랜드 SNS 댓글을 실시간 분석하고, 브랜드 페르소나에 맞춘 위트 있는 숏폼 대본과 음성(TTS)을 자동 생성하여 반응 속도 극대화.</div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">08 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="bg-watermark">SCRUB DADDY</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          일상의 불편함(Pain Point)을<br>
+          <span class="yellow">'웃음'과 '특허'로 치환하라</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">결핍과 불편함이 혁신의 시작이다</div>
+            <div class="lesson-desc">실패한 기획도 사용 환경(Use Case)을 재정의하면 비즈니스 모델로 탈바꿈할 수 있다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">02</div>
+            <div class="lesson-title">가격은 가치에 대한 확신이다</div>
+            <div class="lesson-desc">기술적 해자가 확실하다면 저가 경쟁에 뛰어들 필요가 없다. 이윤은 품질에 재투자하라.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">03</div>
+            <div class="lesson-title">팬덤은 진정성에서 온다</div>
+            <div class="lesson-desc">완벽한 광고보다 날것의 소통이 고객을 옹호자로 만든다. 지속적으로 대화하라.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · 스크럽대디 · 롱블랙 2025.04.10</span>
+        <span>AI 신사업 위키 · Wiki-Pages/Longblack-Coffee-Insight</span>
+      </div>
+      <div class="slide-num">09 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — APPENDIX
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" style="background: var(--cream); text-align: center; color: var(--black);" id="slide-9">
+      <div class="content-wrapper" style="align-items: center; justify-content: center; z-index: 1;">
+        <div class="section-tag anim anim-d1" style="margin-bottom: 16px;">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 56px; margin-bottom: 32px; color: var(--black);">
+          더 깊은 <span style="color:var(--yellow);text-shadow: 0 1px 1px rgba(0,0,0,0.2);">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 0 auto 64px auto; background: var(--yellow);"></div>
+        
+        <div class="anim anim-d4" style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/✅스크럽대디-5년-외면받은-수세미를-부활시킨-발명가.md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 420px; height: 320px; background: var(--white); border: 2px solid #E5E0D8; border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='var(--yellow)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='#E5E0D8'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 72px; color: var(--yellow); margin-bottom: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));"></i>
+            <span style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">위키 원문 읽기</span>
+            <span style="font-size: 20px; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">스크럽대디-5년-외면받은-수세미를-부활시킨-발명가</span>
+          </a>
+
+          <!-- YouTube Links List -->
+          <div style="display: flex; flex-direction: column; width: 600px; background: var(--white); border: 2px solid #E5E0D8; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left;">
+            <div style="display: flex; align-items: center; margin-bottom: 20px; color: var(--black);">
+              <i class="ph-duotone ph-youtube-logo" style="font-size: 32px; margin-right: 12px; color: #FF0000;"></i>
+              <span style="font-size: 24px; font-weight: 800;">추천 유튜브 영상</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <a href="https://www.youtube.com/results?search_query=Scrub+Daddy+Shark+Tank" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: #f9f9f9; border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#fffde6'; this.style.color='#FFC800';" onmouseout="this.style.background='#f9f9f9'; this.style.color='var(--black)';">
+                <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/1744202047adec558af3edc7550fa1c917bae635c8.gif" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                  <span style="font-size: 20px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Scrub Daddy Pitch - Shark Tank</span>
+                  <span style="font-size: 14px; color: #888; text-align: left;">ABC • 2012년</span>
+                </div>
+              </a>
+              <a href="https://www.youtube.com/results?search_query=How+Scrub+Daddy+Made+300+Million" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: #f9f9f9; border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#fffde6'; this.style.color='#FFC800';" onmouseout="this.style.background='#f9f9f9'; this.style.color='var(--black)';">
+                <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250409/17441934764c072db75bc5de29a81f206246ae0579.png" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                  <span style="font-size: 20px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">How Scrub Daddy Made $300 Million</span>
+                  <span style="font-size: 14px; color: #888; text-align: left;">CNBC Make It • 2년 전</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // Icon Init
+  lucide.createIcons();
+
+  // Navigation Logic
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const deck = document.getElementById('deck');
+  const navBar = document.getElementById('navBar');
+  
+  // Create Nav Dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    navBar.appendChild(dot);
+  });
+  
+  const navDots = document.querySelectorAll('.nav-dot');
+
+  function updateSlide() {
+    deck.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentSlide);
+      navDots[i].classList.toggle('active', i === currentSlide);
+    });
+
+    document.getElementById('btnPrev').style.opacity = currentSlide === 0 ? '0.2' : '1';
+    document.getElementById('btnPrev').style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+    document.getElementById('btnNext').style.opacity = currentSlide === slides.length - 1 ? '0.2' : '1';
+    document.getElementById('btnNext').style.pointerEvents = currentSlide === slides.length - 1 ? 'none' : 'auto';
+  }
+
+  function nextSlide() {
+    if (currentSlide < slides.length - 1) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlide();
+  }
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'Space') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+
+  // Mouse wheel navigation
+  let isScrolling = false;
+  window.addEventListener('wheel', (e) => {
+    if (isScrolling) return;
+    if (e.deltaY > 50) {
+      nextSlide();
+      isScrolling = true;
+      setTimeout(() => isScrolling = false, 800);
+    } else if (e.deltaY < -50) {
+      prevSlide();
+      isScrolling = true;
+      setTimeout(() => isScrolling = false, 800);
+    }
+  });
+
+  // Touch swipe navigation
+  let touchStartX = 0;
+  let touchEndX = 0;
+  window.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  window.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchStartX - touchEndX > 50) nextSlide();
+    if (touchEndX - touchStartX > 50) prevSlide();
+  });
+</script>
+
+</body>
+</html>

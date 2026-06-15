@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>이야이야앤프렌즈 브랜딩 - 발표자료</title>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+    :root {
+      --bg-color: #111;
+      --text-main: #f5f5f5;
+      --text-sub: #aaa;
+      --accent: #c4d600;
+      /* Olive green */
+      --accent-dark: #6b7a00;
+      --slide-width: 100vw;
+      --slide-height: 100vh;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    /* Layout */
+    .deck {
+      display: flex;
+      width: calc(var(--slide-width) * 9);
+      height: var(--slide-height);
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide {
+      width: var(--slide-width);
+      height: var(--slide-height);
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 10vw;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: clamp(3rem, 5vw, 6rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3.5vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+
+    h3 {
+      font-size: clamp(1.5rem, 2.5vw, 3rem);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: clamp(1.1rem, 1.8vw, 2rem);
+      line-height: 1.6;
+      color: var(--text-sub);
+      margin-bottom: 1.5rem;
+      word-break: keep-all;
+    }
+
+    ul {
+      font-size: clamp(1.1rem, 1.8vw, 2rem);
+      line-height: 1.8;
+      color: var(--text-sub);
+      margin-left: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Layout components */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .img-container {
+      width: 100%;
+      max-height: 60vh;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      cursor: zoom-in;
+    }
+
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .img-container:hover img {
+      transform: scale(1.05);
+    }
+
+    .caption {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    /* Animations */
+    .slide-content {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .slide.active .slide-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* HUD */
+    .hud {
+      position: fixed;
+      bottom: 2rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .nav-arrows {
+      display: flex;
+      gap: 1rem;
+      pointer-events: auto;
+    }
+
+    .arrow-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(5px);
+    }
+
+    .arrow-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .counter {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      width: 30px;
+      border-radius: 5px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-img-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-height: 70vh;
+    }
+
+    .lightbox img {
+      max-width: 80vw;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+      display: block;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      color: #fff;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 10;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .lightbox-arrow:hover {
+      background: var(--accent);
+      color: #000;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .lightbox-arrow.prev {
+      left: 2vw;
+    }
+
+    .lightbox-arrow.next {
+      right: 2vw;
+    }
+
+    .lightbox-meta {
+      padding: 1.5rem 4vw 0;
+      text-align: center;
+      max-width: 860px;
+    }
+
+    .lightbox-counter {
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .lightbox-desc {
+      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    /* Highlights */
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .quote-box {
+      border-left: 5px solid var(--accent);
+      padding-left: 2rem;
+      margin: 2rem 0;
+      font-style: italic;
+    }
+
+    /* Cover specific */
+    .cover-slide {
+      background: radial-gradient(circle at right center, #1a2200 0%, var(--bg-color) 60%);
+    }
+
+    .cover-logo-area {
+      position: absolute;
+      right: -5vw;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60vw;
+      height: 100vh;
+      overflow: hidden;
+      opacity: 0.3;
+      mix-blend-mode: screen;
+      mask-image: linear-gradient(to left, black 50%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+    }
+
+    .cover-logo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-close" onclick="closeLightbox()"><i class="ph-duotone ph-x"></i></div>
+    <div class="lightbox-img-wrap">
+      <button class="lightbox-arrow prev" onclick="lightboxNav(-1)"><i class="ph-duotone ph-caret-left"></i></button>
+      <img id="lightbox-img" src="" alt="확대 이미지">
+      <button class="lightbox-arrow next" onclick="lightboxNav(1)"><i class="ph-duotone ph-caret-right"></i></button>
+    </div>
+    <div class="lightbox-meta">
+      <div class="lightbox-counter" id="lightbox-counter">1 / 8</div>
+      <div class="lightbox-desc" id="lightbox-desc"></div>
+    </div>
+  </div>
+
+  <div class="deck" id="deck">
+    <!-- Slide 1: Cover -->
+    <div class="slide cover-slide active">
+      <div class="cover-logo-area">
+        <img
+          src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338940b3ad6ba45d5417aaff909aa056dd877.png"
+          alt="이야이야 배경">
+      </div>
+      <div class="slide-content" style="max-width: 60vw; z-index: 10;">
+        <p
+          style="color: var(--accent); font-weight: 600; letter-spacing: 3px; font-size: 1.2rem; text-transform: uppercase;">
+          YiaYia & Friends : Brand Storytelling</p>
+        <h1 style="margin-top: 1rem;">할머니의 두 눈을<br>병에 담은 올리브유</h1>
+        <p style="font-size: 1.5rem; margin-top: 2rem; max-width: 80%;">스펙 경쟁이 아닌 <span class="highlight">서사(Narrative)
+            경쟁</span>으로<br>글로벌 디자인 어워드를 석권한 D2C 식품 브랜드의 차별화 공식</p>
+      </div>
+    </div>
+
+    <!-- Slide 2: 배경 -->
+    <div class="slide">
+      <div class="grid-2 slide-content">
+        <div>
+          <h2>01. 조롱을 역전시키다</h2>
+          <h3>냉소를 자부심으로 뒤집는 포지티브 리프레이밍</h3>
+          <p>2009년 그리스 금융위기 당시, 유럽 언론은 그리스를 '유로존의 괴물'이라 조롱했습니다. 비트루트(Beetroot) 스튜디오의 창업자 알렉시스 니쿠는 이를 역이용합니다.</p>
+          <div class="quote-box">
+            <p>"그리스 신화 속 괴물들을 감정적이고 창의적인 존재로 재해석하자."</p>
+          </div>
+          <p>이 아이디어는 <span class="highlight">'그릭 몬스터(Greek Monster)'</span> 전시로 탄생해 뉴욕, 시카고 등을 순회하며 세계 디자인계의 주목을 받게 됩니다.
+          </p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img
+              src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833642d33080a3f93d3e579598083c5882e57a.png"
+              alt="그릭 몬스터">
+          </div>
+          <p class="caption">금융위기 이후 그리스가 받던 조롱을 뒤집어 기획한 '그릭 몬스터'</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: 감정 투영 -->
+    <div class="slide">
+      <div class="grid-2 slide-content">
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img
+              src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338940b3ad6ba45d5417aaff909aa056dd877.png"
+              alt="두 눈 캐릭터">
+          </div>
+          <p class="caption">이름도 스펙도 없다. 오직 '두 눈' 뿐.</p>
+        </div>
+        <div>
+          <h2>02. 감정을 투영하는 디자인</h2>
+          <h3>서사없는 디자인은 첫 만남으로 끝난다</h3>
+          <p>이야이야(YiaYia, 할머니) 올리브유 병에는 제품 스펙 대신 표정 없는 <span class="highlight">'두 눈'</span>만이 그려져 있습니다.</p>
+          <ul>
+            <li>표정이 없어 <strong>보는 이가 자신의 감정을 투영</strong>하게 만듭니다.</li>
+            <li>제품 기획서 대신 <strong>'할머니를 위한 시(poem)'</strong>를 먼저 작성하여 브랜드의 서사적 기반으로 삼았습니다.</li>
+          </ul>
+          <p>예쁜 디자인은 고객을 끌어들이지만, 그들을 <strong>붙잡아두는 것은 서사(Narrative)</strong>입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: 할머니의 기준 -->
+    <div class="slide">
+      <div class="grid-2 slide-content">
+        <div>
+          <h2>03. 스펙 대신 진정성</h2>
+          <h3>최고가 아닌 '할머니의 기준' 고집</h3>
+          <p>올리브유 산도를 기술적으로 0.2%까지 낮출 수 있음에도 불구하고, 이야이야는 <span class="highlight">0.35% 이하</span>로 제한합니다.</p>
+          <div class="quote-box">
+            <p>"산도를 너무 낮추면 풀 향이 과해져, 할머니가 만들어주던 편안한 음식 맛이 아닙니다."</p>
+          </div>
+          <p>수확량이 많은 화려한 품종 대신 할머니 농장에서 자라던 <strong>코로네이키</strong> 품종만을 고집합니다. 이것이 바로 그들만의 <span class="highlight">가치 기반
+              프리미엄 포지셔닝</span>입니다.</p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img
+              src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833777b68fb1675735e9d033db4994e515cdf7.png"
+              alt="코로네이키 올리브">
+          </div>
+          <p class="caption">그리스 농장에서 코로네이키 올리브를 수확하는 직원</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: 세계관 확장 -->
+    <div class="slide">
+      <div class="grid-2 slide-content">
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img
+              src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683391905cf5199503f13fc9fdfbd9b0dbf82d1.png"
+              alt="슈퍼 이야이야">
+          </div>
+          <p class="caption">안국에 위치한 슈퍼 이야이야 매장의 일러스트</p>
+        </div>
+        <div>
+          <h2>04. 살아있는 세계관의 확장</h2>
+          <h3>브랜드에서 파생되는 유연한 확장성</h3>
+          <p>할머니라는 단단한 세계관은 카테고리 확장의 비용을 극적으로 낮춰줍니다.</p>
+          <ul>
+            <li><strong>2017년:</strong> 올리브유 론칭</li>
+            <li><strong>2021년:</strong> 라이프스타일 굿즈 (도마, 앞치마)</li>
+            <li><strong>2023년:</strong> 한국 도산 플래그십 스토어</li>
+            <li><strong>2024년:</strong> 안국 '슈퍼이야이야' (피타 샌드위치 F&B)</li>
+          </ul>
+          <p>가족을 챙기는 끈끈한 문화와 <span class="highlight">'할머니의 마음'</span>이라는 공통 분모가 한국 시장 성공의 핵심 열쇠였습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: 지속가능성 -->
+    <div class="slide">
+      <div class="grid-2 slide-content">
+        <div>
+          <h2>05. 의도적인 감속(Deceleration)</h2>
+          <h3>느림이 만드는 창의성의 지속가능성</h3>
+          <p>비트루트는 25년간 스튜디오를 운영하며, 매년 여름 팀 전체가 그리스 바닷가로 한 달간 워케이션을 떠납니다.</p>
+          <div class="quote-box">
+            <p>"한국은 빠릅니다. 하지만 이야이야엔 그리스식 느림이 필요합니다. 할머니는 급하게 요리하지 않았으니까요."</p>
+          </div>
+          <p>번아웃을 방지하고 <span class="highlight">창의성을 유지하기 위한 의도적 감속</span> 전략은 브랜드를 멀리 가게 만드는 비결입니다.</p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img
+              src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338307ab1c81aad3c87046167e37ac8c26a4f.png"
+              alt="레드닷 어워드 3관왕 팀">
+          </div>
+          <p class="caption">2024 레드닷 어워드 3관왕을 수상한 비트루트 팀</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: KEY TAKEAWAY — AI 신사업 기회 -->
+    <div class="slide" style="background: #0a1a00;">
+      <div class="slide-content">
+        <div
+          style="display: inline-block; background: var(--accent); color: #000; font-size: 0.85rem; font-weight: 900; letter-spacing: 0.15em; padding: 6px 16px; border-radius: 4px; margin-bottom: 2rem; text-transform: uppercase;">
+          KEY TAKEAWAY</div>
+        <h2 style="color: #fff; margin-bottom: 0.5rem;">이야이야의 성공 공식을<br>AI로 자동화하면</h2>
+        <div style="width: 48px; height: 4px; background: var(--accent); margin: 1.5rem 0;"></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+          <div
+            style="background: rgba(196,214,0,0.07); border: 1px solid rgba(196,214,0,0.25); border-left: 4px solid var(--accent); border-radius: 12px; padding: 2rem;">
+            <i class="ph-duotone ph-brain" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 1rem; display: block;"></i>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 0.8rem;">Brand
+              Narrative Generator</div>
+            <p style="font-size: 1.1rem; margin-bottom: 0;">창업자의 파편화된 개인 기억·철학을 LLM이 촘촘한 브랜드 세계관(시, 에세이, 제품 언어)으로 자동
+              변환하는 B2B 솔루션.</p>
+            <div style="margin-top: 1.2rem; font-size: 0.9rem; color: var(--accent); font-weight: 700;">★★★★★
+              Feasibility</div>
+          </div>
+          <div
+            style="background: rgba(196,214,0,0.07); border: 1px solid rgba(196,214,0,0.25); border-left: 4px solid var(--accent); border-radius: 12px; padding: 2rem;">
+            <i class="ph-duotone ph-eye" style="font-size: 3.5rem; color: var(--accent); margin-bottom: 1rem; display: block;"></i>
+            <div style="font-size: 1.4rem; font-weight: 800; color: var(--accent); margin-bottom: 0.8rem;">감정 투영 비주얼 AI
+            </div>
+            <p style="font-size: 1.1rem; margin-bottom: 0;">'두 눈' 캐릭터처럼 의도적으로 불완전하여 소비자가 자신의 감정을 이입하는 AI 생성 브랜드 비주얼 에셋
+              서비스.</p>
+            <div style="margin-top: 1.2rem; font-size: 0.9rem; color: var(--accent); font-weight: 700;">★★★★☆
+              Feasibility</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: 결론 -->
+    <div class="slide">
+      <div class="slide-content" style="text-align: center; max-width: 80vw; margin: 0 auto;">
+        <i class="ph-duotone ph-plant" style="font-size: 64px; color: var(--accent); margin-bottom: 2rem;"></i>
+        <h2 style="font-size: clamp(2.5rem, 4vw, 5rem); color: #fff;">포화된 시장의 탈출구,<br>스펙이 아닌 <span class="highlight">사람과
+            이야기</span></h2>
+        <p style="font-size: 1.8rem; margin-top: 3rem; opacity: 0.9;">
+          창업자 본인의 가장 사적인 기억에서 출발한 서사는<br>어떤 경쟁자도 복제할 수 없는 진짜 차별점이 됩니다.
+        </p>
+        <p style="font-size: 1.8rem; margin-top: 1.5rem;">
+          당신의 제품과 서비스에는 어떤 <span class="highlight">인격(Persona)</span>과 <span class="highlight">서사(Narrative)</span>가 입혀져
+          있습니까?
+        </p>
+        <div
+          style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; color: #555; letter-spacing: 0.1em;">
+          SOURCE · LONGBLACK.CO · 2025.12.29 · AI 신사업 위키 Wiki-Pages/Longblack-Coffee-Insight</div>
+      </div>
+    </div>
+
+    <!-- Slide 9: APPENDIX — Wiki Link -->
+    <section class="slide">
+      <div class="slide-content"
+        style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%;">
+        <div class="highlight" style="margin-bottom: 16px; letter-spacing: 0.2em; font-size: 0.95rem;">APPENDIX</div>
+        <div
+          style="font-size: clamp(2rem, 3.5vw, 3.5rem); font-weight: 800; margin-bottom: 32px; color: #fff; word-break:keep-all;">
+          더 깊은 <span style="color: var(--accent);">인사이트</span>를 원하신다면
+        </div>
+        <div style="width: 48px; height: 4px; background: var(--accent); margin: 0 auto 48px auto;"></div>
+
+        <div style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+
+          <!-- Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%EA%B7%B8%EB%A6%AC%EC%8A%A4-%EB%94%94%EC%9E%90%EC%9D%B4%EB%84%88%EC%99%80-%ED%95%A0%EB%A8%B8%EB%8B%88-%EC%B6%94%EC%96%B5%EC%9D%84-%EC%95%95%EC%B0%A9%ED%95%9C-%EC%98%AC%EB%A6%AC%EB%B8%8C%EC%9C%A0.md"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 340px; height: 280px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; text-decoration: none; color: #fff; transition: all 0.3s; flex-shrink: 0;"
+            onmouseover="this.style.borderColor='var(--accent)'; this.style.transform='translateY(-5px)'; this.style.background='rgba(196,214,0,0.08)';"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.transform='translateY(0)'; this.style.background='rgba(255,255,255,0.05)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 56px; color: var(--accent); margin-bottom: 20px;"></i>
+            <span style="font-size: 22px; font-weight: 800; margin-bottom: 10px;">위키 원문 읽기</span>
+            <span
+              style="font-size: 0.9rem; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">그리스-디자이너와-할머니-<br>추억을-압착한-올리브유</span>
+          </a>
+
+          <!-- Image Gallery Grid -->
+          <div
+            style="display: flex; flex-direction: column; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; text-align: left; min-width: 480px; max-width: 640px;">
+            <div style="display: flex; align-items: center; margin-bottom: 16px; color: var(--accent);">
+              <i class="ph-duotone ph-image" style="font-size: 26px; margin-right: 10px;"></i>
+              <span style="font-size: 18px; font-weight: 800;">이미지 아카이브 (클릭하여 확대)</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+              <div class="img-container" onclick="openLightboxIdx(0)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833642d33080a3f93d3e579598083c5882e57a.png"
+                  alt="그릭 몬스터 전시" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(1)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668336907644e863c8f806c134601115338dd28c.png"
+                  alt="알렉시스 니쿠 인터뷰" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(2)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683391905cf5199503f13fc9fdfbd9b0dbf82d1.png"
+                  alt="슈퍼이야이야 할머니 일러스트" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(3)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338940b3ad6ba45d5417aaff909aa056dd877.png"
+                  alt="두 눈 캐릭터" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(4)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833777b68fb1675735e9d033db4994e515cdf7.png"
+                  alt="코로네이키 올리브 수확" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(5)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683379475435b6d9292ecfe844299279627c801.png"
+                  alt="알렉시스 할머니 흑백사진" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(6)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338307ab1c81aad3c87046167e37ac8c26a4f.png"
+                  alt="레드닷 어워드 3관왕" style="height:90px; object-fit:cover;">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(7)" style="max-height: 90px; border-radius: 8px;">
+                <img
+                  src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683401558b49e275b717e7c16bcb578d85a9958.png"
+                  alt="여기 삶은 단순하다" style="height:90px; object-fit:cover;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Brand Shop Link -->
+          <a href="https://yiayiaandfriends.co.kr" target="_blank"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 220px; height: 280px; background: rgba(196,214,0,0.06); border: 1px solid rgba(196,214,0,0.3); border-radius: 16px; text-decoration: none; color: #fff; transition: all 0.3s; flex-shrink: 0;"
+            onmouseover="this.style.borderColor='var(--accent)'; this.style.transform='translateY(-5px)'; this.style.background='rgba(196,214,0,0.12)';"
+            onmouseout="this.style.borderColor='rgba(196,214,0,0.3)'; this.style.transform='translateY(0)'; this.style.background='rgba(196,214,0,0.06)';">
+            <i class="ph-duotone ph-shopping-bag"
+              style="font-size: 48px; color: var(--accent); margin-bottom: 16px;"></i>
+            <span style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">공식 스토어</span>
+            <span
+              style="font-size: 0.85rem; color: #888; text-align: center; line-height: 1.5;">yiayiaandfriends<br>.co.kr</span>
+            <div
+              style="margin-top: 16px; font-size: 0.75rem; color: var(--accent); font-weight: 700; letter-spacing: 0.1em;">
+              올리브유 · 리빙 풀라인 →</div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- deck end -->
+
+  <!-- HUD Navigation -->
+  <div class="hud">
+    <div class="counter"><span id="curr">1</span> / <span id="total">11</span></div>
+    <div class="dots" id="dots"></div>
+    <div class="nav-arrows">
+      <button class="arrow-btn" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></button>
+      <button class="arrow-btn" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></button>
+    </div>
+  </div>
+
+  <script>
+    // ── Lightbox Image Registry ──────────────────────────
+    const LIGHTBOX_IMAGES = [
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833642d33080a3f93d3e579598083c5882e57a.png',
+        desc: '전시 ‘그릭 몬스터(Greek Monster)’ — 2009년 그리스 금융위기 당시 유럽 언론의 조롱을 역이용한 비트루트의 프로젝트. 그리스 신화 속 괴물들을 감정적이고 창의적인 존재로 재해석해 아테네 베나키 박물관에서 시작해 뉴욕·시카고까지 순회하며 세계 디자인계의 주목을 받았다. 냉소의 상징을 자부심으로 륙지는 ‘포지티브 리프레이밍’의 표본. ©Beetroot'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668336907644e863c8f806c134601115338dd28c.png',
+        desc: '이야이야앤프렌즈 도산 스토어에서 롭블랙과 인터뷰 중인 비트루트 공동창업자 알렉시스 니쿠. 그는 "낙천주의에는 힘이 있다"며 브랜드의 주인공이 트렌디할 필요는 없다고 강조했다. 25년간 스튀디오를 지속시켜온 비결은 속도를 늘리는 의도적 감속이라고 밝혀 증언했다. ©롭블랙'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683391905cf5199503f13fc9fdfbd9b0dbf82d1.png',
+        desc: '안국에 위치한 슈퍼이야이야 스토어 붩면에 그려진 할머니 일러스트. ‘슈퍼 히어로’만큼 주변을 풍성하게 가꾸는 할머니를 뭘형화한 이미지. 2024년 론침한 피타 샌드위치 F&B 프랜차이즈 ‘슈퍼이야이야’는 올리브유로는 시작된 세계관이 F&B 카테고리로 확장된 사례. ©이야이야'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338940b3ad6ba45d5417aaff909aa056dd877.png',
+        desc: '이야이야의 핵심 디자인 코드 — 입에 담한 ‘두 눈’. 표정이 없기 때문에 우울한 날엔 우울하게, 기분 좋은 날엔 기분 좋게 보인다. 알렉시스는 “해석은 보는 이에게 맡기다”며 의도적으로 불완전한 쾔릭터를 설계했다. 이것이 서사가 없는 디자인과 가장 큰 차이점이다. ©롭블랙'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/1766833777b68fb1675735e9d033db4994e515cdf7.png',
+        desc: '그리스 농장에서 코로네이키 올리브를 수확하는 이야이야 직원. 산도를 0.2%까지 낙쳐 서능하게 만들 수 있지만 0.35% 이하로 제한하는 이유는 "할머니가 만들어주던 편안한 음식 맛이 아니기 때문이다". ‘최고 수치’를 목표로 하지 않는 ‘친성 기반 품질 찌안’의 정수. ©이야이야'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683379475435b6d9292ecfe844299279627c801.png',
+        desc: '알렉시스와 어린 시절 할머니가 함께 찍은 흑백사진. “트렌디하지 않아도 브랜드의 주인공이 될 수 있다”는 철학의 출발점. 성인이 된 이후 아무도 주목하지 않는 할머니를 브랜드의 얼굴로 맞이한 순간, 가장 사적인 기억이 가장 공공적인 브랜드 언어가 됐다. ©롭블랙'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/17668338307ab1c81aad3c87046167e37ac8c26a4f.png',
+        desc: '2024년 레드닷 어워즈에서 3관왕을 수상한 비트루트 팀과 가족들. 알렉시스는 “의도적으로 속도를 늘써야 멀리 갈 수 있다”며 매년 여름 팀 전체가 그리스 바닷가로 워케이션을 떠나는 제도를 지켜오고 있다. 번아웃 없는 지속가능한 창의성이 우승 비결. ©Beetroot'
+      },
+      {
+        src: 'https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20251227/176683401558b49e275b717e7c16bcb578d85a9958.png',
+        desc: '이야이야앤프렌즈의 브랜드 슬로건 ‘여기, 삶은 단순하다’. 알렉시스는 “속도를 늘추고 함께 먹고 나누는 가장 단순한 순간이 삶을 풍요롭게 만든다”고 말한다. 그리스의 삶의 철학을 한 문장으로 압축한 이 슬로건이 영리한 F&B 브랜드와 이야이야를 구분짓는 파트너실이다. ©롭블랙'
+      }
+    ];
+
+    // ── Slide Deck Navigation ────────────────────────────
+    const deck = document.getElementById('deck');
+    const slides = document.querySelectorAll('.slide');
+    const currEl = document.getElementById('curr');
+    const totalEl = document.getElementById('total');
+    const dotsContainer = document.getElementById('dots');
+    const totalSlides = slides.length;
+    let currentIdx = 0;
+
+    totalEl.textContent = totalSlides;
+
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+    const dots = document.querySelectorAll('.dot');
+
+    function updateNav() {
+      deck.style.transform = `translateX(-${currentIdx * 100}vw)`;
+      currEl.textContent = currentIdx + 1;
+      slides.forEach((s, i) => { i === currentIdx ? s.classList.add('active') : s.classList.remove('active'); });
+      dots.forEach((d, i) => { i === currentIdx ? d.classList.add('active') : d.classList.remove('active'); });
+    }
+    function nextSlide() { if (currentIdx < totalSlides - 1) { currentIdx++; updateNav(); } }
+    function prevSlide() { if (currentIdx > 0) { currentIdx--; updateNav(); } }
+    function goToSlide(idx) { currentIdx = idx; updateNav(); }
+
+    // ── Lightbox ─────────────────────────────────────────
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxDesc = document.getElementById('lightbox-desc');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    let lbIdx = 0;
+
+    function renderLightbox() {
+      const item = LIGHTBOX_IMAGES[lbIdx];
+      lightboxImg.src = item.src;
+      lightboxDesc.textContent = item.desc;
+      lightboxCounter.textContent = `${lbIdx + 1} / ${LIGHTBOX_IMAGES.length}`;
+    }
+
+    function openLightboxIdx(idx) {
+      lbIdx = idx;
+      renderLightbox();
+      lightbox.classList.add('active');
+    }
+
+    // Legacy: called from inline img-container onclick with element
+    function openLightbox(el) {
+      const src = el.querySelector('img').src;
+      const found = LIGHTBOX_IMAGES.findIndex(i => i.src === src || src.includes(i.src.split('/').pop().split('.')[0]));
+      openLightboxIdx(found >= 0 ? found : 0);
+    }
+
+    function lightboxNav(dir) {
+      lbIdx = (lbIdx + dir + LIGHTBOX_IMAGES.length) % LIGHTBOX_IMAGES.length;
+      renderLightbox();
+    }
+
+    function closeLightbox() { lightbox.classList.remove('active'); }
+
+    // ── Keyboard ─────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'ArrowRight') lightboxNav(1);
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'Escape') closeLightbox();
+      } else {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+      }
+    });
+
+    // Close on backdrop click (not on arrow/close buttons)
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightboxImg) closeLightbox();
+    });
+
+    setTimeout(() => { slides[0].classList.add('active'); }, 100);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카바(CAVA) — 1조원 상장사의 지중해식 브랜딩</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --black: #1a1a1a;
+    --accent: #E05F36; /* 카바 느낌의 오렌지/테라코타 */
+    --accent-light: #F48A69;
+    --cream: #F9F6F0;
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-light: #E5E0D8;
+    --brand-dark: #1E3A32; /* 지중해/올리브 딥그린 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--brand-dark);
+    color: var(--black);
+    overflow: hidden; 
+  }
+
+  /* ─── SLIDE WRAPPER ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+          .nav-bar {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    z-index: 999;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+  }
+  .nav-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #aaa;
+    margin: 0 8px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .nav-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; cursor: pointer; transition: all 0.3s;
+    border: 3px solid #888;
+  }
+  .nav-dot:hover { 
+    border-color: #ccc;
+  }
+  .nav-dot.active { 
+    background: var(--accent); 
+    border: none;
+    width: 36px; height: 12px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+
+.nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.1);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(224, 95, 54, 0.3);
+  }
+  .nav-arrow:hover {
+    background: var(--accent);
+    color: var(--white);
+    transform: scale(1.1);
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--black);
+    word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--accent); }
+  .slide-divider {
+    width: 48px; height: 4px;
+    background: var(--accent);
+    margin: 32px 0;
+  }
+  .body-text {
+    font-size: 21px;
+    line-height: 1.75;
+    color: #333;
+    max-width: 700px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1; min-width: 400px; }
+  .col-img { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 8px;
+  }
+  .img-caption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    max-width: 80%;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 01: COVER ─── */
+  .slide-01 { background: var(--cream); }
+  .s01-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .s01-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(52px, 7vw, 90px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 24px;
+    word-break: keep-all;
+  }
+  .s01-headline .accent { color: var(--accent); }
+  .s01-sub {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 60px;
+  }
+  .s01-stat-row { display: flex; gap: 56px; margin-top: 40px; }
+  .s01-stat { text-align: left; }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .s01-hero-img {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 600px;
+    z-index: 0;
+  }
+  .s01-hero-img img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: -20px 20px 60px rgba(0,0,0,0.1);
+  }
+
+  /* ─── SLIDE 02: WHAT HAPPENED ─── */
+  .slide-02 { background: var(--cream); }
+  .highlight-box {
+    background: var(--brand-dark);
+    color: var(--cream);
+    padding: 32px 40px;
+    border-left: 5px solid var(--accent);
+    margin-top: 40px;
+    max-width: 700px;
+  }
+  .highlight-box .quote { font-size: 19px; font-weight: 500; line-height: 1.7; color: #eee; word-break: keep-all; }
+  .highlight-box .quote-attr { font-size: 13px; color: var(--accent); margin-top: 16px; letter-spacing: 0.1em; }
+
+  /* ─── SLIDE 03: TIMELINE / PILLARS ─── */
+  .slide-03 { background: var(--brand-dark); color: var(--cream); }
+  .slide-03 .big-headline { color: var(--cream); }
+  .timeline { margin-top: 40px; position: relative; padding-left: 0; }
+  .timeline::before { content: ''; position: absolute; left: 80px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), transparent); }
+  .tl-item { display: flex; gap: 0; margin-bottom: 32px; align-items: flex-start; position: relative; }
+  .tl-year { width: 80px; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--accent); flex-shrink: 0; padding-top: 2px; }
+  .tl-dot { width: 14px; height: 14px; background: var(--accent); border-radius: 50%; margin: 5px 24px 0 -7px; flex-shrink: 0; z-index: 1; }
+  .tl-title { font-size: 18px; font-weight: 700; color: var(--cream); margin-bottom: 6px; }
+  .tl-desc { font-size: 15px; color: #bbb; line-height: 1.6; word-break: keep-all; }
+  .tl-badge { display: inline-block; background: var(--accent); color: var(--white); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 4px; margin-right: 10px; }
+
+  /* ─── SLIDE 04: CHART ─── */
+  .slide-04 { background: var(--cream); }
+  .chart-wrap { margin-top: 30px; background: var(--white); border: 1px solid var(--gray-light); padding: 40px; max-width: 800px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  .chart-title { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 24px; }
+  .chart-note { font-size: 13px; color: var(--gray); margin-top: 16px; font-style: italic; }
+
+  /* ─── SLIDE 05: SYSTEMATIZE ─── */
+  .slide-05 { background: var(--cream); }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 48px; }
+  .col-card { border-top: 4px solid var(--accent); padding-top: 28px; }
+  .col-num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 16px; }
+  .col-title { font-size: 19px; font-weight: 800; color: var(--black); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .col-desc { font-size: 16px; color: #555; line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 06: LOVE BUTTON ─── */
+  .slide-06 { background: var(--brand-dark); color: var(--cream); }
+  .slide-06 .big-headline { color: var(--cream); }
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+  .strategy-card { background: #24463C; border: 1px solid #2B5749; border-left: 4px solid var(--accent); padding: 32px; transition: all 0.3s; border-radius: 4px; }
+  .strategy-card:hover { border-left-color: var(--accent-light); background: #2B5749; transform: translateY(-4px); }
+  .sc-icon { font-size: 32px; margin-bottom: 16px; }
+  .sc-title { font-size: 18px; font-weight: 700; color: var(--accent-light); margin-bottom: 12px; letter-spacing: 0.05em; word-break: keep-all; }
+  .sc-body { font-size: 15px; color: #ccc; line-height: 1.7; word-break: keep-all; }
+  .sc-result { margin-top: 16px; font-size: 14px; color: #eee; border-top: 1px solid #333; padding-top: 16px; font-weight: 500; }
+  .sc-result strong { color: var(--accent-light); font-weight: 800; }
+
+  /* ─── SLIDE 07: SHOULDER TO SHOULDER ─── */
+  .slide-07 { background: var(--cream); }
+
+  /* ─── SLIDE 08: ORGANIZATION CULTURE ─── */
+  .slide-08 { background: var(--brand-dark); color: var(--cream); }
+  .slide-08 .big-headline { color: var(--cream); }
+
+  /* ─── SLIDE 09: AI OPPORTUNITY ─── */
+  .slide-09 { background: var(--cream); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 48px; }
+  .opp-card { background: var(--brand-dark); color: var(--cream); padding: 40px 32px; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 16px 32px rgba(0,0,0,0.1); }
+  .opp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--accent); }
+  .opp-num { font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900; color: var(--accent); opacity: 0.2; position: absolute; right: 24px; top: 16px; line-height: 1; }
+  .opp-icon { font-size: 32px; margin-bottom: 20px; }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--accent-light); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .opp-desc { font-size: 15px; color: #ccc; line-height: 1.7; word-break: keep-all; font-weight: 400; }
+  .feasibility { display: flex; align-items: center; gap: 4px; margin-top: 24px; border-top: 1px solid #2B5749; padding-top: 16px; }
+  .star { color: var(--accent); font-size: 14px; }
+  .star.empty { color: #555; }
+
+  /* ─── SLIDE 10: CONCLUSION ─── */
+  .slide-10 { background: var(--black); color: var(--cream); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(40px, 5.5vw, 68px); font-weight: 900; line-height: 1.25; color: var(--cream); max-width: 1000px; margin: 32px 0; word-break: keep-all; }
+  .conclusion-headline .accent { color: var(--accent); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .lesson { border-top: 3px solid #333; padding-top: 24px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--accent); margin-bottom: 12px; }
+  .lesson-title { font-size: 18px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 15px; color: #999; line-height: 1.7; word-break: keep-all; }
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #666; letter-spacing: 0.1em; border-top: 1px solid #222; padding-top: 16px; }
+  .bg-watermark { position: absolute; right: -50px; bottom: -50px; font-family: 'Playfair Display'; font-size: 350px; font-weight:900; opacity: 0.03; color: var(--white); line-height: 1; pointer-events: none; }
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #888; letter-spacing: 0.15em; }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+
+  .key-takeaway-badge {
+    position: absolute;
+    top: 64px;
+    right: 80px;
+    background: var(--accent);
+    color: var(--white);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">BUSINESS MODELS · HOSPITALITY</div>
+        <div class="s01-headline anim anim-d2">
+          1조원 상장사가 된<br>
+          <span class="accent">지중해식 동네 식당</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          카바(CAVA) — 관대함의 시스템화<br>
+          그리스 이민자 가정의 '환대 문화'를<br>400개 매장에서 일관되게 재현하는 브랜드 전략
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">1조원</div>
+            <div class="s01-stat-label">연간 매출 (2025)</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">400+</div>
+            <div class="s01-stat-label">매장 수 (2026)</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">4200만</div>
+            <div class="s01-stat-label">틱톡 UGC 뷰</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4">
+        <img src="https://c.longblack.co/image/20260317/1773748644966336b3ff461b2058ce6a918ea9faf8.png" alt="카바의 공동창업자들과 CEO 브렛 슐만">
+      </div>
+      <div class="slide-num" style="color:#555">01 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — WHAT HAPPENED
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">WHAT HAPPENED</div>
+            <div class="big-headline anim anim-d2">
+              메릴랜드주 동네 식당에서<br>
+              <span class="accent">월스트리트 상장사</span>로
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              2006년 미국 메릴랜드주 록빌. 그리스 이민자 가정에서 자란 세 친구가 '어머니의 레시피'로 동네 식당을 열었습니다.<br><br>
+              치폴레가 독점하던 패스트 캐주얼 시장에서 카바는 '지중해식 치폴레'라는 별명을 넘어, 2023년 뉴욕 증시에 상장하며 독자적인 거대 브랜드로 자리 잡았습니다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "우리의 목표는 두 번째 치폴레가 아니라, 최고의 카바가 되는 것입니다."
+              </div>
+              <div class="quote-attr">— 브렛 슐만, 카바(CAVA) CEO</div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20260317/17737485301f8def42b6cb5eef6e520a01a194c102.png" alt="2006년 창업자들 사진">
+            <div class="img-caption">2006년 문을 연 '카바 메제' 시절의 세 친구. 이들의 환대 문화가 오늘날 400개 매장의 뼈대가 되었습니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">02 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — TIMELINE / PILLARS
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">4 PILLARS OF GROWTH</div>
+            <div class="big-headline anim anim-d2">
+              관대함을 시스템으로<br><span class="accent">성장 4대 원칙</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="timeline anim anim-d3">
+              <div class="tl-item">
+                <div class="tl-year">원칙 1</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">제품</span>손맛의 데이터화</div>
+                  <div class="tl-desc">후무스 한 통 비용을 소수점 셋째 자리까지 계산. 레시피 표준화로 800개 마트 유통 성공.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">원칙 2</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">고객 경험</span>러브 버튼 (Love Button)</div>
+                  <div class="tl-desc">직원이 자율적으로 하루 4번 무료 식사를 제공할 권한. 틱톡 4200만 뷰 바이럴 창출.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">원칙 3</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">직원 경험</span>숄더 투 숄더 (현장 근무)</div>
+                  <div class="tl-desc">CEO 포함 전 경영진이 분기마다 매장 근무. 현장 고충을 듣고 공정 즉각 개선.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">원칙 4</div>
+                <div class="tl-dot" style="background:var(--accent-light);box-shadow:0 0 0 4px rgba(224,95,54,0.2)"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge" style="background:var(--accent-light)">조직 문화</span>MVC 언어화 + 레시피 카드</div>
+                  <div class="tl-desc">미션, 가치, 역량을 현장의 구체적 행동 지침으로 번역하여 M&A 조직 통합 성공.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">03 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — CHART
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">DATA VISUALIZATION</div>
+        <div class="big-headline anim anim-d2">
+          상장 이후의<br>
+          <span class="accent">압도적 성장 지표</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="chart-wrap anim anim-d4">
+          <div class="chart-title">카바(CAVA) 연간 매출액 트렌드 (억 달러)</div>
+          <canvas id="growthChart" height="150"></canvas>
+          <div class="chart-note">* 2025년 연 매출 10억 달러 (약 1조 4900억 원) 돌파 / 매장 수 400개 돌파</div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">04 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — SYSTEMATIZE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">PRINCIPLE 01</div>
+        <div class="big-headline anim anim-d2">
+          감각적 확장의 전제,<br><span class="accent">손맛의 데이터화</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-col anim anim-d4">
+          <div class="col-card">
+            <div class="col-num">01</div>
+            <div class="col-title">아날로그의 한계</div>
+            <div class="col-desc">
+              창업 초기엔 어머니의 레시피를 바탕으로 자정까지 창업자들이 직접 소스와 후무스를 포장했습니다. 맛은 훌륭했지만 확장이 불가능했습니다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">02</div>
+            <div class="col-title">소수점 셋째 자리 계산</div>
+            <div class="col-desc">
+              "후무스 한 통의 원가를 소수점 셋째 자리까지 계산할 수 있나?" CEO 브렛의 이 질문이 모든 레시피를 데이터로 변환하는 기폭제가 되었습니다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">03</div>
+            <div class="col-title">확장 가능한 일관성</div>
+            <div class="col-desc">
+              손맛이 시스템으로 번역되자, 카바의 소스는 홀푸드 등 미국 내 800여 개 식료품점에 안정적으로 유통되기 시작했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">05 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — LOVE BUTTON
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">PRINCIPLE 02</div>
+        <div class="big-headline anim anim-d2">
+          직원의 자율성이 만든<br><span class="accent">러브 버튼 (Love Button)</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="strategy-grid anim anim-d4">
+          <div class="strategy-card">
+            <div class="sc-icon">❤️</div>
+            <div class="sc-title">하루 4번의 권한 부여</div>
+            <div class="sc-body">모든 현장 직원은 하루 최대 4명의 고객에게 자신의 판단으로 '무료 식사(컴프)'를 제공할 수 있는 권한인 러브 버튼을 가집니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">📱</div>
+            <div class="sc-title">자발적 바이럴 (UGC)</div>
+            <div class="sc-body">SNS에서 카바 매장의 관대함을 칭찬하는 고객 경험담이 쏟아지며, 틱톡에서 관련 영상이 4,200만 회 이상의 조회수를 기록했습니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">🥗</div>
+            <div class="sc-title">카바 핵스 (Cava Hacks)</div>
+            <div class="sc-body">고객들이 '카바에서 저렴하게 많이 먹는 조합'을 공유해도, 카바는 이를 막지 않고 오히려 '관대함'의 증거로 환영합니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">✨</div>
+            <div class="sc-title">신뢰의 시스템</div>
+            <div class="sc-body">직원들에게 규칙만 강요하지 않고 예산을 내어주며 권한을 위임할 때, 환대는 비로소 '진짜'가 됩니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">06 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — SHOULDER TO SHOULDER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLE 03</div>
+            <div class="big-headline anim anim-d2">
+              직원이 먼저 환대받아야<br>
+              <span class="accent">숄더 투 숄더</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              "행복한 팀이 행복한 손님을 만듭니다."<br><br>
+              CEO 브렛 슐만을 포함한 카바의 모든 경영진은 분기마다 최소 4시간씩 매장에서 직원들과 어깨를 나란히 하고 일합니다(Shoulder to Shoulder).<br><br>
+              "적양파 자르기가 너무 힘들다"는 현장의 목소리를 듣고, 즉각 양파 전처리 공정을 중앙화하여 직원들의 노고를 덜어낸 것이 대표적 사례입니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20260317/17737485425835c16ca5ed01e4b135ad18fcc2ead8.png" alt="숄더 투 숄더 매장 근무 중인 경영진">
+            <div class="img-caption">숄더 투 숄더 프로그램에 참여해 앞치마를 두르고 현장 근무 중인 CEO 브렛 슐만</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">07 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — ORGANIZATION CULTURE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLE 04</div>
+            <div class="big-headline anim anim-d2">
+              추상적 가치의 구체화<br>
+              <span class="accent">MVC와 칭찬 카드</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3" style="color:#eee">
+              2018년 조이스 키친 인수 후 조직 규모가 3배로 커지며 기업 문화 붕괴 위기를 맞았습니다.<br><br>
+              카바는 추상적인 미션과 가치를 현장의 구체적 행동으로 번역하는 MVC 프레임워크를 도입했습니다. "서비스 마인드"라는 모호한 말 대신 "손님과 눈을 맞추고 웃어라"로 명시했습니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20260317/17737489133c2e57c18152efe91a9f0ebbc2c616e0.png" alt="카바의 칭찬 카드">
+            <div class="img-caption" style="color:#aaa">핵심 행동 가치를 잘 실천한 직원을 인정하고 보상하는 '칭찬 카드' 시스템</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">08 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — AI BUSINESS OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="content-wrapper">
+        <div class="key-takeaway-badge anim anim-d1">KEY TAKEAWAY</div>
+        <div class="section-tag anim anim-d1">AI 신사업 기회</div>
+        <div class="big-headline anim anim-d2">
+          카바의 성장 공식을<br>
+          <span class="accent">AI로 자동화</span>하면
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-num">1</div>
+            <div class="opp-icon">🧠</div>
+            <div class="opp-title">경험 시스템화 AI (CX)</div>
+            <div class="opp-desc">
+              '러브 버튼'처럼 현장 직원에게 재량권을 부여하되, AI가 고객 반응과 감정을 분석해 최적의 사용 시점과 혜택을 직원에게 역제안하는 CX 자동화 도구.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">2</div>
+            <div class="opp-icon">📖</div>
+            <div class="opp-title">브랜드 언어 번역 컨설팅</div>
+            <div class="opp-desc">
+              기업의 모호한 핵심 가치(Core Values)를 입력하면, AI가 영업/매장/기획 등 직군별 실제 행동 지침서(레시피 카드)로 자동 생성해주는 조직 문화 솔루션.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">3</div>
+            <div class="opp-icon">📊</div>
+            <div class="opp-title">레시피 디지털화 SaaS</div>
+            <div class="opp-desc">
+              영세 F&B 프랜차이즈의 아날로그 '손맛'을 소수점 단위의 데이터로 추출하고 실시간 원가를 자동 계산해주는 프랜차이즈 스케일업 전용 SaaS.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" id="slide-9">
+      <div class="bg-watermark">CAVA</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          관대함은 퍼주는 것이 아니라<br>
+          <span class="accent">시스템화될 때</span><br>
+          브랜드의 진정한<br>
+          <span class="accent">경쟁력</span>이 된다
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">추상과 실행의 거리 좁히기</div>
+            <div class="lesson-desc">가치는 벽에 붙은 선언문에 머물러선 안 된다. 현장에서 매일 쓰는 '레시피 카드'로 구체화하라.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">02</div>
+            <div class="lesson-title">경험의 선순환 구조</div>
+            <div class="lesson-desc">고객 경험(CX) 향상 이전에 직원 경험(EX)을 먼저 설계하라. 행복한 직원이 진정한 환대를 만든다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">03</div>
+            <div class="lesson-title">결정적 감각의 시스템화</div>
+            <div class="lesson-desc">어머니의 손맛이라는 감각을 소수점 데이터로 번역할 때 비로소 1조 원대 브랜드 확장이 시작된다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · CAVA · 롱블랙 2026.03.18</span>
+        <span>AI 신사업 위키 · Wiki-Pages/Longblack-Coffee-Insight</span>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ══ APPENDIX ══ -->
+    <section class="slide" style="background: var(--cream); text-align: center;">
+      <div class="content-wrapper" style="align-items: center; justify-content: center; z-index: 1;">
+        <div class="section-tag anim anim-d1" style="margin-bottom: 16px;">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 56px; margin-bottom: 32px;">
+          더 깊은 <span class="gold">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 0 auto 64px auto;"></div>
+        
+        <div class="anim anim-d4" style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%EC%B9%B4%EB%B0%94-CAVA-1%EC%A1%B0%EC%9B%90-%EB%B8%8C%EB%9E%9C%EB%94%A9.md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 420px; height: 320px; background: var(--white); border: 2px solid var(--gray-light, #E5E0D8); border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='var(--gold)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='var(--gray-light, #E5E0D8)'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 72px; color: var(--gold); margin-bottom: 24px;"></i>
+            <span style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">위키 원문 읽기</span>
+            <span style="font-size: 20px; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">카바-CAVA-1조원-브랜딩</span>
+          </a>
+
+          <!-- YouTube Links List -->
+          <div style="display: flex; flex-direction: column; width: 600px; background: var(--white); border: 2px solid var(--gray-lt, #E5E0D8); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left;">
+            <div style="display: flex; align-items: center; margin-bottom: 20px; color: #C0392B;">
+              <i class="ph-duotone ph-youtube-logo" style="font-size: 32px; margin-right: 12px;"></i>
+              <span style="font-size: 24px; font-weight: 800;">추천 유튜브 영상</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              
+            <a href="https://www.youtube.com/watch?v=jc73tVrcHLU" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/jc73tVrcHLU/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Is CAVA Worth The Hype!?</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">KingSchratz • 2년 전</span>
+              </div>
+            </a>
+            <a href="https://www.youtube.com/watch?v=FFESZdsNc5Y" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/FFESZdsNc5Y/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">CAVA는 과연 그 명성에 걸맞을까요? 미국에서 가장 빠르게 성장하는 레스토랑 체인!</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">UA Eats • 5개월 전</span>
+              </div>
+            </a>
+            <a href="https://www.youtube.com/watch?v=uefLqwsH7G0" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/uefLqwsH7G0/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">I Tried Cava For The First Time! Is it Worth the Hype?</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">Jonathan Rollheiser • 8개월 전</span>
+              </div>
+            </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /deck -->
+</div><!-- /deck-container -->
+
+<script>
+// ─── SLIDE NAVIGATION LOGIC ───
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const navBar = document.getElementById('navBar');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+
+// Generate Dots
+const startNum = document.createElement('div');
+startNum.className = 'nav-num';
+startNum.textContent = '1';
+navBar.appendChild(startNum);
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  navBar.appendChild(dot);
+}
+
+const endNum = document.createElement('div');
+endNum.className = 'nav-num';
+endNum.textContent = totalSlides.toString();
+navBar.appendChild(endNum);
+const dots = document.querySelectorAll('.nav-dot');
+
+function updateNav() {
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+  slides.forEach((slide, idx) => {
+    if (idx === currentSlide) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  });
+
+  btnPrev.style.opacity = currentSlide === 0 ? '0.3' : '1';
+  btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+  
+  btnNext.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+  btnNext.style.pointerEvents = currentSlide === totalSlides - 1 ? 'none' : 'auto';
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= totalSlides) return;
+  currentSlide = idx;
+  const translateX = -(currentSlide * 100);
+  deck.style.transform = `translateX(${translateX}vw)`;
+  updateNav();
+}
+
+function prevSlide() { goToSlide(currentSlide - 1); }
+function nextSlide() { goToSlide(currentSlide + 1); }
+
+// ─── KEYBOARD & WHEEL EVENT ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    prevSlide();
+  }
+});
+
+let isScrolling = false;
+window.addEventListener('wheel', (e) => {
+  if (isScrolling) return;
+  
+  if (e.deltaY > 50 || e.deltaX > 50) {
+    isScrolling = true;
+    nextSlide();
+    setTimeout(() => isScrolling = false, 800);
+  } else if (e.deltaY < -50 || e.deltaX < -50) {
+    isScrolling = true;
+    prevSlide();
+    setTimeout(() => isScrolling = false, 800);
+  }
+});
+
+// ─── CHART 04: GROWTH BAR ───
+const ctx4 = document.getElementById('growthChart').getContext('2d');
+new Chart(ctx4, {
+  type: 'bar',
+  data: {
+    labels: ['2023 (IPO)', '2024', '2025 (목표)'],
+    datasets: [{
+      label: '매출액 (억 달러)',
+      data: [6.5, 8.2, 10.0],
+      backgroundColor: 'rgba(224, 95, 54, 0.8)',
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => `매출액: $${ctx.raw}억` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Pretendard', size: 13 }, color: '#888' } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { family: 'Pretendard', size: 12 }, color: '#888', callback: v => v + '억' } }
+    }
+  }
+});
+
+// 초기 설정
+updateNav();
+</script>
+</body>
+</html>

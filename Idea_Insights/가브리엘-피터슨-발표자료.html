@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>가브리엘 피터슨 — 21세기 아키텍트형 인재</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root {
+  --white: #FFFFFF;
+  --cream: #FAF8F4;
+  --black: #0F0F11;
+  --dark: #16161A;
+  --accent: #E5A93C;
+  --accent-lt: #F7D070;
+  --gray: #8A8D93;
+  --gray-lt: #2A2C35;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Pretendard', sans-serif; background:var(--black); color:var(--cream); overflow:hidden; }
+
+/* ── DECK ── */
+.dc { width:100vw; height:100vh; overflow:hidden; position:relative; }
+.dk { display:flex; width:100vw; height:100vh; transition:transform .6s cubic-bezier(.4,0,.2,1); will-change:transform; }
+.sl { min-width:100vw; height:100vh; position:relative; overflow:hidden; display:flex; flex-direction:column; background:var(--dark); }
+
+/* 하단 장식선 */
+.sl::after { content:''; position:absolute; bottom:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg, var(--accent) 0%, var(--accent-lt) 50%, var(--accent) 100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  z-index: 999;
+}
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: transparent; cursor: pointer; transition: all 0.3s;
+  border: 2px solid var(--gray);
+}
+.dot:hover { 
+  border-color: var(--white);
+}
+.dot.on { 
+  background: var(--accent); 
+  border: none;
+  width: 28px; height: 10px; border-radius: 5px;
+}
+.nb { position:fixed; top:50%; transform:translateY(-50%); z-index:998; width:46px; height:46px;
+  border-radius:50%; border:1px solid rgba(229,169,60,.3); background:rgba(255,255,255,.03);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s;
+  color:var(--accent); font-size:18px; backdrop-filter:blur(4px); }
+.nb:hover { background:var(--accent); color:var(--black); }
+#prev { left:28px; } #next { right:28px; }
+
+/* HUD 카운터 */
+.hud-counter {
+  position: absolute;
+  top: 40px;
+  right: 68px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+}
+
+/* ── LABEL ── */
+.lbl { position:absolute; top:40px; left:68px; font-family:'Outfit', sans-serif; font-size:11px; letter-spacing:.25em; text-transform:uppercase; font-weight:800; color:var(--accent); }
+
+/* ── BODY ── */
+.body { flex:1; display:flex; flex-direction:column; justify-content:center; padding:96px 88px 72px; }
+
+/* ── TYPO ── */
+.hl { font-family:'Noto Serif KR', serif; font-weight:900; line-height:1.15; word-break:keep-all; }
+.hl-xl { font-size:clamp(52px, 6.8vw, 84px); }
+.hl-lg { font-size:clamp(40px, 5vw, 68px); }
+.hl-md { font-size:clamp(30px, 4vw, 48px); }
+.acc { color:var(--accent); }
+.acclt { color:var(--accent-lt); }
+
+.desc { font-size:clamp(16px, 1.8vw, 21px); line-height:1.75; word-break:keep-all; color:#D2D4D9; }
+.div-bar { width:48px; height:3px; background:var(--accent); margin:24px 0; }
+.div-bar.c { margin:24px auto; }
+
+/* ── GRID/CARDS ── */
+.grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:32px; margin-top:20px; }
+.grid-3 { display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; margin-top:20px; }
+.card { padding:28px 24px; background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; transition:all .3s; }
+.card:hover { border-color:rgba(229,169,60,.4); transform:translateY(-4px); background:rgba(255,255,255,.05); }
+.card-icon { font-size:32px; color:var(--accent); margin-bottom:16px; }
+.card-head { font-size:20px; font-weight:800; margin-bottom:10px; color:var(--white); }
+.card-body { font-size:14.5px; color:#A4A7AE; line-height:1.6; }
+
+/* ── MICRO ANIMATIONS ── */
+.anim { opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease; }
+.sl.on .anim { opacity:1; transform:none; }
+.d1 { transition-delay:.1s; } .d2 { transition-delay:.2s; } .d3 { transition-delay:.3s; }
+.d4 { transition-delay:.4s; } .d5 { transition-delay:.5s; }
+
+/* ── LIGHTBOX ── */
+#lb { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,15,17,.95); z-index:9999; display:none; align-items:center; justify-content:center; }
+#lb img { max-width:90%; max-height:85%; border:2px solid var(--accent); }
+#lb-close { position:absolute; top:32px; right:32px; font-size:32px; color:var(--white); cursor:pointer; }
+
+/* ── MORE INSIGHTS LAYOUT ── */
+.mi-split { display:grid; grid-template-columns: 1.2fr 1.8fr; gap:48px; height:100%; align-items:center; }
+.mi-left { display:flex; flex-direction:column; gap:24px; }
+.wiki-btn { display:inline-flex; align-items:center; gap:16px; padding:18px 28px; border:2px dashed rgba(229,169,60,.5); border-radius:6px; text-decoration:none; color:var(--accent); transition:all 0.3s; }
+.wiki-btn:hover { background:rgba(229,169,60,.06); border-style:solid; color:var(--white); }
+.wiki-btn i { font-size:28px; }
+.yt-grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+.yt-card { background:rgba(255,255,255,.02); border:1px solid var(--border-color); border-radius:6px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; }
+.yt-card:hover { transform:translateY(-3px); border-color:var(--accent); }
+.yt-thumb { width:100%; aspect-ratio:16/9; background-size:cover; background-position:center; }
+.yt-info { padding:14px; }
+.yt-title { font-size:13.5px; font-weight:700; line-height:1.4; margin-bottom:6px; color:var(--white); }
+.yt-channel { font-size:11.5px; color:var(--gray); }
+</style>
+</head>
+<body>
+
+<div class="dc">
+  <div class="nb" id="prev" onclick="mv(-1)"><i class="ph-duotone ph-caret-left"></i></div>
+  <div class="nb" id="next" onclick="mv(1)"><i class="ph-duotone ph-caret-right"></i></div>
+  <div class="nav-dots" id="dots"></div>
+
+  <div class="dk" id="deck">
+
+    <!-- ══ 01 COVER ══ -->
+    <section class="sl on">
+      <span class="lbl anim d1">THE AI-AUGMENTED AUTODIDACT</span>
+      <div class="hud-counter">01 / 11</div>
+      <div class="body">
+        <div style="display:flex; align-items:center; gap:36px;" class="anim d2">
+          <img src="https://img4.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202512/02/551236-AJ2DFRP/20251202000132999nnld.png" alt="Gabriel Petersson" style="width:110px; height:110px; border-radius:50%; border:3px solid var(--accent); object-fit:cover; cursor:pointer;" onclick="openLb(this.src)">
+          <div>
+            <h1 class="hl hl-xl acc">가브리엘 피터슨</h1>
+            <p style="font-family:'Outfit', sans-serif; font-size:20px; font-weight:300; letter-spacing:0.1em; color:var(--gray); margin-top:8px;">21세기 아키텍트형 인재의 표본</p>
+          </div>
+        </div>
+        <div class="div-bar anim d3"></div>
+        <p class="desc anim d4" style="max-width:800px;">
+          정규 학위 없이 오직 '과제 중심 재귀 학습(RLT)'만으로 OpenAI Sora 팀 연구 과학자가 되기까지.
+          그가 증명한 탑다운(Top-down) 학습 혁명과 바이브 코딩을 넘어서는 심층 통제의 중요성을 분석합니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 02 ORIGIN STORY ══ -->
+    <section class="sl">
+      <span class="lbl">ORIGIN STORY</span>
+      <div class="hud-counter">02 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">고교 중퇴, <span class="acc">문제 해결로 배우다</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-student"></i></div>
+            <div class="card-head">제도권 교육의 이탈</div>
+            <div class="card-body">
+              스웨덴 시골 마을 출신으로, 17세에 기회비용을 고려해 전략적으로 고등학교를 중퇴했습니다. 학교라는 정해진 시스템을 떠나, 스스로 문제를 정의하고 돌파하는 길을 선택했습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-lightbulb"></i></div>
+            <div class="card-head">실제 문제를 통한 성장</div>
+            <div class="card-body">
+              "학교에 안 가면 어떻게 배우냐고 묻는다. 하지만 실제 문제를 해결해야 할 때 배우는 게 더 쉽다." 그는 10대 시절 포켓몬 카드 거래와 마인크래프트 서버 운영으로 비즈니스 감각을 익혔습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 03 CAREER TRAJECTORY ══ -->
+    <section class="sl">
+      <span class="lbl">CAREER TRAJECTORY</span>
+      <div class="hud-counter">03 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">스타트업에서 <span class="acc">OpenAI까지</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-3">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-rocket-launch"></i></div>
+            <div class="card-head">초기 스타트업 합류</div>
+            <div class="card-body">
+              18세, 프로그래밍 경험이 거의 없는 상태에서 Y Combinator 투자사 <strong>Depict.ai</strong>에 합류했습니다. AI 추천 시스템 데모를 직접 들고 오프라인 매장에서 B2B 영업을 뛰며 실전 감각을 키웠습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-code"></i></div>
+            <div class="card-head">한계 돌파의 여정</div>
+            <div class="card-body">
+              <strong>Curb Food</strong>(임시 CTO)와 <strong>Dataland</strong>(창립 엔지니어)를 거치며 수십만 행 데이터의 실시간 렌더링 등 브라우저의 한계를 극복했습니다. 이후 <strong>Midjourney</strong>에서 시각 공학을 고도화했습니다.
+            </div>
+          </div>
+          <div class="card anim d5">
+            <div class="card-icon"><i class="ph-duotone ph-video-camera"></i></div>
+            <div class="card-head">OpenAI Sora 합류</div>
+            <div class="card-body">
+              동영상 생성 모델 <strong>Sora 팀 연구 과학자</strong>로 합류했습니다. 비디오 데이터와 잠재 공간(Latent Space)의 물리적 변화를 시각적으로 디버깅할 수 있는 인터페이스를 설계하는 핵심 역할을 수행했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 04 TECH MASTERY ══ -->
+    <section class="sl">
+      <span class="lbl">TECH MASTERY</span>
+      <div class="hud-counter">04 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">극한 성능과 <span class="acc">제1원리 통제</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-gauge"></i></div>
+            <div class="card-head">브라우저 엔진의 한계 도전</div>
+            <div class="card-body">
+              Dataland 재직 시 크롬 그래픽 엔진 Skia를 WebAssembly(WASM)로 컴파일하고 Rust 바인딩을 적용했습니다. Midjourney에서는 세계에서 가장 빠른 이미지 그리드를 위해 커스텀 멀티스레드 렌더링 큐를 구축했습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-cube"></i></div>
+            <div class="card-head">제1원리부터의 재구축</div>
+            <div class="card-body">
+              개념을 완벽히 소화하기 위해, PyTorch 같은 외부 라이브러리 없이 <strong>오직 순수 NumPy만을 사용해 바닥부터 RNN을 직접 구현</strong>했습니다. 이는 기초(Foundations)를 장악하려는 그의 집요함을 보여줍니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 05 RLT METHODOLOGY ══ -->
+    <section class="sl">
+      <span class="lbl">RLT METHODOLOGY</span>
+      <div class="hud-counter">05 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">과제 중심 재귀 학습 <span class="acc">(RLT)</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-stack"></i></div>
+            <div class="card-head">바텀업(Bottom-up)의 종말</div>
+            <div class="card-body">
+              전통적 교육은 기초 수학부터 시작해 수년에 걸쳐 응용으로 올라가는 상향식입니다. 이는 확장에 유리하나 매우 비효율적입니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-arrow-fat-lines-down"></i></div>
+            <div class="card-head">탑다운(Top-down) 역추적</div>
+            <div class="card-body">
+              실제 해결할 "과제(Task)"에서 먼저 시작해, 에러나 막히는 부분이 생길 때마다 AI를 통해 기반 지식을 재귀적으로 파고듭니다. <strong>그는 이 방식으로 6년이 걸릴 디퓨전 모델의 이해를 3일로 단축했습니다.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 06 AI AS SOCRATIC TUTOR ══ -->
+    <section class="sl">
+      <span class="lbl">SOCRATIC AI TUTOR</span>
+      <div class="hud-counter">06 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">답이 아닌 <span class="acc">이해의 메커니즘을 묻다</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3" style="border-left:4px solid var(--accent); background:rgba(229,169,60,.03);">
+            <div class="card-icon"><i class="ph-duotone ph-chat-teardrop-text"></i></div>
+            <div class="card-head">소크라테스식 튜터 활용법</div>
+            <div class="card-body" style="font-size:15px; line-height:1.7;">
+              단순히 완성된 코드를 요구하지 마십시오.
+              "12살 아이에게 설명하듯 말해줘", "현실 세계의 직관적 메타포로 비유해줘" 등 꼬리를 무는 질문으로 지식의 해상도를 높입니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-arrows-left-right"></i></div>
+            <div class="card-head">이해의 교차 검증</div>
+            <div class="card-body">
+              AI를 단순 검색기가 아니라 24시간 실시간 피드백을 주는 연구 파트너로 대우합니다. 스스로 이해한 바를 AI에게 다시 설명하고 논리적 결함을 교정받으며 지식을 완벽히 내재화합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 07 ANTI-VIBE CODING ══ -->
+    <section class="sl">
+      <span class="lbl">ANTI-VIBE CODING</span>
+      <div class="hud-counter">07 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">바이브 코딩의 <span class="acc">거부</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3" style="border-left:4px solid var(--accent); background:rgba(229,169,60,.03);">
+            <div class="card-icon"><i class="ph-duotone ph-warning-circle"></i></div>
+            <div class="card-head" style="font-family:'Playfair Display', serif; font-style:italic;">"이해는 아웃소싱할 수 없다"</div>
+            <div class="card-body" style="font-size:15px; line-height:1.7; color:#D2D4D9;">
+              가브리엘 피터슨의 반전은 코딩을 AI에 일임하는 <strong>'바이브 코딩'</strong>을 극도로 경계한다는 것입니다. 도구가 강력해질수록 결과물 이면의 기초(Foundations)를 통제해야만 시스템을 유지보수하고 혁신할 수 있습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-eye"></i></div>
+            <div class="card-head">모든 코드를 읽어라</div>
+            <div class="card-body">
+              AI가 작성한 코드를 단순히 복사/붙여넣기 하는 대신, 생성된 코드의 모든 줄을 직접 읽고 그 동작 원리를 완벽히 이해합니다. 이는 시스템 부채를 억제하고 아키텍트로서의 지배력을 유지하는 핵심입니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 08 KARPATHY CONNECTION ══ -->
+    <section class="sl">
+      <span class="lbl">THE LIVING PROOF</span>
+      <div class="hud-counter">08 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">안드레 카파시 조언의 <span class="acc">살아있는 실증</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-twitter-logo"></i></div>
+            <div class="card-head">2020년 카파시의 조언</div>
+            <div class="card-body">
+              "기초부터 넓게 배우는 Bottom-up을 피하고, 구체적인 프로젝트를 잡아 깊이 파고들며 필요한 것만 그때그때 배우라(Learning on-demand)." 당시엔 1:1 튜터가 필수적이라 이상론에 불과했습니다.
+            </div>
+          </div>
+          <div class="card anim d4">
+            <div class="card-icon"><i class="ph-duotone ph-check-circle"></i></div>
+            <div class="card-head">5년 후 현실이 되다</div>
+            <div class="card-body">
+              ChatGPT의 등장으로 무한한 인내심의 AI 과외 선생이 생겼습니다. 피터슨은 이 조언을 완벽히 실행에 옮겨 압축 성장을 이뤄냈고, 시대가 안드레 카파시의 통찰을 따라잡았음을 몸소 증명했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 09 PROOF OF WORK ══ -->
+    <section class="sl">
+      <span class="lbl">PROOF OF WORK (PoW)</span>
+      <div class="hud-counter">09 / 11</div>
+      <div class="body">
+        <h2 class="hl hl-lg anim d1">학위를 대체하는 <span class="acc">작업 증명</span></h2>
+        <div class="div-bar anim d2"></div>
+        <div class="grid-2" style="grid-template-columns: 1.2fr 0.8fr;">
+          <div class="card anim d3">
+            <div class="card-icon"><i class="ph-duotone ph-medal"></i></div>
+            <div class="card-head">스택오버플로우 수백만 뷰</div>
+            <div class="card-body">
+              전통적 학위 없이 오로지 스택오버플로우에 남긴 문제 해결 답변 등 실전 코딩 성과만으로 자신의 능력을 증명했습니다. 이는 지식의 대중화 시대에 '어디서 배웠느냐'보다 '무엇을 할 수 있느냐'가 중요함을 보여줍니다.
+            </div>
+          </div>
+          <div class="card anim d4" style="border-left:3px solid var(--accent);">
+            <div class="card-icon"><i class="ph-duotone ph-airplane"></i></div>
+            <div class="card-head">미국 O-1 (특기자) 비자 취득</div>
+            <div class="card-body">
+              뛰어난 작업 증명(PoW)은 국경과 제도의 장벽도 넘었습니다. 그는 순수한 실력만으로 O-1 비자를 발급받고 세계 최고의 연구기관에 입성했습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 10 CONCLUSION ══ -->
+    <section class="sl" style="background: linear-gradient(135deg, #0F0F11 0%, #1A1A22 100%);">
+      <span class="lbl" style="color:var(--accent-lt);">CONCLUSION</span>
+      <div class="hud-counter">10 / 11</div>
+      <div class="body" style="align-items:center; text-align:center;">
+        <div class="anim d1" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(229,169,60,.1); display:flex; align-items:center; justify-content:center; margin-bottom:28px;">
+          <i class="ph-duotone ph-shield-check" style="font-size:48px; color:var(--accent);"></i>
+        </div>
+        <h2 class="hl hl-lg anim d2" style="color:var(--white);">정해진 커리큘럼은 죽었다</h2>
+        <div class="div-bar c anim d3" style="margin:24px auto;"></div>
+        <p class="desc anim d4" style="max-width:850px; font-size:18px; line-height:1.8; color:#D2D4D9;">
+          이제 지식의 보유량은 차별화 포인트가 아닙니다.<br>
+          경쟁력은 당면한 <strong>문제에서 시작해 AI에게 끊임없이 질문하며 돌파하는 속도</strong>에 있습니다.<br>
+          수동적인 위임자(Vibe Coder)를 넘어, 기술을 바닥부터 통제하는 <strong>주도적 아키텍트</strong>만이 AI 시대의 승자가 될 것입니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ══ 11 MORE INSIGHTS (🔚 Rule-08 의무 형식) ══ -->
+    <section class="sl">
+      <span class="lbl">MORE INSIGHTS</span>
+      <div class="hud-counter">11 / 11</div>
+      <div class="body">
+        <div class="mi-split">
+          <div class="mi-left anim d1">
+            <h3 class="hl hl-md acc" style="line-height:1.2;">지식 자산화<br>연계 링크</h3>
+            <p style="font-size:14.5px; color:#A4A7AE; line-height:1.6; margin-bottom:12px;">
+              본 발표자료의 모태가 되는 LLM Wiki의 상세 분석 내용과 원문 문서 정보는 옵시디언 위키 내의 아래 딥링크를 통해 직접 탐색할 수 있습니다.
+            </p>
+            <!-- L1 Rule-08 옵시디언 원문 딥링크 버튼 -->
+            <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=markdown%2FPeople%2F%E2%9C%85%EC%9D%B8%EB%AC%BC%EC%82%AC%EC%A0%84-%EA%B0%80%EB%B8%8C%EB%A6%AC%EC%97%98-%ED%94%BC%ED%84%B0%EC%8A%A8%28Gabriel-Petersson%29.md" class="wiki-btn">
+              <i class="ph-duotone ph-file-text"></i>
+              <div style="text-align:left;">
+                <div style="font-size:12px; color:var(--gray); font-weight:800; text-transform:uppercase; letter-spacing:0.05em;">OBSIDIAN DEEPLINK</div>
+                <div style="font-size:15px; font-weight:700; margin-top:2px;">위키 원문 읽기</div>
+                <div style="font-size:11px; color:rgba(255,255,255,.5); font-family:'Outfit',sans-serif; margin-top:4px;">✅인물사전-가브리엘 피터슨(Gabriel-Petersson).md</div>
+              </div>
+            </a>
+          </div>
+          
+          <div class="anim d2">
+            <h4 style="font-size:14px; font-weight:800; letter-spacing:0.1em; color:var(--gray); margin-bottom:18px; text-transform:uppercase;">Related YouTube Insights</h4>
+            <div class="yt-grid">
+              <!-- 유튜브 썸네일 카드 1 -->
+              <a href="https://www.youtube.com/watch?v=vq5WhoPCWQ8" target="_blank" class="yt-card">
+                <div class="yt-thumb" style="background-image: url('https://img.youtube.com/vi/vq5WhoPCWQ8/mqdefault.jpg');"></div>
+                <div class="yt-info">
+                  <div class="yt-title">High School Dropout to OpenAI Researcher</div>
+                  <div class="yt-channel">Gabriel Petersson Interview</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lb" onclick="closeLb()">
+  <span id="lb-close" onclick="closeLb()"><i class="ph-duotone ph-x"></i></span>
+  <img id="lb-img" src="" alt="Enlarged Visual">
+</div>
+
+<script>
+let cur = 0;
+const slides = document.querySelectorAll('.sl');
+const dotsCont = document.getElementById('dots');
+const total = slides.length;
+
+// Generate Navigation Dots
+for (let i = 0; i < total; i++) {
+  const dot = document.createElement('div');
+  dot.classList.add('dot');
+  if (i === 0) dot.classList.add('on');
+  dot.addEventListener('click', () => go(i));
+  dotsCont.appendChild(dot);
+}
+const dots = document.querySelectorAll('.dot');
+
+function update() {
+  document.getElementById('deck').style.transform = `translateX(-${cur * 100}vw)`;
+  slides.forEach((s, idx) => {
+    if (idx === cur) s.classList.add('on');
+    else s.classList.remove('on');
+  });
+  dots.forEach((d, idx) => {
+    if (idx === cur) d.classList.add('on');
+    else d.classList.remove('on');
+  });
+}
+
+function go(idx) {
+  cur = idx;
+  update();
+}
+
+function mv(dir) {
+  cur = (cur + dir + total) % total;
+  update();
+}
+
+// Keyboard Navigation
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') mv(1);
+  if (e.key === 'ArrowLeft') mv(-1);
+});
+
+// Lightbox functions
+function openLb(src) {
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  lbImg.src = src;
+  lb.style.display = 'flex';
+}
+function closeLb() {
+  document.getElementById('lb').style.display = 'none';
+}
+</script>
+</body>
+</html>

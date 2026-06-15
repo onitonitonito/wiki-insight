@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>투비(Tubi) — B급 OTT의 파괴적 혁신</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --black: #0B0A10;
+    --tubi-purple: #4F14A0;
+    --tubi-purple-light: #6A1FD1;
+    --tubi-orange: #FF5A00;
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-light: #2A2835;
+    --bg-dark: #12101A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--bg-dark);
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  .deck-container {
+    width: 100vw; height: 100vh;
+    overflow: hidden; position: relative;
+  }
+
+  .deck {
+    display: flex; flex-direction: row;
+    width: 100vw; height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; position: relative;
+    overflow: hidden;
+  }
+
+        .nav-bar {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    z-index: 999;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+  }
+  .nav-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #aaa;
+    margin: 0 8px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .nav-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; cursor: pointer; transition: all 0.3s;
+    border: 3px solid #888;
+  }
+  .nav-dot:hover { 
+    border-color: #ccc;
+  }
+  .nav-dot.active { 
+    background: var(--tubi-orange); 
+    border: none;
+    width: 36px; height: 12px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+
+.nav-arrows {
+    position: fixed; top: 50%; width: 100%; display: flex;
+    justify-content: space-between; padding: 0 30px;
+    pointer-events: none; z-index: 998; transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto; width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); color: var(--tubi-orange);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer; transition: all 0.2s;
+    border: 1px solid rgba(255,90,0,0.3); backdrop-filter: blur(5px);
+  }
+  .nav-arrow:hover {
+    background: var(--tubi-orange); color: var(--white); transform: scale(1.1);
+  }
+
+  /* TYPOGRAPHY */
+  .section-tag {
+    font-size: 13px; letter-spacing: 0.25em; color: var(--tubi-orange);
+    text-transform: uppercase; font-weight: 800; margin-bottom: 32px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5vw, 72px); font-weight: 900;
+    line-height: 1.2; color: var(--white); word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--tubi-orange); }
+  .slide-divider {
+    width: 64px; height: 4px; background: linear-gradient(90deg, var(--tubi-orange), var(--tubi-purple));
+    margin: 32px 0; border-radius: 2px;
+  }
+  .body-text {
+    font-size: 21px; line-height: 1.7; color: #DDDDDD;
+    max-width: 700px; word-break: keep-all; font-weight: 300;
+  }
+
+  /* LAYOUT UTILS */
+  .content-wrapper {
+    padding: 64px 80px; width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .two-col-layout { display: flex; gap: 60px; align-items: center; width: 100%; }
+  .col-text { flex: 1.1; min-width: 400px; }
+  .col-img { flex: 0.9; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+  .col-img img {
+    max-width: 100%; max-height: 60vh; object-fit: contain;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); border-radius: 12px;
+  }
+  .img-caption {
+    margin-top: 16px; font-size: 13px; color: var(--gray);
+    text-align: center; max-width: 80%; word-break: keep-all;
+  }
+
+  /* SLIDE 01: COVER */
+  .slide-01 { background: var(--black); position: relative; }
+  .slide-01::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 80% 50%, rgba(79, 20, 160, 0.4) 0%, transparent 50%);
+  }
+  .s01-brand { font-family: 'Outfit', sans-serif; font-size: 20px; letter-spacing: 0.15em; color: var(--tubi-orange); font-weight: 700; margin-bottom: 8px; }
+  .s01-tag { font-size: 12px; letter-spacing: 0.2em; color: var(--gray); text-transform: uppercase; margin-bottom: 48px; font-weight: 600; }
+  .s01-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(52px, 6vw, 84px); font-weight: 900; line-height: 1.15; color: var(--white); margin-bottom: 24px; word-break: keep-all; }
+  .s01-sub { font-size: 22px; line-height: 1.6; color: #BBB; font-weight: 400; margin-bottom: 60px; }
+  .s01-hero-img { position: absolute; right: 80px; top: 50%; transform: translateY(-50%); width: 40%; max-width: 500px; z-index: 1; }
+  .s01-hero-img img { width: 100%; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); }
+  
+  .stat-row { display: flex; gap: 48px; margin-top: 40px; }
+  .stat-item { text-align: left; }
+  .stat-num { font-family: 'Outfit', sans-serif; font-size: 48px; font-weight: 900; color: var(--tubi-orange); line-height: 1; }
+  .stat-label { font-size: 13px; letter-spacing: 0.05em; color: var(--gray); margin-top: 8px; font-weight: 500; }
+
+  /* SLIDE 02: LONG TAIL */
+  .slide-02 { background: #161320; }
+  .highlight-box { background: rgba(79, 20, 160, 0.2); border: 1px solid rgba(79, 20, 160, 0.5); padding: 32px 40px; border-left: 5px solid var(--tubi-orange); margin-top: 40px; border-radius: 4px; max-width: 700px; }
+  .highlight-box .quote { font-size: 19px; font-weight: 400; line-height: 1.7; color: #EEE; word-break: keep-all; }
+
+  /* SLIDE 03: UX INNOVATION */
+  .slide-03 { background: var(--bg-dark); }
+  
+  /* SLIDE 04: CREATOR FANDOM */
+  .slide-04 { background: #161320; }
+  
+  /* SLIDE 05: FAST GROWTH */
+  .slide-05 { background: var(--black); }
+  .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; }
+  .grid-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 32px; border-radius: 12px; }
+  .grid-title { font-size: 20px; font-weight: 700; color: var(--tubi-orange); margin-bottom: 12px; }
+  .grid-desc { font-size: 16px; color: #BBB; line-height: 1.6; word-break: keep-all; }
+
+  /* SLIDE 06: AI OPPORTUNITY */
+  .slide-06 { background: #1A122B; }
+  .opp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
+  .opp-card { background: var(--black); padding: 40px 32px; border-radius: 12px; position: relative; border-top: 4px solid var(--tubi-purple-light); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .opp-icon { font-size: 32px; margin-bottom: 20px; }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--white); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .opp-desc { font-size: 15px; color: #AAA; line-height: 1.7; word-break: keep-all; }
+
+  /* SLIDE 07: CONCLUSION */
+  .slide-07 { background: var(--black); }
+  .conclusion-text { font-family: 'Noto Serif KR', serif; font-size: clamp(36px, 4vw, 56px); font-weight: 900; line-height: 1.3; color: var(--white); text-align: center; max-width: 900px; margin: 0 auto; word-break: keep-all; }
+  .conclusion-text .accent { color: var(--tubi-orange); }
+
+  /* ANIMATIONS */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; color: #555; letter-spacing: 0.15em; }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <div class="nav-arrows">
+    <div class="nav-arrow" onclick="prevSlide()"><i class="ph-duotone ph-chevron-left" style=""></i></div>
+    <div class="nav-arrow" onclick="nextSlide()"><i class="ph-duotone ph-chevron-right" style=""></i></div>
+  </div>
+  <div class="nav-bar" id="navBar"></div>
+
+  <div class="deck" id="deck">
+
+    <!-- SLIDE 01: COVER -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI BUSINESS WIKI</div>
+        <div class="s01-tag anim anim-d1">BUSINESS MODELS · OTT STRATEGY</div>
+        <div class="s01-headline anim anim-d2">
+          B급 OTT 투비(Tubi)는<br>어떻게 <span class="accent">파괴적 혁신가</span>가<br>되었나
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          넷플릭스가 지배하는 구독형 시장에서<br>
+          버려진 자원과 UX 혁신으로 1억 명의 월간 활성 사용자를 모은 전략
+        </div>
+        <div class="stat-row anim anim-d4">
+          <div class="stat-item">
+            <div class="stat-num">100M+</div>
+            <div class="stat-label">월간 활성 사용자 (MAU)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">$1.1B</div>
+            <div class="stat-label">연간 광고 매출액 (2024)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">Free</div>
+            <div class="stat-label">FAST(광고 기반 무료) 모델</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4">
+        <img src="https://c.longblack.co/image/20260525/17797068648ed1b4c65d5cc0727d8b239a122ce0c7.png" alt="투비 로고" style="background:#fff; padding:20px;">
+      </div>
+      <div class="slide-num">01 / 08</div>
+    </section>
+
+    <!-- SLIDE 02: LONG TAIL -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">STRATEGY 1. LONG TAIL</div>
+            <div class="big-headline anim anim-d2">
+              경쟁 없는<br><span class="accent">롱테일(Long Tail)</span>에<br>집중하라
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              넷플릭스와 디즈니플러스가 천문학적인 비용으로 오리지널 대작을 만들며 치킨 게임을 할 때, 투비 창업자 파르하드 마소우디는 다른 길을 택했습니다.<br><br>
+              수익성이 없어 버려진 1970년대 고전 영화, 잊혀진 애니메이션 등 **30만 편 이상의 B급 콘텐츠**를 수급하여 철저하게 니치 팬덤을 결집시켰습니다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "경쟁이 치열한 블록오션을 피해 남들이 보지 않는 틈새 자원(고전 콘텐츠)을 매치메이킹(Matchmaking)하여 콘텐츠 조달 비용(CAC)을 혁신적으로 낮췄습니다."
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3">
+            <img src="https://c.longblack.co/image/20260525/17797068709a3c4a6b1f3cd8d0e2ed7d46cf08593d.png" alt="창업자 파르하드 마소우디">
+            <div class="img-caption">투비의 창업자 파르하드 마소우디. 그는 레거시 콘텐츠에 광고를 붙여 무료 스트리밍의 새 지평을 열었다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">02 / 08</div>
+    </section>
+
+    <!-- SLIDE 03: ZERO FRICTION UX -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">STRATEGY 2. ZERO FRICTION</div>
+            <div class="big-headline anim anim-d2">
+              선택의 마찰을<br>완전히 제거한 <span class="accent">'신스'</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              현재 스트리밍 시장의 가장 큰 페인 포인트는 **'무엇을 볼지 고르는 시간(선택의 마비)'**입니다.<br><br>
+              투비의 CEO 안잘리 수드는 경쟁 상대를 넷플릭스가 아닌 '틱톡'으로 정의하고, 짧은 세로형 영상 클립을 스크롤하며 영화를 탐색하는 **'신스(Scenes)'**를 선도적으로 도입했습니다. 이 파괴적 UX 혁신은 훗날 넷플릭스가 '클립스'라는 이름으로 카피할 정도였습니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d4">
+            <div style="display:flex; gap:20px;">
+              <img src="https://c.longblack.co/image/20260525/1779707811f007c2f9f445a7a290c7923d8f751a7a.png" alt="신스 기능" style="height:45vh; object-fit:cover;">
+              <img src="https://c.longblack.co/image/20260525/1779707817f17910467d5d15def6a9f28a80a64a59.png" alt="넷플릭스 클립스" style="height:45vh; object-fit:cover; filter:grayscale(50%);">
+            </div>
+            <div class="img-caption">투비의 혁신적 탐색 기능 '신스'(좌)와 이를 1년 뒤 후행 도입한 넷플릭스의 '클립스'(우)</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">03 / 08</div>
+    </section>
+
+    <!-- SLIDE 04: CREATOR FANDOM -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">STRATEGY 3. CREATOR IP</div>
+            <div class="big-headline anim anim-d2">
+              데이터와 팬덤이<br>가장 확실한 <span class="accent">오리지널</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              투비는 거액의 제작비로 도박을 하지 않습니다. 대신 4,000만 팔로워를 가진 틱톡커 '노아 벡'을 오리지널 영화 「사이드라인드」의 주연으로 전격 발탁했습니다.<br><br>
+              연기력 논란을 불식시킨 것은 압도적인 트래픽이었습니다. 확고한 팬덤을 지닌 크리에이터 IP를 레버리지화하여 마케팅 비용을 최소화하고 초기 흥행을 100% 확정 지었습니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d4">
+            <img src="https://c.longblack.co/image/20260525/1779708446409f7155d2172bcc15b1d48a7fb2e2df.png" alt="사이드라인드 영화">
+            <div class="img-caption">크리에이터 팬덤을 직접적으로 스트리밍 트래픽으로 흡수한 오리지널 영화 「사이드라인드」</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">04 / 08</div>
+    </section>
+
+    <!-- SLIDE 05: FAST GROWTH -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">BUSINESS IMPACT</div>
+        <div class="big-headline anim anim-d2">
+          글로벌 FAST 시장과<br><span class="accent">수익화 플라이휠</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="grid-2x2 anim anim-d4">
+          <div class="grid-card">
+            <div class="grid-title"><i class="ph-duotone ph-trending-up" style="vertical-align: middle; margin-right: 8px;"></i>MAU 1억 명 & 매출 1.5조원</div>
+            <div class="grid-desc">2025년 기준 월간 사용자 1억 명 돌파. 연간 11억 달러의 광고 매출을 기록하며 미국 닐슨 기준 전체 TV 시청 시간의 2.2%를 차지하는 메이저 스트리밍으로 도약했습니다.</div>
+          </div>
+          <div class="grid-card">
+            <div class="grid-title"><i class="ph-duotone ph-users" style="vertical-align: middle; margin-right: 8px;"></i>Z세대 중심의 시장 재편</div>
+            <div class="grid-desc">전통적 FAST가 중장년층 채널 중심이었다면, 투비는 시청자의 절반 이상이 Z세대와 밀레니얼입니다. 틱톡형 UI와 크리에이터 콘텐츠가 이들을 견인했습니다.</div>
+          </div>
+          <div class="grid-card">
+            <div class="grid-title"><i class="ph-duotone ph-circle-dollar-sign" style="vertical-align: middle; margin-right: 8px;"></i>TCO(비용) 최적화</div>
+            <div class="grid-desc">넷플릭스가 오리지널 대작 1편에 수백억 원을 쏟아부을 때, 투비는 동일 비용으로 수천 편의 롱테일 라이선스를 긁어모아 리스크를 철저히 분산했습니다.</div>
+          </div>
+          <div class="grid-card">
+            <div class="grid-title"><i class="ph-duotone ph-bot" style="vertical-align: middle; margin-right: 8px;"></i>AI 챗GPT 네이티브 앱 선점</div>
+            <div class="grid-desc">2026년 스트리밍 최초로 챗GPT 내장 앱을 출시해 대화형으로 취향에 맞는 고전 영화를 추천하고 즉시 스트리밍으로 연결하는 혁신을 선보였습니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">05 / 08</div>
+    </section>
+
+    <!-- SLIDE 06: AI OPPORTUNITIES -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">AI BUSINESS OPPORTUNITY</div>
+        <div class="big-headline anim anim-d2">
+          투비 모델을 통해 도출한<br><span class="accent">AI 신사업 기회</span> 3가지
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-puzzle" style="font-size: 32px; color: var(--tubi-orange);"></i></div>
+            <div class="opp-title">롱테일 자산 매치메이커 AI</div>
+            <div class="opp-desc">방치된 공공데이터, 고전 문학, 인디 음악 등 '롱테일 자산'을 분석해 특정 마이크로 팬덤(니치 타겟)에게 자동으로 매칭하고 추천해주는 비용 최적화 SaaS 모델.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-zap" style="font-size: 32px; color: var(--tubi-orange);"></i></div>
+            <div class="opp-title">Zero-Friction 탐색 UI 엔진</div>
+            <div class="opp-desc">복잡한 이커머스나 B2B 솔루션에 틱톡의 '신스(Scenes)'처럼 직관적인 스크롤형 숏폼 탐색 인터페이스를 입혀주는 플러그인 기반 UX 자동화 프레임워크.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-star" style="font-size: 32px; color: var(--tubi-orange);"></i></div>
+            <div class="opp-title">팬덤 레버리지 가치 평가 봇</div>
+            <div class="opp-desc">특정 크리에이터나 인플루언서의 팬덤 트래픽이 실제 구매 전환(또는 시청)으로 얼마나 이어질지 예측하여 초기 리스크를 계량화하는 AI 마케팅 에이전트.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">06 / 08</div>
+    </section>
+
+    <!-- SLIDE 07: CONCLUSION -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper" style="align-items: center; text-align: center;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-text anim anim-d2">
+          대세를 따르는 대신<br>
+          <span class="accent">빈틈(롱테일)</span>을 파고들면,<br>
+          결국 스스로가<br>
+          <span class="accent">대세(파괴적 혁신가)</span>가 된다.
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 40px auto;"></div>
+        <div class="body-text anim anim-d4" style="text-align: center;">
+          경쟁자가 주목하지 않는 버려진 자원과 이종 산업의 성공 공식을 융합하여 새로운 비즈니스 밸류를 창출하십시오.
+        </div>
+      </div>
+      <div class="slide-num">07 / 08</div>
+    </section>
+
+    <!-- SLIDE 08: APPENDIX -->
+    <section class="slide slide-08" id="slide-7" style="background: #12101A;">
+      <div class="content-wrapper" style="align-items: center; justify-content: center;">
+        <div class="section-tag anim anim-d1">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 48px; margin-bottom: 40px;">
+          더 깊은 인사이트 <span class="accent">탐구하기</span>
+        </div>
+        
+        <div class="anim anim-d3" style="display: flex; gap: 40px; justify-content: center; align-items: stretch; max-width: 1100px; margin: 0 auto; min-height: 480px;">
+          
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%ED%88%AC%EB%B9%84-B%EA%B8%89OTT%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%ED%8C%8C%EA%B4%B4%EC%A0%81%ED%98%81%EC%8B%A0%EA%B0%80%EA%B0%80-%EB%90%98%EC%97%88%EB%82%98.md" 
+             style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; text-decoration: none; color: var(--white); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3);"
+             onmouseover="this.style.borderColor='var(--tubi-orange)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 56px; color: var(--tubi-orange); margin-bottom: 24px;"></i>
+            <div style="font-size: 26px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px;">위키 원문 읽기</div>
+            <div style="font-size: 15px; color: #888; font-weight: 400;">투비-B급OTT는-어떻게-파괴적혁신가가-되었나</div>
+          </a>
+
+          <!-- 2. YouTube List -->
+          <div style="flex: 1.2; display: flex; flex-direction: column; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 32px 32px 24px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <div style="font-size: 18px; font-weight: 800; color: var(--tubi-orange); margin-bottom: 24px; text-align: center; letter-spacing: -0.5px;">추천 유튜브 영상</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px; padding-right: 8px;">
+              <!-- Video 1 -->
+              <a href="https://www.youtube.com/watch?v=w3byN8e8QuA" target="_blank" 
+                 style="display: flex; align-items: center; gap: 16px; text-decoration: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; transition: all 0.2s;" 
+                 onmouseover="this.style.background='rgba(255,255,255,0.05)';" onmouseout="this.style.background='rgba(0,0,0,0.2)';">
+                <img src="https://i.ytimg.com/vi/w3byN8e8QuA/hqdefault.jpg" style="width: 140px; height: 79px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                  <div style="color: var(--white); font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px;">Tubi Features and App</div>
+                  <div style="color: #888; font-size: 13px;">chewymoviereviews</div>
+                </div>
+              </a>
+
+              <!-- Video 2 -->
+              <a href="https://www.youtube.com/watch?v=73p4lL1iq7w" target="_blank" 
+                 style="display: flex; align-items: center; gap: 16px; text-decoration: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; transition: all 0.2s;" 
+                 onmouseover="this.style.background='rgba(255,255,255,0.05)';" onmouseout="this.style.background='rgba(0,0,0,0.2)';">
+                <img src="https://i.ytimg.com/vi/73p4lL1iq7w/hqdefault.jpg" style="width: 140px; height: 79px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                  <div style="color: var(--white); font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px;">Tubi Interface Interruption | Super Bowl</div>
+                  <div style="color: #888; font-size: 13px;">Tubi</div>
+                </div>
+              </a>
+
+              <!-- Video 3 -->
+              <a href="https://www.youtube.com/watch?v=1-RLqZUfqMI" target="_blank" 
+                 style="display: flex; align-items: center; gap: 16px; text-decoration: none; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; transition: all 0.2s;" 
+                 onmouseover="this.style.background='rgba(255,255,255,0.05)';" onmouseout="this.style.background='rgba(0,0,0,0.2)';">
+                <img src="https://i.ytimg.com/vi/1-RLqZUfqMI/hqdefault.jpg" style="width: 140px; height: 79px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                  <div style="color: var(--white); font-size: 16px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.3px;">Tubi CEO on Making Her Mark in Streaming</div>
+                  <div style="color: #888; font-size: 13px;">Bloomberg Live</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">08 / 08</div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // SLIDE NAVIGATION JS
+  const deck = document.getElementById('deck');
+  const slides = document.querySelectorAll('.slide');
+  const navBar = document.getElementById('navBar');
+  let currentIndex = 0;
+
+  // Create Nav Dots
+  const startNum = document.createElement('div');
+  startNum.className = 'nav-num';
+  startNum.textContent = '1';
+  navBar.appendChild(startNum);
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    navBar.appendChild(dot);
+  });
+
+  const endNum = document.createElement('div');
+  endNum.className = 'nav-num';
+  endNum.textContent = slides.length.toString();
+  navBar.appendChild(endNum);
+  const dots = document.querySelectorAll('.nav-dot');
+
+  function updateNav() {
+    deck.style.transform = `translateX(-${currentIndex * 100}vw)`;
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentIndex);
+    });
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    if (currentIndex < slides.length - 1) { currentIndex++; updateNav(); }
+  }
+  function prevSlide() {
+    if (currentIndex > 0) { currentIndex--; updateNav(); }
+  }
+  function goToSlide(index) {
+    currentIndex = index; updateNav();
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+  
+  // Wheel scroll with debounce
+  let isScrolling = false;
+  window.addEventListener('wheel', (e) => {
+    if (isScrolling) return;
+    isScrolling = true;
+    if (e.deltaY > 50) nextSlide();
+    else if (e.deltaY < -50) prevSlide();
+    setTimeout(() => { isScrolling = false; }, 800);
+  });
+
+  // Initialize Lucide icons
+  lucide.createIcons();
+</script>
+</body>
+</html>

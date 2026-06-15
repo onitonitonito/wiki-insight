@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스타벅스코리아 리스크 매니지먼트 — 무엇을 놓쳤는가</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --black: #1E3932; /* Starbucks Dark Green */
+    --accent: #00704A; /* Starbucks Green */
+    --accent-light: #D4E9E2; /* Light Green */
+    --cream: #FAF9F6;
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-light: #E9ECEF;
+    --bg-dark: #1E3932; /* Dark Green Background */
+    --danger: #C0392B; /* Red for Failures */
+    --success: #27AE60; /* Green for Success */
+    --warning: #F39C12; /* Orange for Warning */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--bg-dark);
+    color: var(--black);
+    overflow: hidden; /* 가로, 세로 스크롤 방지 */
+  }
+
+  /* ─── SLIDE WRAPPER ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+  .nav-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    z-index: 999;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  .nav-bar:hover {
+    opacity: 1;
+  }
+  .nav-num {
+    font-size: 14px;
+    font-weight: 400;
+    color: #666;
+    margin: 0 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #555; cursor: pointer; transition: all 0.3s;
+    border: none;
+  }
+  .nav-dot:hover { 
+    background: #888;
+  }
+  .nav-dot.active { 
+    background: var(--accent); 
+    width: 16px; height: 6px; border-radius: 3px;
+  }
+
+  .nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    opacity: 0.3;
+  }
+  .nav-arrow:hover {
+    color: var(--white);
+    opacity: 0.8;
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--black);
+    word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--accent); }
+  .big-headline .danger { color: var(--danger); }
+  
+  .slide-divider {
+    width: 48px; height: 4px;
+    background: var(--accent);
+    margin: 32px 0;
+  }
+  .body-text {
+    font-size: 21px;
+    line-height: 1.75;
+    color: #333;
+    max-width: 700px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1; min-width: 400px; }
+  .col-img { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 8px;
+  }
+  .img-caption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    max-width: 80%;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 01: COVER ─── */
+  .slide-01 { background: var(--cream); }
+  .s01-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .s01-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(52px, 7vw, 90px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 24px;
+    word-break: keep-all;
+  }
+  .s01-sub {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 60px;
+  }
+  .s01-stat-row { display: flex; gap: 56px; margin-top: 40px; }
+  .s01-stat { text-align: left; }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .s01-hero-img {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 600px;
+    z-index: 0;
+  }
+  .s01-hero-img img {
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  /* ─── YOUTUBE THUMBNAIL COMPONENT ─── */
+  .yt-thumb-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
+  }
+  .yt-thumb-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.25);
+  }
+  .yt-thumb-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.3s ease;
+  }
+  .yt-thumb-wrapper:hover img {
+    filter: brightness(0.85);
+  }
+  .yt-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 68px;
+    height: 48px;
+    background: rgba(229, 9, 20, 0.9);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
+  .yt-play-btn::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 18px;
+    border-color: transparent transparent transparent var(--white);
+    margin-left: 4px;
+  }
+  .yt-thumb-wrapper:hover .yt-play-btn {
+    background: #FF0000;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  /* ─── SLIDE 02: WHAT HAPPENED ─── */
+  .slide-02 { background: var(--cream); }
+  .highlight-box {
+    background: var(--bg-dark);
+    color: var(--cream);
+    padding: 32px 40px;
+    border-left: 5px solid var(--danger);
+    margin-top: 40px;
+    max-width: 700px;
+  }
+  .highlight-box .quote { font-size: 19px; font-weight: 500; line-height: 1.7; color: #eee; word-break: keep-all; }
+  .highlight-box .quote-attr { font-size: 13px; color: var(--danger); margin-top: 16px; letter-spacing: 0.1em; }
+  .insight-quote {
+    font-style: italic;
+    color: var(--gray);
+    margin-top: 16px;
+    font-size: 15px;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent);
+  }
+
+  /* ─── SLIDE 03: 3H FRAMEWORK ─── */
+  .slide-03 { background: var(--bg-dark); color: var(--cream); }
+  .slide-03 .big-headline { color: var(--cream); }
+  .slide-03 .section-tag { color: var(--accent-light); }
+  .hh-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 48px;
+  }
+  .hh-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hh-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .hh-card.hand::before { background: var(--warning); }
+  .hh-card.head::before { background: var(--accent-light); }
+  .hh-card.heart::before { background: var(--danger); }
+  .hh-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; opacity: 0.3; margin-bottom: 16px; }
+  .hh-title { font-size: 20px; font-weight: 800; color: var(--cream); margin-bottom: 12px; }
+  .hh-desc { font-size: 15px; color: #bbb; line-height: 1.6; word-break: keep-all; }
+
+  /* ─── SLIDE 04: GOLDEN TIME ─── */
+  .slide-04 { background: var(--cream); }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 48px; }
+  .col-card { border-top: 4px solid var(--accent); padding-top: 28px; }
+  .col-num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 16px; }
+  .col-title { font-size: 19px; font-weight: 800; color: var(--black); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .col-desc { font-size: 16px; color: #555; line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 05: COMPARE ─── */
+  .slide-05 { background: var(--bg-dark); color: var(--cream); }
+  .slide-05 .big-headline { color: var(--cream); }
+  .slide-05 .section-tag { color: var(--accent-light); }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; }
+  .compare-box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 8px; }
+  .compare-box.fail { border-top: 4px solid var(--danger); }
+  .compare-box.success { border-top: 4px solid var(--success); }
+  .cb-title { font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+  .compare-box.fail .cb-title { color: var(--danger); }
+  .compare-box.success .cb-title { color: var(--success); }
+  .cb-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+  .cb-icon { font-size: 18px; margin-top: 2px; }
+  .cb-text { font-size: 16px; color: #ccc; line-height: 1.6; word-break: keep-all; }
+  .cb-text strong { color: var(--white); font-weight: 700; }
+
+  /* ─── SLIDE 06: ROOT CAUSE ─── */
+  .slide-06 { background: var(--cream); }
+  .insight-card { background: var(--bg-dark); color: var(--cream); padding: 40px; border-radius: 8px; margin-top: 40px; max-width: 800px; box-shadow: 0 16px 32px rgba(0,0,0,0.1); }
+  .insight-title { font-size: 22px; font-weight: 800; color: var(--accent-light); margin-bottom: 16px; }
+  .insight-desc { font-size: 18px; line-height: 1.7; color: #ddd; word-break: keep-all; }
+  .insight-quote { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 20px; font-weight: 700; color: var(--white); }
+
+  /* ─── SLIDE 07: MATRIX ─── */
+  .slide-07 { background: var(--bg-dark); color: var(--cream); }
+  .slide-07 .big-headline { color: var(--cream); }
+  .slide-07 .section-tag { color: var(--accent-light); }
+  .matrix-table { width: 100%; max-width: 900px; border-collapse: collapse; margin-top: 40px; }
+  .matrix-table th { font-family: 'Playfair Display', serif; font-size: 14px; letter-spacing: 0.1em; color: var(--accent-light); text-align: left; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+  .matrix-table td { padding: 20px 16px; font-size: 16px; color: #ddd; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: top; line-height: 1.5; word-break: keep-all; }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .medal { font-size: 20px; font-weight: 800; }
+  .m-gold { color: var(--success); }
+  .m-silver { color: var(--accent-light); }
+  .m-bronze { color: var(--warning); }
+  .m-fail { color: var(--danger); }
+
+  /* ─── SLIDE 08: AI OPPORTUNITY ─── */
+  .slide-08 { background: var(--cream); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; max-width: 900px; }
+  .opp-card { background: var(--white); padding: 32px; border-radius: 8px; border: 1px solid var(--gray-light); box-shadow: 0 10px 20px rgba(0,0,0,0.03); transition: transform 0.3s; }
+  .opp-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .opp-icon { display: flex; margin-bottom: 16px; width: 32px; height: 32px; color: var(--accent); }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--black); margin-bottom: 12px; }
+  .opp-desc { font-size: 15px; color: #555; line-height: 1.6; word-break: keep-all; }
+
+  /* ─── SLIDE 09: CONCLUSION ─── */
+  .slide-09 { background: var(--bg-dark); color: var(--cream); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(40px, 5.5vw, 68px); font-weight: 900; line-height: 1.25; color: var(--cream); max-width: 1000px; margin: 32px 0; word-break: keep-all; }
+  .conclusion-headline .accent { color: var(--accent-light); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .lesson { border-top: 3px solid rgba(255,255,255,0.2); padding-top: 24px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--accent-light); margin-bottom: 12px; }
+  .lesson-title { font-size: 18px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 15px; color: #aaa; line-height: 1.7; word-break: keep-all; }
+  .bg-watermark { position: absolute; right: -50px; bottom: -50px; font-family: 'Playfair Display'; font-size: 200px; font-weight:900; opacity: 0.03; color: var(--white); line-height: 1; pointer-events: none; }
+  
+  /* ─── LUCIDE ICON HELPER ─── */
+  i[data-lucide] {
+    display: inline-block;
+    vertical-align: middle;
+    stroke-width: 2;
+  }
+  .cb-icon { display: flex; align-items: center; justify-content: center; }
+
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #888; letter-spacing: 0.1em; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; }
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #888; letter-spacing: 0.15em; }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">CRISIS MANAGEMENT</div>
+        <div class="s01-headline anim anim-d2">
+          스타벅스코리아는<br>
+          <span class="accent">무엇을 놓쳤는가</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          기업 위기관리 실패와 성공의 결정적 차이<br>
+          손(Hand) · 머리(Head) · 마음(Heart)의 3H 프레임워크
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">3H</div>
+            <div class="s01-stat-label">위기관리 프레임</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">4</div>
+            <div class="s01-stat-label">성패 사례 비교</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num" style="display: flex; align-items: center; height: 52px;"><i class="ph-duotone ph-award" style="font-size: 48px; stroke-width: 1.5;"></i></div>
+            <div class="s01-stat-label">금메달 회복 전략</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4" style="display:flex; align-items:center; justify-content:center; padding: 40px;">
+        <img src="https://c.longblack.co/image/20260608/1780913831637dbf930d43ffe67aca9490ca022db9.png" alt="스타벅스 로고" style="max-width: 450px; width: 100%; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3)); border-radius: 12px;">
+      </div>
+      <div class="slide-num">01 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — WHAT HAPPENED
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">THE INCIDENT</div>
+            <div class="big-headline anim anim-d2">
+              5.18 민주화운동 기념일의<br>
+              <span class="danger">'탱크데이' 사태</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              2026년 5월 18일, 스타벅스 코리아가 진행한 '탱크데이' 텀블러 할인 프로모션. 5·18 광주 계엄군 탱크를 연상시킨다는 비판과 함께 1987년 박종철 열사 고문치사 사건을 연상시키는 홍보 문구 "책상에 탁!"이 겹치며 최악의 역사적 맥락 무시라는 사회적 공분을 샀습니다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "서로를 이해하고 나아가야 할 때"<br>
+                — 대중의 상처를 외면한 전형적인 '비사과 사과'
+              </div>
+              <div class="quote-attr">— 정용진 신세계그룹 회장 사과문 논란</div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <div class="yt-thumb-wrapper">
+              <a href="https://www.youtube.com/watch?v=d6-MCSNp8qg" target="_blank">
+                <img src="https://img.youtube.com/vi/d6-MCSNp8qg/maxresdefault.jpg" alt="정용진 회장 사과 뉴스">
+                <div class="yt-play-btn"></div>
+              </a>
+            </div>
+            <div class="img-caption">[뉴스클립] 2026년 5월, 논란 이후 신세계그룹 정용진 회장의 서면 사과문과 관련 보도.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">02 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — 3H FRAMEWORK
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">CORE FRAMEWORK</div>
+        <div class="big-headline anim anim-d2">
+          위기관리의 본질 — <span class="accent-light">3H 프레임워크</span>
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <div class="body-text anim anim-d3" style="color:#ddd">
+          스타벅스코리아는 실무 조치(Hand)와 법적 판단(Head)은 빨랐지만, 가장 중요한 대중과의 공감(Heart)이 완전히 비어있었습니다.
+        </div>
+        
+        <div class="hh-grid anim anim-d4">
+          <div class="hh-card hand">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <i class="ph-duotone ph-hand" style="font-size: 40px; color: var(--warning); stroke-width: 1.5;"></i>
+              <div class="hh-num" style="margin-bottom: 0;">Hand</div>
+            </div>
+            <div class="hh-title">손 (실무 조치)</div>
+            <div class="hh-desc">캠페인 즉각 중단, 손정현 대표 전격 해임 등 빠르고 단호한 사건 수습 및 처리.</div>
+          </div>
+          <div class="hh-card head">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <i class="ph-duotone ph-brain" style="font-size: 40px; color: var(--accent-light); stroke-width: 1.5;"></i>
+              <div class="hh-num" style="margin-bottom: 0;">Head</div>
+            </div>
+            <div class="hh-title">머리 (법적·재무적 판단)</div>
+            <div class="hh-desc">주가 하락 방어 및 기업의 법적 책임 리스크 최소화를 위한 이성적 대응 전략.</div>
+          </div>
+          <div class="hh-card heart">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <i class="ph-duotone ph-heart" style="font-size: 40px; color: var(--danger); stroke-width: 1.5;"></i>
+              <div class="hh-num" style="margin-bottom: 0;">Heart</div>
+            </div>
+            <div class="hh-title" style="color:var(--danger)">마음 (가장 중요한 공감)</div>
+            <div class="hh-desc">피해자와 대중의 상처를 달래는 진정성 있는 커뮤니케이션. <strong>(스타벅스의 결정적 실패 요인)</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#666">03 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — GOLDEN TIME
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">PRINCIPLES</div>
+        <div class="big-headline anim anim-d2">
+          위기 대응 골든타임의<br><span class="accent">3가지 핵심 원칙</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-col anim anim-d4">
+          <div class="col-card">
+            <div class="col-num">01</div>
+            <div class="col-title">투명한 조사 선언</div>
+            <div class="col-desc">
+              완벽한 진상이 아닌 "숨김없이 조사하겠다"는 의지를 즉시 표명하라. 대중이 원하는 것은 완벽한 답이 아닌 조사 의지 자체다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">02</div>
+            <div class="col-title">피해자 중심의 사과</div>
+            <div class="col-desc">
+              사과문에는 오직 자신의 잘못에만 집중해야 한다. "하지만", "생각은 다를 수 있지만" 등 조건부 변명은 사과를 독으로 만든다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">03</div>
+            <div class="col-title">눈에 보이는 과감한 행동</div>
+            <div class="col-desc">
+              점검하겠다는 미래형 약속이 아닌 예상을 뛰어넘는 구조적 변화를 가시적으로 보여라. 행동만이 무너진 신뢰를 회복한다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">04 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — SUCCESSFUL CASE STUDY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text" style="flex: 1.2;">
+            <div class="section-tag anim anim-d1">COMPARISON</div>
+            <div class="big-headline anim anim-d2">
+              실패와 성공의<br><span class="accent">결정적 차이</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="compare-box fail anim anim-d3">
+              <div class="cb-title">실패 — 스타벅스코리아</div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-x-circle" style="font-size: 20px; color: var(--danger); stroke-width: 2;"></i></div><div class="cb-text">"서로를 이해하고 나아가야 할 때" — <strong>전형적 비사과 사과</strong></div></div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-x-circle" style="font-size: 20px; color: var(--danger); stroke-width: 2;"></i></div><div class="cb-text">관련자 해임에 그친 미래형 약속, <strong>가시적 행동 부재</strong></div></div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-x-circle" style="font-size: 20px; color: var(--danger); stroke-width: 2;"></i></div><div class="cb-text">4단계 결재 시스템 존재했으나 <strong>상향 커뮤니케이션 단절</strong></div></div>
+            </div>
+            <div class="compare-box success anim anim-d4">
+              <div class="cb-title">성공 — 글로벌 사례</div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-check-circle" style="font-size: 20px; color: var(--success); stroke-width: 2;"></i></div><div class="cb-text"><strong>타이레놀(존슨앤존슨)</strong> — 3,100만 병 즉각 전량 리콜. "시민 보호" 최우선</div></div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-check-circle" style="font-size: 20px; color: var(--success); stroke-width: 2;"></i></div><div class="cb-text"><strong>메이플 리프 푸드</strong> — "모든 책임을 진다" 선언 후 220개 제품 자발 회수</div></div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-check-circle" style="font-size: 20px; color: var(--success); stroke-width: 2;"></i></div><div class="cb-text"><strong>스타벅스 미국 본사</strong> — 인종 편견 논란에 8,000개 매장 하루 폐쇄 (230억 원 포기)</div></div>
+              <div class="cb-item"><div class="cb-icon"><i class="ph-duotone ph-check-circle" style="font-size: 20px; color: var(--success); stroke-width: 2;"></i></div><div class="cb-text"><strong>BBC</strong> — 경쟁사 닉 폴라드에 진상조사 위탁, 객관성 확보</div></div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <div class="yt-thumb-wrapper">
+              <a href="https://www.youtube.com/watch?v=oKsbV3ABZC0" target="_blank">
+                <img src="https://img.youtube.com/vi/oKsbV3ABZC0/maxresdefault.jpg" alt="존슨앤존슨 타이레놀 사태">
+                <div class="yt-play-btn"></div>
+              </a>
+            </div>
+            <div class="img-caption">[다큐멘터리] 1982년 타이레놀 위기 극복 스토리. '어떻게 시민을 보호할 것인가'를 최우선으로 둔 교과서적 사례.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#666">05 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — ROOT CAUSE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">ROOT CAUSE</div>
+            <div class="big-headline anim anim-d2">
+              매뉴얼이 있었지만,<br><span class="accent">문화가 없었다</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              스타벅스코리아는 헤드라인 테스트와 4단계 결재 시스템을 갖추고 있었습니다. 그럼에도 치명적 오류가 통과된 이유는 <strong>'심리적 안전감(Psychological Safety)'의 결여</strong> 때문입니다.
+            </div>
+            <div class="insight-card anim anim-d4">
+              <div class="insight-title">구조적 참사</div>
+              <div class="insight-desc">
+                실무진이 기획안에 의문을 품었더라도, 상위 의사결정자에게 이견을 제기하지 못하는 경직된 하향식(Top-down) 문화가 근본적인 원인이었습니다. 안전에 대한 우려를 위로 올리지 못한 보잉 737 맥스 추락 사고와 동일한 원리입니다.
+              </div>
+              <div class="insight-quote">
+                <i class="ph-duotone ph-lightbulb" style="font-size: 20px; color: var(--warning); vertical-align: middle; margin-right: 6px; stroke-width: 2;"></i> 리더가 던져야 할 겸손한 질문:<br>
+                "여러분이 문제를 편하게 말하려면 제가 무엇을 바꿔야 할까요?"
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <div class="yt-thumb-wrapper">
+              <a href="https://www.youtube.com/watch?v=4Fw5H7GWzog" target="_blank">
+                <img src="https://img.youtube.com/vi/4Fw5H7GWzog/maxresdefault.jpg" alt="조직심리학자 에드거 샤인">
+                <div class="yt-play-btn"></div>
+              </a>
+            </div>
+            <div class="img-caption">[강연] 세계적 조직심리학자 故 에드거 샤인의 '상향 커뮤니케이션' 특강. 심리적 안전감이 기업 생존에 미치는 영향을 다룬다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">06 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — MATRIX
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">RECOVERY MATRIX</div>
+        <div class="big-headline anim anim-d2">
+          조치 유형별 <span class="accent-light">평판 회복 기간</span>
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <table class="matrix-table anim anim-d4">
+          <thead>
+            <tr>
+              <th>등급</th>
+              <th>대응 방식</th>
+              <th>평균 회복 기간</th>
+              <th>핵심 요인</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="medal m-gold"><span style="display:flex; align-items:center; gap:8px;"><i class="ph-duotone ph-award" style="font-size: 20px; color: var(--success);"></i> 금메달</span></td>
+              <td>선제적 예방 + 상향 커뮤니케이션 문화</td>
+              <td><strong>리스크 미발생</strong></td>
+              <td>리더의 겸손한 질문, 심리적 안전감이 확보된 조직 문화</td>
+            </tr>
+            <tr>
+              <td class="medal m-silver"><span style="display:flex; align-items:center; gap:8px;"><i class="ph-duotone ph-award" style="font-size: 20px; color: var(--accent-light);"></i> 은메달</span></td>
+              <td>진정성 행동 + 구조 변경 (전량 리콜, 매장 폐쇄)</td>
+              <td><strong>6개월 ~ 1년</strong></td>
+              <td>법적 책임을 초월한 소비자 안심 우선 조치</td>
+            </tr>
+            <tr>
+              <td class="medal m-bronze"><span style="display:flex; align-items:center; gap:8px;"><i class="ph-duotone ph-award" style="font-size: 20px; color: var(--warning);"></i> 동메달</span></td>
+              <td>신속한 사과 + 관련자 문책</td>
+              <td><strong>2년 ~ 3년 이상</strong></td>
+              <td>속도는 빨랐으나 공감(Heart)이 빠져 불매 장기화 (스타벅스코리아)</td>
+            </tr>
+            <tr>
+              <td class="medal m-fail"><span style="display:flex; align-items:center; gap:8px;"><i class="ph-duotone ph-slash" style="font-size: 20px; color: var(--danger);"></i> 실패</span></td>
+              <td>비사과 사과 + 방어적 태도</td>
+              <td><strong>회복 불능</strong></td>
+              <td>불매운동 계열사 전체 확산, 브랜드 가치 영구 훼손</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="slide-num" style="color:#666">07 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — AI OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">AI OPPORTUNITY</div>
+        <div class="big-headline anim anim-d2">
+          AI 시대의 <span class="accent">위기관리 기회</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-cpu" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">AI 리스크 스크리닝</div>
+            <div class="opp-desc">마케팅 카피나 이미지가 가지는 역사적·정치적 맥락을 AI로 실시간 검토. 5·18 등 국가기념일 금기어 자동 충돌 탐지 솔루션 도입.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-bar-chart-2" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">SNS 여론 조기경보</div>
+            <div class="opp-desc">소셜 미디어 감성 분석과 확산 속도 모니터링을 결합하여, 사건 발생 초기 골든타임 내에 위기 신호 감지 및 대응 자동화.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-message-square" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">사과문 진정성 분석</div>
+            <div class="opp-desc">AI로 초안 사과문의 '비사과 사과' 요소를 사전 탐지. 대중을 자극할 수 있는 방어 언어 비율을 낮추고 공감 언어 비율을 검수.</div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-icon"><i class="ph-duotone ph-shield" style="font-size: 32px; stroke-width: 1.5;"></i></div>
+            <div class="opp-title">조직 심리 안전감 측정</div>
+            <div class="opp-desc">직원들의 익명 피드백이나 사내 메신저 패턴을 익명화하여 AI로 분석, 상향 커뮤니케이션 단절 지점을 조기 발견하고 리더십 코칭.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">08 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="bg-watermark">STARBUCKS</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          위기는 시스템의 부재가 아니라<br>
+          <span class="accent">질문이 사라진 문화</span>에서<br>
+          시작된다
+        </div>
+        <div class="slide-divider anim anim-d3" style="background:var(--accent-light)"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">상향 커뮤니케이션의 복원</div>
+            <div class="lesson-desc">완벽한 결재 시스템보다 중요한 것은 실무자의 이견이 가감없이 CEO에게 도달할 수 있는 심리적 안전감입니다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-title" style="margin-top:48px;">02</div>
+            <div class="lesson-title">Heart(공감)의 감각 유지</div>
+            <div class="lesson-desc">빠른 실무 처리(Hand)와 법적 방어(Head)에 매몰되지 않고 대중의 상처를 헤아리는 공감 능력이 위기관리의 본질입니다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-title" style="margin-top:48px;">03</div>
+            <div class="lesson-title">행동으로 증명하라</div>
+            <div class="lesson-desc">"다음에 잘하겠다"는 말뿐인 약속이 아니라, 구조적 변화를 가시적인 행동으로 보여줄 때 신뢰가 회복됩니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · STARBUCKS KOREA · 롱블랙 2026.06.01</span>
+        <span>AI 신사업 위키 · Wiki-Pages/Longblack-Coffee-Insight</span>
+      </div>
+      <div class="slide-num" style="color:#666">09 / 10</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — APPENDIX
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" id="slide-9" style="background: var(--cream); text-align: center;">
+      <div class="content-wrapper" style="align-items: center; justify-content: center; z-index: 1;">
+        <div class="section-tag anim anim-d1" style="margin-bottom: 16px;">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 56px; margin-bottom: 32px;">
+          더 깊은 <span style="color:var(--accent)">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 0 auto 64px auto;"></div>
+        
+        <div class="anim anim-d4" style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%EC%8A%A4%ED%83%80%EB%B2%85%EC%8A%A4%EC%BD%94%EB%A6%AC%EC%95%84-%EB%A6%AC%EC%8A%A4%ED%81%AC%EB%A7%A4%EB%8B%88%EC%A7%80%EB%A8%BC%ED%8A%B8.md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 420px; height: 320px; background: var(--white); border: 2px solid var(--gray-light); border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='var(--accent)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='var(--gray-light)'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 72px; color: var(--accent); margin-bottom: 24px;"></i>
+            <span style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">위키 원문 읽기</span>
+            <span style="font-size: 20px; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">스타벅스코리아 리스크 매니지먼트</span>
+          </a>
+
+          <!-- YouTube Links List -->
+          <div style="display: flex; flex-direction: column; width: 600px; background: var(--white); border: 2px solid var(--gray-light); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left;">
+            <div style="display: flex; align-items: center; margin-bottom: 20px; color: var(--danger);">
+              <i class="ph-duotone ph-youtube-logo" style="font-size: 32px; margin-right: 12px;"></i>
+              <span style="font-size: 24px; font-weight: 800;">추천 뉴스 영상</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <a href="https://www.youtube.com/watch?v=d6-MCSNp8qg" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: #f9f9f9; border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#eef8f4'; this.style.color='var(--accent)';" onmouseout="this.style.background='#f9f9f9'; this.style.color='var(--black)';">
+                <img src="https://img.youtube.com/vi/d6-MCSNp8qg/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" alt="뉴스 썸네일">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                  <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; margin-bottom: 8px;">스타벅스코리아, 탱크데이 논란 확산... 대표 전격 경질</span>
+                  <span style="font-size: 16px; color: #888; text-align: left;">방송 3사 주요 뉴스 • 2026년 5월</span>
+                </div>
+              </a>
+              <a href="https://www.youtube.com/watch?v=oKsbV3ABZC0" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: #f9f9f9; border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#eef8f4'; this.style.color='var(--accent)';" onmouseout="this.style.background='#f9f9f9'; this.style.color='var(--black)';">
+                <img src="https://img.youtube.com/vi/oKsbV3ABZC0/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" alt="뉴스 썸네일">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                  <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; margin-bottom: 8px;">미국 본사 공식 사과... 신세계 리스크 매니지먼트의 실패</span>
+                  <span style="font-size: 16px; color: #888; text-align: left;">경제 핫이슈 심층분석 • 2026년 6월</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /deck -->
+</div><!-- /deck-container -->
+
+<script>
+// ─── SLIDE NAVIGATION LOGIC ───
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const navBar = document.getElementById('navBar');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+
+// Generate Dots
+const startNum = document.createElement('div');
+startNum.className = 'nav-num';
+startNum.textContent = '1';
+navBar.appendChild(startNum);
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  navBar.appendChild(dot);
+}
+
+const endNum = document.createElement('div');
+endNum.className = 'nav-num';
+endNum.textContent = totalSlides.toString();
+navBar.appendChild(endNum);
+const dots = document.querySelectorAll('.nav-dot');
+
+function updateNav() {
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+  slides.forEach((slide, idx) => {
+    if (idx === currentSlide) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  });
+
+  btnPrev.style.opacity = currentSlide === 0 ? '0.3' : '1';
+  btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+  
+  btnNext.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+  btnNext.style.pointerEvents = currentSlide === totalSlides - 1 ? 'none' : 'auto';
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= totalSlides) return;
+  currentSlide = idx;
+  const translateX = -(currentSlide * 100);
+  deck.style.transform = `translateX(${translateX}vw)`;
+  updateNav();
+}
+
+function prevSlide() { goToSlide(currentSlide - 1); }
+function nextSlide() { goToSlide(currentSlide + 1); }
+
+// ─── KEYBOARD & WHEEL EVENT ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    prevSlide();
+  }
+});
+
+let isScrolling = false;
+window.addEventListener('wheel', (e) => {
+  if (isScrolling) return;
+  
+  if (e.deltaY > 50 || e.deltaX > 50) {
+    isScrolling = true;
+    nextSlide();
+    setTimeout(() => isScrolling = false, 800);
+  } else if (e.deltaY < -50 || e.deltaX < -50) {
+    isScrolling = true;
+    prevSlide();
+    setTimeout(() => isScrolling = false, 800);
+  }
+});
+
+// 초기 설정
+updateNav();
+lucide.createIcons();
+</script>
+</body>
+</html>

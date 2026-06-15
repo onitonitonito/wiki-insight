@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>레벨스 헬스(Levels Health) — 데이터 맥락화 비즈니스 전략</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --black: #0A0B10;
+    --accent: #2E90FA; /* Levels Blue */
+    --accent-light: #53B1FD;
+    --cream: #F8F9FB;
+    --white: #FFFFFF;
+    --gray: #667085;
+    --gray-light: #E4E7EC;
+    --brand-dark: #101828; /* Tech Dark */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: var(--brand-dark);
+    color: var(--black);
+    overflow: hidden; 
+  }
+
+  /* ─── SLIDE WRAPPER ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+          .nav-bar {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    z-index: 999;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+  }
+  .nav-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #aaa;
+    margin: 0 8px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .nav-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; cursor: pointer; transition: all 0.3s;
+    border: 3px solid #888;
+  }
+  .nav-dot:hover { 
+    border-color: #ccc;
+  }
+  .nav-dot.active { 
+    background: var(--accent); 
+    border: none;
+    width: 36px; height: 12px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+
+.nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.1);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(46, 144, 250, 0.3);
+  }
+  .nav-arrow:hover {
+    background: var(--accent);
+    color: var(--white);
+    transform: scale(1.1);
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--black);
+    word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--accent); }
+  .slide-divider {
+    width: 48px; height: 4px;
+    background: var(--accent);
+    margin: 32px 0;
+  }
+  .body-text {
+    font-size: 21px;
+    line-height: 1.75;
+    color: #475467;
+    max-width: 700px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1; min-width: 400px; }
+  .col-img { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 16px;
+  }
+  .img-caption {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    max-width: 80%;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 01: COVER ─── */
+  .slide-01 { background: var(--cream); }
+  .s01-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .s01-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(52px, 7vw, 90px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 24px;
+    word-break: keep-all;
+  }
+  .s01-headline .accent { color: var(--accent); }
+  .s01-sub {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #475467;
+    font-weight: 500;
+    margin-bottom: 60px;
+  }
+  .s01-stat-row { display: flex; gap: 56px; margin-top: 40px; }
+  .s01-stat { text-align: left; }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .s01-hero-img {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 500px;
+    z-index: 0;
+  }
+  .s01-hero-img img {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: -20px 20px 60px rgba(0,0,0,0.1);
+  }
+
+  /* ─── SLIDE 02: WHAT HAPPENED ─── */
+  .slide-02 { background: var(--cream); }
+  .highlight-box {
+    background: var(--brand-dark);
+    color: var(--cream);
+    padding: 32px 40px;
+    border-left: 5px solid var(--accent);
+    margin-top: 40px;
+    max-width: 700px;
+    border-radius: 0 8px 8px 0;
+  }
+  .highlight-box .quote { font-size: 19px; font-weight: 500; line-height: 1.7; color: #EAECF0; word-break: keep-all; }
+  .highlight-box .quote-attr { font-size: 13px; color: var(--accent-light); margin-top: 16px; letter-spacing: 0.1em; }
+
+  /* ─── SLIDE 03: TIMELINE / PILLARS ─── */
+  .slide-03 { background: var(--brand-dark); color: var(--cream); }
+  .slide-03 .big-headline { color: var(--cream); }
+  .timeline { margin-top: 40px; position: relative; padding-left: 0; }
+  .timeline::before { content: ''; position: absolute; left: 80px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), transparent); }
+  .tl-item { display: flex; gap: 0; margin-bottom: 36px; align-items: flex-start; position: relative; }
+  .tl-year { width: 80px; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--accent); flex-shrink: 0; padding-top: 2px; }
+  .tl-dot { width: 14px; height: 14px; background: var(--accent); border-radius: 50%; margin: 5px 24px 0 -7px; flex-shrink: 0; z-index: 1; }
+  .tl-title { font-size: 18px; font-weight: 700; color: var(--cream); margin-bottom: 8px; }
+  .tl-desc { font-size: 15px; color: #98A2B3; line-height: 1.6; word-break: keep-all; }
+  .tl-badge { display: inline-block; background: var(--accent); color: var(--white); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 4px; margin-right: 10px; }
+
+  /* ─── SLIDE 04: CHART ─── */
+  .slide-04 { background: var(--cream); }
+  .chart-wrap { margin-top: 30px; background: var(--white); border: 1px solid var(--gray-light); padding: 40px; max-width: 800px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  .chart-title { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 24px; }
+  .chart-note { font-size: 13px; color: var(--gray); margin-top: 16px; font-style: italic; }
+
+  /* ─── SLIDE 05: SYSTEMATIZE ─── */
+  .slide-05 { background: var(--brand-dark); color: var(--cream); }
+  .slide-05 .big-headline { color: var(--cream); }
+  .slide-05 .body-text { color: #D0D5DD; }
+
+  /* ─── SLIDE 06: JTBD ─── */
+  .slide-06 { background: var(--cream); }
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+  .strategy-card { background: var(--white); border: 1px solid var(--gray-light); border-left: 4px solid var(--accent); padding: 32px; transition: all 0.3s; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+  .strategy-card:hover { border-left-color: var(--accent); box-shadow: 0 12px 24px rgba(46,144,250,0.1); transform: translateY(-4px); }
+  .sc-icon { font-size: 32px; margin-bottom: 16px; }
+  .sc-title { font-size: 18px; font-weight: 700; color: var(--black); margin-bottom: 12px; letter-spacing: 0.05em; word-break: keep-all; }
+  .sc-body { font-size: 15px; color: var(--gray); line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 07: CONTENT ─── */
+  .slide-07 { background: var(--cream); }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 48px; }
+  .col-card { border-top: 4px solid var(--accent); padding-top: 28px; }
+  .col-num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 16px; }
+  .col-title { font-size: 19px; font-weight: 800; color: var(--black); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .col-desc { font-size: 16px; color: var(--gray); line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 08: BUSINESS MODEL ─── */
+  .slide-08 { background: var(--brand-dark); color: var(--cream); }
+  .slide-08 .big-headline { color: var(--cream); }
+  .quote-big { margin-top: 32px; max-width: 700px; }
+  .quote-big .q-mark { font-family: 'Playfair Display', serif; font-size: 96px; color: var(--accent); line-height: 0.6; margin-bottom: 8px; }
+  .quote-big .q-text { font-size: 26px; line-height: 1.6; color: var(--cream); font-weight: 500; word-break: keep-all; }
+  .quote-big .q-attr { margin-top: 24px; font-size: 14px; font-weight: 600; color: var(--accent-light); letter-spacing: 0.15em; text-transform: uppercase; }
+
+  /* ─── SLIDE 09: AI OPPORTUNITY ─── */
+  .slide-09 { background: var(--cream); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 48px; }
+  .opp-card { background: var(--brand-dark); color: var(--cream); padding: 40px 32px; position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 16px 32px rgba(0,0,0,0.1); }
+  .opp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--accent); }
+  .opp-num { font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900; color: var(--accent); opacity: 0.2; position: absolute; right: 24px; top: 16px; line-height: 1; }
+  .opp-icon { font-size: 32px; margin-bottom: 20px; }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--accent-light); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .opp-desc { font-size: 15px; color: #98A2B3; line-height: 1.7; word-break: keep-all; font-weight: 400; }
+  .feasibility { display: flex; align-items: center; gap: 4px; margin-top: 24px; border-top: 1px solid #1D2939; padding-top: 16px; }
+  .star { color: var(--accent); font-size: 14px; }
+  .star.empty { color: #475467; }
+
+  /* ─── SLIDE 10: CONCLUSION ─── */
+  .slide-10 { background: var(--black); color: var(--cream); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(40px, 5.5vw, 64px); font-weight: 900; line-height: 1.25; color: var(--cream); max-width: 1000px; margin: 32px 0; word-break: keep-all; }
+  .conclusion-headline .accent { color: var(--accent); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .lesson { border-top: 3px solid #344054; padding-top: 24px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--accent); margin-bottom: 12px; }
+  .lesson-title { font-size: 18px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 15px; color: #98A2B3; line-height: 1.7; word-break: keep-all; }
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #667085; letter-spacing: 0.1em; border-top: 1px solid #1D2939; padding-top: 16px; }
+  .bg-watermark { position: absolute; right: -50px; bottom: -50px; font-family: 'Playfair Display'; font-size: 280px; font-weight:900; opacity: 0.03; color: var(--white); line-height: 1; pointer-events: none; }
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #667085; letter-spacing: 0.15em; }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+
+  .key-takeaway-badge {
+    position: absolute;
+    top: 64px;
+    right: 80px;
+    background: var(--accent);
+    color: var(--white);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+</style>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">BUSINESS MODELS · HEALTHTECH</div>
+        <div class="s01-headline anim anim-d2">
+          혈당 데이터를<br>
+          <span class="accent">맥락화</span>하여<br>
+          20만 명을 줄 세우다
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          레벨스 헬스(Levels Health) — <br>
+          숫자를 파는 앱들 사이에서, 수치의 '의미'를 팔아<br>연 40만 원의 구독료를 정당화한 SaaS 브랜딩
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">10만</div>
+            <div class="s01-stat-label">유료 구독자</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">20만</div>
+            <div class="s01-stat-label">정식 출시 전 대기자</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">7억</div>
+            <div class="s01-stat-label">누적 데이터 포인트</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4">
+        <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20260310/17731396534cfe0e1bdaf3caf6d1df0fe1aae589ed.png" alt="레벨스 앱 안정화 점수 화면">
+      </div>
+      <div class="slide-num" style="color:#555">01 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — WHAT HAPPENED
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">WHAT HAPPENED</div>
+            <div class="big-headline anim anim-d2">
+              스페이스X 엔지니어,<br>
+              <span class="accent">건강의 맥락</span>을 묻다
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              스페이스X의 엔지니어였던 조쉬 클레멘테는 의문을 가졌습니다. "왜 건강 데이터는 병에 걸린 '이후'에만 쓰여야 하는가?"<br><br>
+              그는 당뇨 환자만 쓰던 연속혈당측정기(CGM) 데이터를 일반인의 식단·수면·운동과 연결했습니다. 측정을 넘어 '건강 최적화(Health Optimization)'라는 새로운 트렌드가 탄생한 순간입니다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "우리는 숫자를 보여주지 않습니다. 어제 먹은 점심이 내 삶에 어떤 의미인지를 해석해 줍니다."
+              </div>
+              <div class="quote-attr">— 조쉬 클레멘테, 레벨스 공동 창업자</div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://c.longblack.co/image/20260310/1773139805a9695b3610ca24bdfd3d505e684c01ce.png" alt="조쉬 클레멘테 창업자">
+            <div class="img-caption">스페이스X 엔지니어 출신으로 2019년 레벨스를 공동 창업한 조쉬 클레멘테.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">02 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — 3 PILLARS OF GROWTH
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PILLARS OF GROWTH</div>
+            <div class="big-headline anim anim-d2">
+              숫자를 넘어 의미로<br><span class="accent">성장 3대 전략</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="timeline anim anim-d3">
+              <div class="tl-item">
+                <div class="tl-year">전략 1</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">제품</span>맥락화 레이어 (Contextualization)</div>
+                  <div class="tl-desc">"160mg/dL"이라는 모호한 수치 대신, "100점 만점의 안정화 점수"로 번역. A/B 테스트 기능으로 직관적 인사이트 제공.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">전략 2</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">세일즈</span>JTBD 기반 고객 정의</div>
+                  <div class="tl-desc">CEO가 수천 통의 전화 인터뷰 진행. 가상의 페르소나 대신 "어떤 문제를 해결하고 싶나요?" 질문으로 핵심 고객 발굴.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">전략 3</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">마케팅</span>전문가 콘텐츠 (SEO)</div>
+                  <div class="tl-desc">의사 검토를 거친 편당 1천만 원짜리 블로그 아티클 제작. 광고비 0원으로 연간 200만 명의 오가닉 검색 유입 달성.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">03 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — CHART
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">DATA ASSET</div>
+        <div class="big-headline anim anim-d2">
+          측정값의 폭발적 누적<br>
+          <span class="accent">독보적 데이터 해자</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="chart-wrap anim anim-d4">
+          <div class="chart-title">레벨스의 누적 혈당 측정 데이터 포인트 (억 개)</div>
+          <canvas id="growthChart" height="150"></canvas>
+          <div class="chart-note">* 개인의 식단, 운동, 수면 등 '행동'과 '혈당'의 상관관계가 포함된 7억 개의 데이터는 레벨스의 거대한 AI 학습 자산이 됩니다.</div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">04 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — CONTEXTUALIZATION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PRINCIPLE 01</div>
+            <div class="big-headline anim anim-d2">
+              숫자가 아니라<br><span class="accent">맥락을 팔아라</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              기존 CGM 기기의 한계는 명확했습니다. 화면에 "140"이라는 숫자가 뜨면 고객은 "그래서 이 숫자가 좋은 건가요?"라고 물었습니다.<br><br>
+              레벨스는 이 숫자를 100점 만점의 '안정화 점수'로 번역했습니다. 연간 건강관리에 1억 원을 쓰던 자산가조차 레벨스 앱을 통해 자신이 즐겨 먹던 케첩이 '설탕 덩어리'였음을 깨달았습니다.
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <img src="https://c.longblack.co/image/20260310/17731398150e73678f4ceb099114a55175e21354c1.png" alt="식단과 수면에 따른 혈당 점수 그래프">
+            <div class="img-caption" style="color:#888">단순 혈당 곡선이 아니라, 내 행동이 점수에 어떤 영향을 미쳤는지 보여주는 맥락화 UI</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">05 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — JTBD
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">PRINCIPLE 02</div>
+        <div class="big-headline anim anim-d2">
+          상상하지 말고<br><span class="accent">진짜 고객에게 물어라</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="strategy-grid anim anim-d4">
+          <div class="strategy-card">
+            <div class="sc-icon">📞</div>
+            <div class="sc-title">수천 통의 직접 통화</div>
+            <div class="sc-body">CEO 샘 코르코스는 책상에 앉아 페르소나를 상상하는 대신, 3년간 직접 고객들에게 전화를 걸어 생생한 목소리를 노션에 누적했습니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">🛠️</div>
+            <div class="sc-title">JTBD 프레임워크</div>
+            <div class="sc-body">"고객은 어떤 임무(Jobs To Be Done)를 달성하려 하는가?" 인터뷰를 통해 '의지(감시 도구)'와 '지식(선생님)'이라는 2가지 핵심 니즈를 발굴했습니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">🎯</div>
+            <div class="sc-title">90% 전환율의 타겟</div>
+            <div class="sc-body">인터뷰 결과 발굴된 '펠로톤을 타며 간헐적 단식을 하는 집단'. 이들에게 레벨스를 제안했을 때 구매 전환율은 무려 90%에 달했습니다.</div>
+          </div>
+          <div class="strategy-card">
+            <div class="sc-icon">👥</div>
+            <div class="sc-title">조직 전체의 언어화</div>
+            <div class="sc-body">모든 통화 기록은 조직 내 공유되어, 제품 개발팀과 마케팅팀 모두가 고객의 언어로 사고하게 만들었습니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">06 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — CONTENT MARKETING
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">PRINCIPLE 03</div>
+        <div class="big-headline anim anim-d2">
+          광고보다 강한 신뢰,<br><span class="accent">전문가 콘텐츠 점령</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-col anim anim-d4">
+          <div class="col-card">
+            <div class="col-num">01</div>
+            <div class="col-title">초고품질 투자</div>
+            <div class="col-desc">
+              단순한 바이럴 기사 대신, 의사 검토를 반드시 거친 심도 깊은 아티클을 제작했습니다. 1편 제작비만 약 700만~1,400만 원이 투입되었습니다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">02</div>
+            <div class="col-title">검색(SEO) 장악</div>
+            <div class="col-desc">
+              '건강한 혈당 가이드' 아티클 한 편이 블로그 유입의 33%를 차지했습니다. 단 3개월 만에 전체 유입의 20%를 오가닉 검색으로 채웠습니다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">03</div>
+            <div class="col-title">광고비 0원</div>
+            <div class="col-desc">
+              신뢰할 수 있는 정보가 쌓이자 유료 광고 없이도 2025년 기준 연간 200만 명이 블로그를 방문하며 최고의 그로스 해킹 채널이 되었습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">07 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — BUSINESS MODEL
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">BUSINESS MODEL</div>
+            <div class="big-headline anim anim-d2">
+              지속 가능한 구독<br>
+              <span class="accent">1개월 관측 + 11개월 관리</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="quote-big anim anim-d4">
+              <div class="q-mark">"</div>
+              <div class="q-text">
+                연 최저 288달러(약 42만원)의 구독 모델. <br><br>
+                첫 달은 CGM을 몸에 부착해 식단과 혈당의 인과관계를 철저히 파악합니다. 남은 11개월은 기기 없이도 100여 개의 다른 생체 지표 앱과 연동해 습관을 관리합니다.
+              </div>
+              <div class="q-attr">초기 체험 투자 → 장기 구독 전환의 '낚시 모델'</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">08 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — AI BUSINESS OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="content-wrapper">
+        <div class="key-takeaway-badge anim anim-d1">KEY TAKEAWAY</div>
+        <div class="section-tag anim anim-d1">AI 신사업 기회</div>
+        <div class="big-headline anim anim-d2">
+          레벨스의 공식을<br>
+          <span class="accent">AI로 자동화</span>하면
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-num">1</div>
+            <div class="opp-icon">🩺</div>
+            <div class="opp-title">AI 헬스케어 맥락화 SaaS</div>
+            <div class="opp-desc">
+              기존 웨어러블 기기(스마트워치 등)의 단순 생체 수치 API를 연동받아, "오늘 운동을 쉬면 내일 피로도가 20% 증가합니다"처럼 의미망을 부여해 주는 구독 결합 B2B 레이어.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">2</div>
+            <div class="opp-icon">🤖</div>
+            <div class="opp-title">JTBD 고객 발굴 챗봇</div>
+            <div class="opp-desc">
+              수천 통의 통화를 대체할 AI 인터뷰어. 고객의 Pain point를 심층 질문하여 전환율 90%에 달하는 핵심 페르소나 군을 자동 분류하는 세일즈 파이프라인.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">3</div>
+            <div class="opp-icon">✍️</div>
+            <div class="opp-title">전문가 콘텐츠 생성 에이전시</div>
+            <div class="opp-desc">
+              의학·법률 등 고도화된 전문 지식이 필요한 블로그 포스팅을 AI가 초안 작성하고, 실제 전문가가 팩트체크만 수행하여 SEO를 장악하는 콘텐츠 B2B 서비스.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" id="slide-9">
+      <div class="bg-watermark">LEVELS</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          데이터는 측정할 때가 아니라<br>
+          내 삶과 연결되어 <span class="accent">해석될 때</span><br>
+          비로소 <span class="accent">팔린다</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">맥락화가 프리미엄을 만든다</div>
+            <div class="lesson-desc">숫자를 보여주는 앱은 레드오션이지만, 그 숫자의 '의미'를 번역해 주는 레이어는 5배의 구독 단가를 정당화합니다.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">02</div>
+            <div class="lesson-title">좁고 깊은 타깃에서 시작하라</div>
+            <div class="lesson-desc">모두를 만족시키는 서비스는 없습니다. 인터뷰를 통해 90%가 전환하는 단 하나의 뾰족한 고객군(JTBD)을 찾아내십시오.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">03</div>
+            <div class="lesson-title">신뢰가 최고의 마케팅이다</div>
+            <div class="lesson-desc">전문성이 담긴 고품질 콘텐츠 1편은 수천만 원의 광고비보다 강력하게 오가닉 유입(SEO)을 견인합니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · LEVELS HEALTH · 롱블랙 2026.03.11</span>
+        <span>AI 신사업 위키 · Wiki-Pages/Longblack-Coffee-Insight</span>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ══ APPENDIX ══ -->
+    <section class="slide" style="background: var(--cream); text-align: center;">
+      <div class="content-wrapper" style="align-items: center; justify-content: center; z-index: 1;">
+        <div class="section-tag anim anim-d1" style="margin-bottom: 16px;">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 56px; margin-bottom: 32px;">
+          더 깊은 <span class="gold">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 0 auto 64px auto;"></div>
+        
+        <div class="anim anim-d4" style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%EB%A0%88%EB%B2%A8%EC%8A%A4-%ED%97%AC%EC%8A%A4-%ED%98%88%EB%8B%B9-%EC%8A%A4%ED%8C%8C%EC%9D%B4%ED%81%AC%EB%A5%BC-%EB%B6%84%EC%84%9D%ED%95%98%EB%8A%94-%EC%95%B1.md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 420px; height: 320px; background: var(--white); border: 2px solid var(--gray-light, #E5E0D8); border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='var(--gold)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='var(--gray-light, #E5E0D8)'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 72px; color: var(--gold); margin-bottom: 24px;"></i>
+            <span style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">위키 원문 읽기</span>
+            <span style="font-size: 20px; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">레벨스-헬스-혈당-스파이크를-분석하는-앱</span>
+          </a>
+
+          <!-- YouTube Links List -->
+          <div style="display: flex; flex-direction: column; width: 600px; background: var(--white); border: 2px solid var(--gray-lt, #E5E0D8); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left;">
+            <div style="display: flex; align-items: center; margin-bottom: 20px; color: #C0392B;">
+              <i class="ph-duotone ph-youtube-logo" style="font-size: 32px; margin-right: 12px;"></i>
+              <span style="font-size: 24px; font-weight: 800;">추천 유튜브 영상</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              
+            <a href="https://www.youtube.com/watch?v=jpBuzAJCOl4" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/jpBuzAJCOl4/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Monitoring Blood Sugar Levels & What is a GLUCOSE SPIKE? | Metabolic Health Basics Dr. Casey Means</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">Levels | Health, Metabolism & Human Performance • 4년 전</span>
+              </div>
+            </a>
+            <a href="https://www.youtube.com/watch?v=_FCnUVedI_w" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/_FCnUVedI_w/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Metabolic Health Basics: Monitoring Blood Glucose Levels & What is a Low Glucose? | Dr. Casey Means</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">Levels | Health, Metabolism & Human Performance • 4년 전</span>
+              </div>
+            </a>
+            <a href="https://www.youtube.com/watch?v=5kuLRzfyuCc" target="_blank" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 16px 20px; background: var(--bg-alt, #f9f9f9); border-radius: 12px; text-decoration: none; color: var(--black); transition: all 0.2s;" onmouseover="this.style.background='#ffebee'; this.style.color='#C0392B';" onmouseout="this.style.background='var(--bg-alt, #f9f9f9)'; this.style.color='var(--black)';">
+              <img src="https://img.youtube.com/vi/5kuLRzfyuCc/mqdefault.jpg" style="width: 144px; height: 81px; object-fit: cover; border-radius: 6px; margin-right: 20px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                <span style="font-size: 22px; font-weight: 600; text-align: left; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px;">Pros & Cons of Tracking Your Blood Sugar | Levels 1-Year Review</span>
+                <span style="font-size: 16px; color: #888; text-align: left;">Kevin Jubbal, M.D. • 3년 전</span>
+              </div>
+            </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /deck -->
+</div><!-- /deck-container -->
+
+<script>
+// ─── SLIDE NAVIGATION LOGIC ───
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const navBar = document.getElementById('navBar');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+
+// Generate Dots
+const startNum = document.createElement('div');
+startNum.className = 'nav-num';
+startNum.textContent = '1';
+navBar.appendChild(startNum);
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  navBar.appendChild(dot);
+}
+
+const endNum = document.createElement('div');
+endNum.className = 'nav-num';
+endNum.textContent = totalSlides.toString();
+navBar.appendChild(endNum);
+const dots = document.querySelectorAll('.nav-dot');
+
+function updateNav() {
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+  slides.forEach((slide, idx) => {
+    if (idx === currentSlide) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  });
+
+  btnPrev.style.opacity = currentSlide === 0 ? '0.3' : '1';
+  btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+  
+  btnNext.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+  btnNext.style.pointerEvents = currentSlide === totalSlides - 1 ? 'none' : 'auto';
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= totalSlides) return;
+  currentSlide = idx;
+  const translateX = -(currentSlide * 100);
+  deck.style.transform = `translateX(${translateX}vw)`;
+  updateNav();
+}
+
+function prevSlide() { goToSlide(currentSlide - 1); }
+function nextSlide() { goToSlide(currentSlide + 1); }
+
+// ─── KEYBOARD & WHEEL EVENT ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    prevSlide();
+  }
+});
+
+let isScrolling = false;
+window.addEventListener('wheel', (e) => {
+  if (isScrolling) return;
+  
+  if (e.deltaY > 50 || e.deltaX > 50) {
+    isScrolling = true;
+    nextSlide();
+    setTimeout(() => isScrolling = false, 800);
+  } else if (e.deltaY < -50 || e.deltaX < -50) {
+    isScrolling = true;
+    prevSlide();
+    setTimeout(() => isScrolling = false, 800);
+  }
+});
+
+// ─── CHART 04: GROWTH LINE ───
+const ctx4 = document.getElementById('growthChart').getContext('2d');
+new Chart(ctx4, {
+  type: 'line',
+  data: {
+    labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+    datasets: [{
+      label: '누적 측정 데이터 (억 개)',
+      data: [0.1, 0.5, 1.5, 3.2, 5.0, 7.0],
+      borderColor: '#2E90FA',
+      backgroundColor: 'rgba(46, 144, 250, 0.1)',
+      borderWidth: 3,
+      pointBackgroundColor: '#2E90FA',
+      pointRadius: 6,
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => `데이터: ${ctx.raw}억 개` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Pretendard', size: 13 }, color: '#888' } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { family: 'Pretendard', size: 12 }, color: '#888', callback: v => v + '억' } }
+    }
+  }
+});
+
+// 초기 설정
+updateNav();
+</script>
+</body>
+</html>

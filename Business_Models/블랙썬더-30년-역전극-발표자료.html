@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>블랙썬더 — 30년 역전극의 브랜드 전략</title>
+<!-- 폰트 적용: Pretendard -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Phosphor Icons CDN -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  :root {
+    --black: #111111;
+    --gold: #B8972A;
+    --gold-light: #D4AE4A;
+    --cream: #F7F3EE;
+    --white: #FFFFFF;
+    --gray: #888888;
+    --gray-light: #E5E0D8;
+    --thunder-red: #C0392B;
+    --thunder-dark: #1a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: #1a1a1a;
+    color: var(--black);
+    overflow: hidden; /* 가로, 세로 스크롤 방지 */
+  }
+
+  /* ─── SLIDE WRAPPER (가로 스크롤 구현) ─── */
+  .deck-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+          .nav-bar {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    z-index: 999;
+    filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+  }
+  .nav-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #aaa;
+    margin: 0 8px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .nav-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; cursor: pointer; transition: all 0.3s;
+    border: 3px solid #888;
+  }
+  .nav-dot:hover { 
+    border-color: #ccc;
+  }
+  .nav-dot.active { 
+    background: var(--thunder-red); 
+    border: none;
+    width: 36px; height: 12px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
+
+.nav-arrows {
+    position: fixed;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.1);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(184,151,42,0.3);
+  }
+  .nav-arrow:hover {
+    background: var(--gold);
+    color: var(--white);
+    transform: scale(1.1);
+  }
+
+  /* ─── COMMON TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 32px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(42px, 5.5vw, 78px);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--black);
+    word-break: keep-all;
+  }
+  .big-headline .gold { color: var(--gold); }
+  .slide-divider {
+    width: 48px; height: 4px;
+    background: var(--gold);
+    margin: 32px 0;
+  }
+  .body-text {
+    font-size: 21px;
+    line-height: 1.75;
+    color: #333;
+    max-width: 700px;
+    word-break: keep-all;
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 64px 80px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    width: 100%;
+  }
+  .col-text { flex: 1; min-width: 400px; }
+  .col-img { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-radius: 8px;
+  }
+  .img-caption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    max-width: 80%;
+    word-break: keep-all;
+  }
+
+  /* ─── SLIDE 01: COVER ─── */
+  .slide-01 { background: var(--cream); }
+  .s01-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .s01-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+  .s01-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--black);
+    margin-bottom: 24px;
+    word-break: keep-all;
+  }
+  .s01-headline .gold { color: var(--gold); }
+  .s01-sub {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #444;
+    font-weight: 500;
+    margin-bottom: 60px;
+  }
+  .s01-stat-row { display: flex; gap: 56px; margin-top: 40px; }
+  .s01-stat { text-align: left; }
+  .s01-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .s01-stat-label {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  .s01-hero-img {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45%;
+    max-width: 600px;
+    z-index: 0;
+  }
+  .s01-hero-img img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: -20px 20px 60px rgba(0,0,0,0.1);
+  }
+
+  /* ─── SLIDE 02: WHAT HAPPENED ─── */
+  .slide-02 { background: var(--cream); }
+  .highlight-box {
+    background: var(--black);
+    color: var(--cream);
+    padding: 32px 40px;
+    border-left: 5px solid var(--gold);
+    margin-top: 40px;
+    max-width: 700px;
+  }
+  .highlight-box .quote { font-size: 19px; font-weight: 500; line-height: 1.7; color: #ddd; word-break: keep-all; }
+  .highlight-box .quote-attr { font-size: 13px; color: var(--gold); margin-top: 16px; letter-spacing: 0.1em; }
+
+  /* ─── SLIDE 03: TIMELINE ─── */
+  .slide-03 { background: var(--black); color: var(--cream); }
+  .slide-03 .big-headline { color: var(--cream); }
+  .timeline { margin-top: 40px; position: relative; padding-left: 0; }
+  .timeline::before { content: ''; position: absolute; left: 80px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--gold), transparent); }
+  .tl-item { display: flex; gap: 0; margin-bottom: 32px; align-items: flex-start; position: relative; }
+  .tl-year { width: 80px; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--gold); flex-shrink: 0; padding-top: 2px; }
+  .tl-dot { width: 14px; height: 14px; background: var(--gold); border-radius: 50%; margin: 5px 24px 0 -7px; flex-shrink: 0; z-index: 1; }
+  .tl-title { font-size: 18px; font-weight: 700; color: var(--cream); margin-bottom: 6px; }
+  .tl-desc { font-size: 15px; color: #aaa; line-height: 1.6; word-break: keep-all; }
+  .tl-badge { display: inline-block; background: var(--gold); color: var(--black); font-size: 11px; font-weight: 800; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 4px; margin-right: 10px; }
+
+  /* ─── SLIDE 04: CHART ─── */
+  .slide-04 { background: var(--cream); }
+  .chart-wrap { margin-top: 30px; background: var(--white); border: 1px solid var(--gray-light); padding: 40px; max-width: 800px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  .chart-title { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; margin-bottom: 24px; }
+  .chart-note { font-size: 13px; color: var(--gray); margin-top: 16px; font-style: italic; }
+
+  /* ─── SLIDE 05: WHY IT MATTERS ─── */
+  .slide-05 { background: var(--cream); }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 48px; }
+  .col-card { border-top: 4px solid var(--gold); padding-top: 28px; }
+  .col-num { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 16px; }
+  .col-title { font-size: 19px; font-weight: 800; color: var(--black); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .col-desc { font-size: 16px; color: #555; line-height: 1.7; word-break: keep-all; }
+
+  /* ─── SLIDE 06: DARK STRATEGY ─── */
+  .slide-06 { background: var(--black); color: var(--cream); }
+  .slide-06 .big-headline { color: var(--cream); }
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+  .strategy-card { background: #1e1e1e; border: 1px solid #333; border-left: 4px solid var(--gold); padding: 32px; transition: all 0.3s; border-radius: 4px; }
+  .strategy-card:hover { border-left-color: var(--gold-light); background: #252525; transform: translateY(-4px); }
+  .sc-icon { font-size: 32px; margin-bottom: 16px; }
+  .sc-title { font-size: 18px; font-weight: 700; color: var(--gold); margin-bottom: 12px; letter-spacing: 0.05em; word-break: keep-all; }
+  .sc-body { font-size: 15px; color: #aaa; line-height: 1.7; word-break: keep-all; }
+  .sc-result { margin-top: 16px; font-size: 14px; color: #ddd; border-top: 1px solid #333; padding-top: 16px; font-weight: 500; }
+  .sc-result strong { color: var(--gold); font-weight: 800; }
+  .s06-img-col { flex: 0.8; display: flex; flex-direction: column; gap: 24px; align-items: center; justify-content: center; }
+  .s06-img-col img { width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+  /* ─── SLIDE 07: PREMIUM ─── */
+  .slide-07 { background: var(--cream); }
+  .premium-table { border-top: 3px solid var(--black); margin-top: 24px; }
+  .pt-row { display: flex; padding: 20px 0; border-bottom: 1px solid var(--gray-light); font-size: 17px; align-items: center; }
+  .pt-label { width: 140px; color: var(--gray); font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .pt-val { font-weight: 700; color: var(--black); }
+  .pt-val.gold { color: var(--gold); font-size: 22px; }
+
+  /* ─── SLIDE 08: LEADER ─── */
+  .slide-08 { background: var(--black); color: var(--cream); }
+  .slide-08 .big-headline { color: var(--cream); }
+  .quote-big { margin-top: 32px; max-width: 700px; }
+  .quote-big .q-mark { font-family: 'Playfair Display', serif; font-size: 96px; color: var(--gold); line-height: 0.6; margin-bottom: 8px; }
+  .quote-big .q-text { font-size: 26px; line-height: 1.6; color: var(--cream); font-weight: 500; word-break: keep-all; }
+  .quote-big .q-attr { margin-top: 24px; font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; }
+
+  /* ─── SLIDE 09: AI OPPORTUNITY ─── */
+  .slide-09 { background: var(--cream); }
+  .opp-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; margin-top: 48px; }
+  .opp-card { background: var(--black); color: var(--cream); padding: 40px 32px; position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 16px 32px rgba(0,0,0,0.1); }
+  .opp-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--gold); }
+  .opp-num { font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900; color: var(--gold); opacity: 0.2; position: absolute; right: 24px; top: 16px; line-height: 1; }
+  .opp-icon { font-size: 32px; margin-bottom: 20px; }
+  .opp-title { font-size: 18px; font-weight: 800; color: var(--gold); margin-bottom: 16px; line-height: 1.4; word-break: keep-all; }
+  .opp-desc { font-size: 15px; color: #ccc; line-height: 1.7; word-break: keep-all; font-weight: 400; }
+  .feasibility { display: flex; align-items: center; gap: 4px; margin-top: 24px; border-top: 1px solid #333; padding-top: 16px; }
+  .star { color: var(--gold); font-size: 14px; }
+  .star.empty { color: #555; }
+
+  /* ─── SLIDE 10: CONCLUSION ─── */
+  .slide-10 { background: var(--black); color: var(--cream); position: relative; }
+  .conclusion-headline { font-family: 'Noto Serif KR', serif; font-size: clamp(40px, 5.5vw, 72px); font-weight: 900; line-height: 1.15; color: var(--cream); max-width: 900px; margin: 32px 0; word-break: keep-all; }
+  .conclusion-headline .gold { color: var(--gold); }
+  .three-lessons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 56px; }
+  .lesson { border-top: 3px solid #333; padding-top: 24px; }
+  .lesson-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 12px; }
+  .lesson-title { font-size: 18px; font-weight: 800; color: var(--cream); margin-bottom: 12px; line-height: 1.4; word-break: keep-all; }
+  .lesson-desc { font-size: 15px; color: #999; line-height: 1.7; word-break: keep-all; }
+  .source-note { position: absolute; bottom: 32px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #666; letter-spacing: 0.1em; border-top: 1px solid #222; padding-top: 16px; }
+  .bg-thunder { position: absolute; right: -100px; bottom: -100px; font-size: 450px; opacity: 0.03; color: var(--gold); line-height: 1; pointer-events: none; }
+  .slide-num { position: absolute; bottom: 44px; right: 80px; font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; color: #666; letter-spacing: 0.15em; }
+
+  /* ─── ANIMATIONS ─── */
+  .anim { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+  .slide.active .anim { opacity: 1; transform: translateY(0); }
+  .slide.active .anim-d1 { transition-delay: 0.1s; }
+  .slide.active .anim-d2 { transition-delay: 0.25s; }
+  .slide.active .anim-d3 { transition-delay: 0.4s; }
+  .slide.active .anim-d4 { transition-delay: 0.55s; }
+  .slide.active .anim-d5 { transition-delay: 0.7s; }
+
+  .key-takeaway-badge {
+    position: absolute;
+    top: 64px;
+    right: 80px;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck-container">
+  <!-- NAV ARROWS -->
+  <div class="nav-arrows">
+    <div class="nav-arrow" id="btnPrev" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></div>
+    <div class="nav-arrow" id="btnNext" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></div>
+  </div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-bar" id="navBar">
+    <!-- JS에서 생성됨 -->
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 01 — COVER
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-01 active" id="slide-0">
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="s01-brand anim anim-d1">LONGBLACK × AI 신사업 위키</div>
+        <div class="s01-tag anim anim-d1">BUSINESS MODELS · F&B BRAND STRATEGY</div>
+        <div class="s01-headline anim anim-d2">
+          40엔짜리<br>
+          <span class="gold">싸구려 초코바</span>가<br>
+          1위가 된 방법
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="s01-sub anim anim-d3">
+          블랙썬더 — 30년 역전극의 브랜드 전략<br>
+          하루 100개도 안 팔리던 초코바가<br>연 <strong>2억 개</strong> 판매 1위가 된 3가지 전환점
+        </div>
+        <div class="s01-stat-row anim anim-d4">
+          <div class="s01-stat">
+            <div class="s01-stat-num">30년</div>
+            <div class="s01-stat-label">역전극 기간</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">2억</div>
+            <div class="s01-stat-label">연간 판매량 (2024)</div>
+          </div>
+          <div class="s01-stat">
+            <div class="s01-stat-num">40엔</div>
+            <div class="s01-stat-label">판매가 (약 380원)</div>
+          </div>
+        </div>
+      </div>
+      <div class="s01-hero-img anim anim-d4">
+        <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/1739941765a3e9add4d388b841e7beece6ce380817.jpeg" alt="블랙썬더 오리지널 제품">
+      </div>
+      <div class="slide-num" style="color:#555">01 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 02 — WHAT HAPPENED
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-02" id="slide-1">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">WHAT HAPPENED</div>
+            <div class="big-headline anim anim-d2">
+              팔리지 않는 건<br>
+              맛의 문제가 아니라<br>
+              <span class="gold">타겟팅의 문제</span>였다
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              1994년 출시된 블랙썬더는 하루 100개도 팔리지 못해 생산 중단 위기를 맞았다. 아이를 타겟으로 했지만,제로 제품을 더 자주 집어드는 건 '가성비 포만감'을 찾는 중고생과 대학생이었다.<br><br>
+              영업사원 모리조노는 이 사실을 현장에서 직접 목격하고 도쿄 본사 사장실로 뛰쳐갔다.
+            </div>
+            <div class="highlight-box anim anim-d4">
+              <div class="quote">
+                "생산 중단이라니, 진심이십니까?<br>
+                블랙썬더는 맛있고, 미래에도 잘 팔릴 상품입니다!"
+              </div>
+              <div class="quote-attr">— 모리조노, 유라쿠제과 영업사원 · 1994년 사장실에서</div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/1739942196893229049df09d4291acc3ddd5deeae6.png" alt="모리조노 영업사원의 1994년 편지">
+            <div class="img-caption">유라쿠제과의 영업사원 모리조노 씨가 1994년 딸에게 쓴 편지.<br>"생산 중단이 매우 짜증 난다"고 적혀있다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">02 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 03 — TIMELINE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-03" id="slide-2">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">30-YEAR JOURNEY</div>
+            <div class="big-headline anim anim-d2">
+              3번의 위기,<br><span class="gold">3번의 전환</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="timeline anim anim-d3">
+              <div class="tl-item">
+                <div class="tl-year">1994</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">위기①</span>생산 중단 위기</div>
+                  <div class="tl-desc">하루 100개 미달. 비싸고 싸구려 포장이라는 샌드위치 신세.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">1995</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">전환①</span>타겟 재정의 (모리조노)</div>
+                  <div class="tl-desc">아이들 타겟 포기 → 대학 매점 50곳 납품. 성인 간식으로 변신.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">2010</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">위기②</span>브랜드 고갈</div>
+                  <div class="tl-desc">매출 방어를 위해 10종의 신상품 남발. 피로도 누적으로 성장 둔화.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">2010</div>
+                <div class="tl-dot"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge">전환②</span>비왕도 마케팅 (3대 사장)</div>
+                  <div class="tl-desc">사장 스스로 마케터가 되어 B급 감성과 화제성 위주로 체질 개선.</div>
+                </div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-year">2020</div>
+                <div class="tl-dot" style="background:var(--gold-light);box-shadow:0 0 0 4px rgba(184,151,42,0.2)"></div>
+                <div>
+                  <div class="tl-title"><span class="tl-badge" style="background:var(--gold-light)">전환③</span>살짝 프리미엄 (+10엔)</div>
+                  <div class="tl-desc">스테디셀러 2종에 집중. 행복한 버터맛 1년 390만 개 메가 히트.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/17399478021ac44ef74b443c15c4a0f4c4ee7bc46f.png" alt="2005년 이후 매출 급상승 그래프">
+            <div class="img-caption">2005년 대학생과 스포츠선수 입소문 이후 급상승한 매출 곡선</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">03 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 04 — CHART
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-04" id="slide-3">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">DATA VISUALIZATION</div>
+        <div class="big-headline anim anim-d2">
+          성장의 변곡점<br>
+          <span class="gold">세 번의 역전 그래프</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="chart-wrap anim anim-d4">
+          <div class="chart-title">블랙썬더 연간 출하량 지수 추정 (1994=1 기준)</div>
+          <canvas id="growthChart" height="200"></canvas>
+          <div class="chart-note">* 유라쿠제과 2013년 마케팅 자료 및 언론 보도 추산치 기반</div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">04 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 05 — WHY IT MATTERS
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-05" id="slide-4">
+      <div class="content-wrapper">
+        <div class="section-tag anim anim-d1">WHY IT MATTERS</div>
+        <div class="big-headline anim anim-d2">
+          역전극을 만든<br><span class="gold">3가지 전환점</span>
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-col anim anim-d4">
+          <div class="col-card">
+            <div class="col-num">01</div>
+            <div class="col-title">타겟 재정의<br>— 현장이 전략을 이긴다</div>
+            <div class="col-desc">
+              영업사원의 현장 관찰 하나가 브랜드를 구원했다. 타겟을 아이에서 '대학생/청년'으로 바꾸자 판매가 폭발했다.<br><br>
+              <strong style="color:var(--gold)">Lesson:</strong> 신제품 실패의 80%는 제품이 아닌 포지셔닝(타겟팅)의 문제다.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">02</div>
+            <div class="col-title">비왕도 마케팅<br>— 화제의 씨앗을 퍼뜨려라</div>
+            <div class="col-desc">
+              예산이 많이 드는 TV 광고(왕도) 대신 우동 가게 튀김, 멸치 봉투 한정판 등 이종 결합으로 SNS 화제성(비왕도)을 창출했다.<br><br>
+              <strong style="color:var(--gold)">Lesson:</strong> 자금이 부족하다면 기성 규칙을 깨는 B급 감성을 찌르라.
+            </div>
+          </div>
+          <div class="col-card">
+            <div class="col-num">03</div>
+            <div class="col-title">살짝 프리미엄<br>— 10엔의 경험 격차</div>
+            <div class="col-desc">
+              고작 10엔(약 100원)을 올리고 발효버터와 암염을 추가해 '경험'만 프리미엄으로 포장했다.<br><br>
+              <strong style="color:var(--gold)">Lesson:</strong> 대중 제품의 프리미엄은 가격 인상이 아니라 '색다른 풍미'로 정의해야 한다.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">05 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 06 — DARK STRATEGY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-06" id="slide-5">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">THE SHIFT</div>
+            <div class="big-headline anim anim-d2">
+              <span class="gold">비왕도(非王道)</span><br>마케팅 4대 사례
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="strategy-grid anim anim-d4">
+              <div class="strategy-card">
+                <div class="sc-title">🐟 멸치 봉투 (2013)</div>
+                <div class="sc-body">2.14 발렌타인데이가 '멸치의 날'과 겹친다는 점 착안. 육수용 멸치 팩에 초코바를 담아 '의리 초콜릿' 대중화.</div>
+              </div>
+              <div class="strategy-card">
+                <div class="sc-title">🍜 우동 가게 튀김 (2019)</div>
+                <div class="sc-body">신주쿠 우동 체인에서 '발렌타인용 블랙썬더 덴푸라(튀김)'를 하루 1만 명에게 판매해 바이럴 폭발.</div>
+              </div>
+              <div class="strategy-card">
+                <div class="sc-title">🍡 화과자 앙금 (2017)</div>
+                <div class="sc-body">나고야 70년 전통 '오카메도'와 협업해 초코바를 품은 앙금말이빵 출시. 1년 반 만에 100만 개 돌파.</div>
+              </div>
+              <div class="strategy-card">
+                <div class="sc-title">🍦 맥플러리 침투 (2017)</div>
+                <div class="sc-body">맥도날드, 패밀리마트의 레거시 제품(아이스크림, 에클레어) 속에 들어가 자연스러운 브랜드 경험 확장.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img s06-img-col anim anim-d3">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/173994747914d26587fcbe485ec76d2026daa49006.jpeg" alt="우동 체인에서 판매한 블랙썬더 튀김">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/1739944642eadb85e08a807de5db0f72d31112f492.jpeg" alt="오가메도 블랙썬더 앙금말이빵">
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">06 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 07 — PREMIUM STRATEGY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-07" id="slide-6">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">PREMIUM LADDER</div>
+            <div class="big-headline anim anim-d2">
+              +10엔의 마법<br>
+              <span class="gold">살짝 프리미엄 전략</span>
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="body-text anim anim-d3">
+              블랙썬더가 선택한 라인업 최적화 방식은 단 10엔(약 100원)을 올린 '살짝 프리미엄' 2종으로 집중하는 것이었다.<br><br>
+              프랑스산 발효버터와 암염을 소량 첨가해 가격 저항을 없애고 풍미만 극대화한 이 전략은 엄청난 메가 히트를 기록했다.
+            </div>
+            <div class="premium-table anim anim-d4">
+              <div class="pt-row">
+                <div class="pt-label">오리지널</div>
+                <div class="pt-val">블랙썬더 (40엔)</div>
+              </div>
+              <div class="pt-row">
+                <div class="pt-label">프리미엄 V1</div>
+                <div class="pt-val">행복한 버터맛 (<span class="gold">50엔</span>) → 1년 <strong class="gold">390만 개</strong> 판매</div>
+              </div>
+              <div class="pt-row">
+                <div class="pt-label">프리미엄 V2</div>
+                <div class="pt-val">지복의 버터맛 (<span class="gold">50엔</span>) → 누적 <strong class="gold">1000만 개</strong> 판매</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d4" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/1739947225d4974adc2ced8117321957df817ef122.jpeg" alt="하나에 50엔인 프리미엄 블랙썬더 컬렉션">
+            <div class="img-caption">발효버터나 암염을 넣어 풍미를 살린 50엔짜리 프리미엄 라인업</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">07 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 08 — LEADER CULTURE
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-08" id="slide-7">
+      <div class="content-wrapper">
+        <div class="two-col-layout">
+          <div class="col-text">
+            <div class="section-tag anim anim-d1">CULTURE</div>
+            <div class="big-headline anim anim-d2">
+              "나부터<br><span class="gold">공짜 재료</span>가 되겠다"
+            </div>
+            <div class="slide-divider anim anim-d3"></div>
+            <div class="quote-big anim anim-d4">
+              <div class="q-mark">"</div>
+              <div class="q-text">
+                제가 직접 광고에 나오거나 행사 도우미로 나설 때 효과가 있다면 꼭 써달라고 말합니다. 
+                '나는 공짜 재료'라 늘 강조하죠.<br><br>
+                사장실도 없습니다. 직원이 샘플을 올려두면 그냥 '그거 뭐야?' 묻고 바로 결정합니다.
+              </div>
+              <div class="q-attr">— 가와이 타츠노부 · 3대 CEO</div>
+            </div>
+          </div>
+          <div class="col-img anim anim-d3" style="flex-direction: column;">
+            <img src="https://longblack-contens.s3.ap-northeast-2.amazonaws.com/image/20250219/1739946816c5e7cf3795bbadd990956a988bc72ec3.jpeg" alt="마케팅팀과 일하고 있는 가와이 타츠노부 사장">
+            <div class="img-caption">15년째 사장실 없이 마케팅팀과 함께 책상을 쓰는 타츠노부 사장.<br>직원들의 참신한 아이디어에 가장 먼저 반응해 준다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">08 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 09 — AI BUSINESS OPPORTUNITY
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-09" id="slide-8">
+      <div class="content-wrapper">
+        <div class="key-takeaway-badge anim anim-d1">KEY TAKEAWAY</div>
+        <div class="section-tag anim anim-d1">AI 신사업 기회</div>
+        <div class="big-headline anim anim-d2">
+          블랙썬더 전략을<br>
+          <span class="gold">AI로 자동화</span>하면
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="opp-grid anim anim-d4">
+          <div class="opp-card">
+            <div class="opp-num">1</div>
+            <div class="opp-icon">🎯</div>
+            <div class="opp-title">AI 타겟 재정의 자동화 SaaS</div>
+            <div class="opp-desc">
+              POS 데이터와 소셜 청취(Social Listening)를 AI로 분석해 제품의 '진짜 팬층'을 역으로 발굴하는 시스템.<br><br>모리조노의 눈썰미를 데이터로 대체하는 BI 서비스.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">2</div>
+            <div class="opp-icon">💡</div>
+            <div class="opp-title">비왕도 마케팅 에이전트</div>
+            <div class="opp-desc">
+              예산 부족을 타개할 이종 결합 마케팅 아이디어(초코바×멸치×우동)를 쏟아내는 AI 브레인스토밍 봇.<br><br>최소 예산으로 최대 화제성을 뽑아내는 컨설팅 자동화.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+          <div class="opp-card">
+            <div class="opp-num">3</div>
+            <div class="opp-icon">💰</div>
+            <div class="opp-title">'살짝 프리미엄' 상품 기획 AI</div>
+            <div class="opp-desc">
+              단가를 최소로 높이면서 소비자 리뷰의 감성적 '결핍 포인트'를 채워주는 원재료(암염, 발효버터 등) 배합을 제안하는 제품 라인업 설계 AI.
+            </div>
+            <div class="feasibility">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star empty">★</span><span class="star empty">★</span>
+              <span style="font-size:12px;color:#888;margin-left:6px;font-weight:600">Feasibility</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SLIDE 10 — CONCLUSION
+    ══════════════════════════════════════════════ -->
+    <section class="slide slide-10" id="slide-9">
+      <div class="bg-thunder">⚡</div>
+      <div class="content-wrapper" style="position: relative; z-index: 1;">
+        <div class="section-tag anim anim-d1">CONCLUSION</div>
+        <div class="conclusion-headline anim anim-d2">
+          브랜드의 생사는<br>
+          <span class="gold">포지셔닝</span>이 결정하고,<br>
+          장수는 사장이<br>
+          <span class="gold">'공짜 재료'</span>가 될<br>
+          용기에서 나온다
+        </div>
+        <div class="slide-divider anim anim-d3"></div>
+        <div class="three-lessons anim anim-d4">
+          <div class="lesson">
+            <div class="lesson-num">01</div>
+            <div class="lesson-title">현장 관찰 하나가 전략을 이긴다</div>
+            <div class="lesson-desc">마케팅 데이터보다 매점 카운터의 눈썰미가 더 날카로울 수 있다. 안 팔리면 타겟부터 의심하라.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">02</div>
+            <div class="lesson-title">기성 문법을 부수는 비왕도 전략</div>
+            <div class="lesson-desc">자금력이 없다면 B급 화제성만이 살 길이다. 어울리지 않는 것을 섞어라.</div>
+          </div>
+          <div class="lesson">
+            <div class="lesson-num">03</div>
+            <div class="lesson-title">수평적 조직이 뾰족함을 지킨다</div>
+            <div class="lesson-desc">기획서 결재가 늘어질수록 아이디어는 둥글게 깎인다. 사장실을 없애고 즉시 반응하라.</div>
+          </div>
+        </div>
+      </div>
+      <div class="source-note anim anim-d5">
+        <span>SOURCE · LONGBLACK.CO/NOTE · 유라쿠제과(有楽製菓) · 롱블랙 2025.02.19</span>
+        <span>AI 신사업 위키 · Wiki-Pages/Longblack-Coffee-Insight</span>
+      </div>
+      <div class="slide-num" style="color:#555">09 / 09</div>
+    </section>
+
+    <!-- ══ APPENDIX ══ -->
+    <section class="slide" style="background: var(--cream); text-align: center;">
+      <div class="content-wrapper" style="align-items: center; justify-content: center; z-index: 1;">
+        <div class="section-tag anim anim-d1" style="margin-bottom: 16px;">APPENDIX</div>
+        <div class="big-headline anim anim-d2" style="font-size: 56px; margin-bottom: 32px;">
+          더 깊은 <span class="gold">인사이트</span>를 원하신다면
+        </div>
+        <div class="slide-divider anim anim-d3" style="margin: 0 auto 64px auto;"></div>
+        
+        <div class="anim anim-d4" style="display: flex; gap: 36px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <!-- 1. Wiki Note Link -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages/Longblack-Coffee-Insight/%E2%9C%85%EB%B8%94%EB%9E%99%EC%8D%AC%EB%8D%94-%EC%8B%B8%EA%B5%AC%EB%A0%A4-%EC%B7%A8%EA%B8%89-%EC%B4%88%EC%BD%94%EB%B0%94-30%EB%85%84%EB%A7%8C%EC%97%90-%ED%8C%90%EB%A7%A4-1%EC%9C%84.md" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 420px; height: 320px; background: var(--white); border: 2px solid var(--gray-light, #E5E0D8); border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='var(--gold)'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='var(--gray-light, #E5E0D8)'; this.style.transform='translateY(0)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 72px; color: var(--gold); margin-bottom: 24px;"></i>
+            <span style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">위키 원문 읽기</span>
+            <span style="font-size: 20px; color: #888; padding: 0 20px; text-align: center; line-height: 1.4; word-break: keep-all;">블랙썬더-싸구려-취급-초코바-30년만에-판매-1위</span>
+          </a>
+
+          <!-- YouTube Link -->
+          <a href="https://www.youtube.com/watch?v=JNOXeOkZbnc" target="_blank" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 450px; height: 320px; background: var(--white); border: 2px solid var(--gray-lt, #E5E0D8); border-radius: 16px; text-decoration: none; color: var(--black); transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" onmouseover="this.style.borderColor='#C0392B'; this.style.transform='translateY(-5px)';" onmouseout="this.style.borderColor='var(--gray-lt, #E5E0D8)'; this.style.transform='translateY(0)';">
+            <img src="https://img.youtube.com/vi/JNOXeOkZbnc/mqdefault.jpg" style="width: 240px; height: 135px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <span style="font-size: 24px; font-weight: 800; margin-bottom: 12px; padding: 0 20px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; text-align: center; line-height: 1.4;">일본에서 가장 많이 팔리는 30엔짜리 가성비 초코바 블랙썬더의 성공 비밀</span>
+            <span style="font-size: 18px; color: #888; text-align: center;">일본식품비밀노트 • 2025.01.07</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div><!-- /deck -->
+</div><!-- /deck-container -->
+
+<script>
+// ─── SLIDE NAVIGATION LOGIC ───
+const deck = document.getElementById('deck');
+const slides = document.querySelectorAll('.slide');
+const navBar = document.getElementById('navBar');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+
+// Generate Dots
+const startNum = document.createElement('div');
+startNum.className = 'nav-num';
+startNum.textContent = '1';
+navBar.appendChild(startNum);
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  navBar.appendChild(dot);
+}
+
+const endNum = document.createElement('div');
+endNum.className = 'nav-num';
+endNum.textContent = totalSlides.toString();
+navBar.appendChild(endNum);
+const dots = document.querySelectorAll('.nav-dot');
+
+function updateNav() {
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+  slides.forEach((slide, idx) => {
+    if (idx === currentSlide) {
+      slide.classList.add('active');
+    } else {
+      slide.classList.remove('active');
+    }
+  });
+
+  // 화살표 상태 업데이트
+  btnPrev.style.opacity = currentSlide === 0 ? '0.3' : '1';
+  btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+  
+  btnNext.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
+  btnNext.style.pointerEvents = currentSlide === totalSlides - 1 ? 'none' : 'auto';
+}
+
+function goToSlide(idx) {
+  if (idx < 0 || idx >= totalSlides) return;
+  currentSlide = idx;
+  const translateX = -(currentSlide * 100);
+  deck.style.transform = `translateX(${translateX}vw)`;
+  updateNav();
+}
+
+function prevSlide() { goToSlide(currentSlide - 1); }
+function nextSlide() { goToSlide(currentSlide + 1); }
+
+// ─── KEYBOARD & WHEEL EVENT ───
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    prevSlide();
+  }
+});
+
+let isScrolling = false;
+window.addEventListener('wheel', (e) => {
+  if (isScrolling) return;
+  
+  if (e.deltaY > 50 || e.deltaX > 50) {
+    isScrolling = true;
+    nextSlide();
+    setTimeout(() => isScrolling = false, 800);
+  } else if (e.deltaY < -50 || e.deltaX < -50) {
+    isScrolling = true;
+    prevSlide();
+    setTimeout(() => isScrolling = false, 800);
+  }
+});
+
+// ─── CHART 04: GROWTH LINE ───
+const ctx4 = document.getElementById('growthChart').getContext('2d');
+new Chart(ctx4, {
+  type: 'line',
+  data: {
+    labels: ['1994','1995','1997','2000','2003','2005','2007','2009','2011','2013','2015','2017','2019','2021','2024'],
+    datasets: [{
+      label: '출하량 지수',
+      data: [1, 0.8, 1.2, 1.8, 2.5, 4, 6.5, 8, 10, 12, 15, 18, 22, 28, 38],
+      borderColor: '#B8972A',
+      backgroundColor: 'rgba(184,151,42,0.08)',
+      borderWidth: 3,
+      pointBackgroundColor: '#B8972A',
+      pointRadius: [5,5,3,3,3,8,3,3,3,8,3,5,5,8,10],
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => `출하량 지수: ${ctx.raw}x` } }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { family: 'Pretendard', size: 12 }, color: '#888' } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { family: 'Pretendard', size: 12 }, color: '#888', callback: v => v + 'x' } }
+    }
+  }
+});
+
+// 초기 설정
+updateNav();
+</script>
+</body>
+</html>
