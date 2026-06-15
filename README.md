@@ -1,8 +1,8 @@
-# Wiki-Insight (LLM-Wiki Vercel Deployment)
+# Wiki-Insight (LLM-Wiki Dual Deployment)
 
 이 저장소(폴더)는 옵시디언 기반의 **AI 신사업 위키(LLM-Wiki)**에서 에이전트가 새롭게 창출한 프롬프트, 분석 리포트, 그리고 HTML 슬라이드 발표자료가 영구 자산으로 저장되는 공간입니다. 
 
-Vercel을 통해 정적 웹사이트로 배포되어, 위키에서 생성된 HTML 슬라이드 및 각종 인사이트 문서를 웹 상에서 열람할 수 있도록 구성되어 있습니다.
+**GitHub Pages**와 **Vercel**을 통해 정적 웹사이트로 동시 배포(Dual Deployment)되어, 위키에서 생성된 HTML 슬라이드 및 각종 인사이트 문서를 웹 상에서 빠르고 안정적으로 열람할 수 있도록 구성되어 있습니다.
 
 ## 📂 폴더 및 파일 구조 (Directory Structure)
 
@@ -38,9 +38,9 @@ Wiki-Insight/
     └── 안드레-카파시-에이전트-엔지니어링-발표자료.html
 ```
 
-## 🌐 Vercel 배포 시 주요 진입점 (Entry Points)
+## 🌐 웹 배포 시 주요 진입점 (Entry Points)
 
-- **`index.html`**: Vercel 배포 시 최초로 접속되는 메인 포탈 페이지입니다.
+- **`index.html`**: GitHub Pages 및 Vercel 배포 시 최초로 접속되는 메인 포탈 페이지입니다.
 - **포탈 인덱스**: `index-by-Claude-Sonnet.html` 및 `index-by-Gemini-Flash-Pro.html`을 통해 카테고리별 발표자료에 시각적으로 접근할 수 있습니다.
 - **프레젠테이션 (HTML)**: `발표자료.html`로 끝나는 파일들은 LLM-Wiki에서 자동 생성된 고품질 슬라이드 형태의 자료입니다. 웹 환경에서 즉시 열람 및 프레젠테이션 진행이 가능합니다.
 
