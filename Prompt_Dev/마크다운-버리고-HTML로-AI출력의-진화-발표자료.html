@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마크다운을 버려라 — AI 출력의 진화 법칙</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root {
+  --bg-deep: #0a0e17;
+  --bg-card: #111827;
+  --bg-card-alt: #1a2236;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56,189,248,.15);
+  --accent-glow: rgba(56,189,248,.35);
+  --accent-2: #a78bfa;
+  --accent-2-dim: rgba(167,139,250,.15);
+  --accent-3: #34d399;
+  --accent-3-dim: rgba(52,211,153,.15);
+  --danger: #fb7185;
+  --danger-dim: rgba(251,113,133,.15);
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --border: rgba(255,255,255,.06);
+  --glass: rgba(17,24,39,.72);
+  --radius: 16px;
+  --slide-w: 100vw;
+  --slide-h: 100vh;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg-deep); color:var(--text); font-family:'Pretendard Variable','Pretendard',system-ui,sans-serif; }
+a { color:var(--accent); text-decoration:none; }
+
+/* ===== DECK ===== */
+.deck { display:flex; height:var(--slide-h); transition:transform .55s cubic-bezier(.4,0,.2,1); will-change:transform; }
+.slide { flex:0 0 var(--slide-w); width:var(--slide-w); height:var(--slide-h); display:flex; align-items:center; justify-content:center; padding:clamp(24px,4vw,64px); position:relative; overflow:hidden; }
+
+/* ===== ANIMATIONS ===== */
+.anim { opacity:0; transform:translateY(28px); transition:opacity .6s ease, transform .6s ease; }
+.slide.active .anim { opacity:1; transform:translateY(0); }
+.slide.active .anim.d1 { transition-delay:.12s; }
+.slide.active .anim.d2 { transition-delay:.24s; }
+.slide.active .anim.d3 { transition-delay:.36s; }
+.slide.active .anim.d4 { transition-delay:.48s; }
+.slide.active .anim.d5 { transition-delay:.60s; }
+
+/* ===== TYPOGRAPHY ===== */
+.slide-title { font-family:'Space Grotesk','Pretendard Variable',sans-serif; font-size:clamp(1.7rem,3.8vw,3.2rem); font-weight:700; line-height:1.22; letter-spacing:-.02em; margin-bottom:clamp(12px,2vw,28px); }
+.slide-sub { font-size:clamp(.92rem,1.5vw,1.22rem); color:var(--text-dim); line-height:1.65; max-width:680px; }
+.kw { color:var(--accent); font-weight:600; }
+.kw2 { color:var(--accent-2); font-weight:600; }
+.kw3 { color:var(--accent-3); font-weight:600; }
+.kwdanger { color:var(--danger); font-weight:600; }
+.mono { font-family:'JetBrains Mono',monospace; font-size:.88em; background:var(--accent-dim); color:var(--accent); padding:2px 7px; border-radius:5px; }
+
+/* ===== CARDS ===== */
+.card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:clamp(16px,2.5vw,32px); }
+.card-glow { box-shadow:0 0 40px var(--accent-dim), inset 0 1px 0 rgba(255,255,255,.04); }
+.icon-circle { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+
+/* ===== SLIDE LAYOUTS ===== */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:clamp(20px,3vw,48px); align-items:center; max-width:1260px; width:100%; }
+.three-col { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(12px,2vw,28px); max-width:1260px; width:100%; }
+.center-col { display:flex; flex-direction:column; align-items:center; text-align:center; max-width:860px; width:100%; }
+
+/* ===== HUD ===== */
+.hud { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:10px; z-index:900; background:var(--glass); backdrop-filter:blur(14px); padding:8px 18px; border-radius:40px; border:1px solid var(--border); }
+.dot { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.18); cursor:pointer; transition:all .3s; }
+.dot.on { background:var(--accent); box-shadow:0 0 8px var(--accent-glow); transform:scale(1.25); }
+.hud-counter { font-family:'JetBrains Mono',monospace; font-size:.78rem; color:var(--text-dim); margin-left:6px; white-space:nowrap; }
+.hud-arrow { background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer; padding:2px 6px; transition:color .2s; }
+.hud-arrow:hover { color:var(--accent); }
+
+/* ===== LIGHTBOX ===== */
+.lb-overlay { position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:9999; display:none; align-items:center; justify-content:center; cursor:zoom-out; }
+.lb-overlay.show { display:flex; }
+.lb-overlay img { max-width:92vw; max-height:88vh; border-radius:10px; box-shadow:0 0 60px rgba(0,0,0,.6); }
+
+/* ===== COVER BG ===== */
+.cover-bg { position:absolute; inset:0; z-index:0; }
+.cover-bg::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, var(--bg-deep) 0%, rgba(10,14,23,.6) 50%, var(--bg-deep) 100%); z-index:1; }
+.cover-bg::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 70% 40%, var(--accent-dim) 0%, transparent 65%); z-index:2; }
+.cover-content { position:relative; z-index:3; max-width:860px; }
+.cover-tag { display:inline-flex; align-items:center; gap:6px; background:var(--accent-dim); color:var(--accent); font-size:.82rem; font-weight:600; padding:6px 16px; border-radius:40px; margin-bottom:18px; }
+.cover-hero { font-family:'Space Grotesk','Pretendard Variable',sans-serif; font-size:clamp(2rem,5vw,4.2rem); font-weight:700; line-height:1.15; letter-spacing:-.03em; }
+.cover-hero .hl { background:linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.cover-credit { margin-top:28px; font-size:.88rem; color:var(--text-dim); display:flex; flex-wrap:wrap; gap:6px 20px; }
+.cover-credit span { display:inline-flex; align-items:center; gap:5px; }
+
+/* ===== EVOLUTION TIMELINE ===== */
+.evo-track { display:flex; align-items:stretch; gap:0; width:100%; position:relative; }
+.evo-step { flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:18px 10px 12px; position:relative; }
+.evo-step::after { content:''; position:absolute; top:32px; right:0; width:0; height:0; border-top:10px solid transparent; border-bottom:10px solid transparent; border-left:12px solid var(--accent); opacity:.35; }
+.evo-step:last-child::after { display:none; }
+.evo-num { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--accent); background:var(--accent-dim); width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:8px; font-weight:700; }
+.evo-step.current .evo-num { background:var(--accent); color:var(--bg-deep); box-shadow:0 0 14px var(--accent-glow); }
+.evo-label { font-size:clamp(.78rem,1.1vw,.95rem); font-weight:600; margin-bottom:4px; }
+.evo-desc { font-size:.72rem; color:var(--text-dim); line-height:1.5; }
+
+/* ===== STAT CARD ===== */
+.stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; }
+.stat-box { background:var(--bg-card-alt); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; }
+.stat-num { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.6rem,2.5vw,2.4rem); font-weight:700; }
+.stat-label { font-size:.76rem; color:var(--text-dim); margin-top:4px; }
+
+/* ===== SCENARIO LIST ===== */
+.scenario-list { display:flex; flex-direction:column; gap:12px; width:100%; }
+.scenario-item { display:flex; align-items:flex-start; gap:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px 20px; transition:border-color .3s, box-shadow .3s; }
+.scenario-item:hover { border-color:var(--accent); box-shadow:0 0 20px var(--accent-dim); }
+.scenario-item .num { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:var(--bg-deep); background:var(--accent); width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; margin-top:2px; }
+.scenario-item h4 { font-size:.98rem; font-weight:600; margin-bottom:4px; }
+.scenario-item p { font-size:.82rem; color:var(--text-dim); line-height:1.55; }
+
+/* ===== QUOTE ===== */
+.quote-block { border-left:3px solid var(--accent); padding:20px 24px; background:var(--accent-dim); border-radius:0 12px 12px 0; }
+.quote-text { font-size:clamp(1rem,1.6vw,1.28rem); font-style:italic; line-height:1.65; color:var(--text); }
+.quote-attr { margin-top:10px; font-size:.82rem; color:var(--accent); font-weight:600; }
+
+/* ===== CONCLUSION ===== */
+.conclusion-bg { position:absolute; inset:0; z-index:0; }
+.conclusion-bg img { width:100%; height:100%; object-fit:cover; opacity:.12; }
+.conclusion-content { position:relative; z-index:2; }
+.conclusion-takeaway { font-size:clamp(1.3rem,2.8vw,2.2rem); font-weight:700; line-height:1.35; max-width:720px; text-align:center; }
+.conclusion-takeaway .hl { background:linear-gradient(90deg,var(--accent),var(--accent-3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+/* ===== MORE INSIGHTS ===== */
+.mi-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(16px,3vw,40px); max-width:1100px; width:100%; align-items:start; }
+.mi-section-title { font-size:.82rem; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+.mi-wiki-btn { display:flex; flex-direction:column; gap:6px; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:22px 24px; text-decoration:none; color:var(--text); transition:border-color .3s, box-shadow .3s; }
+.mi-wiki-btn:hover { border-color:var(--accent); box-shadow:0 0 24px var(--accent-dim); }
+.mi-wiki-btn .btn-label { font-size:1rem; font-weight:600; display:flex; align-items:center; gap:8px; }
+.mi-wiki-btn .btn-file { font-size:.72rem; color:var(--text-dim); font-family:'JetBrains Mono',monospace; word-break:break-all; }
+.yt-card { display:flex; gap:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px; text-decoration:none; color:var(--text); transition:border-color .3s; }
+.yt-card:hover { border-color:var(--danger); }
+.yt-card img { width:140px; height:80px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+.yt-card-info { display:flex; flex-direction:column; justify-content:center; }
+.yt-card-info h5 { font-size:.84rem; font-weight:600; line-height:1.4; margin-bottom:4px; }
+.yt-card-info span { font-size:.72rem; color:var(--text-dim); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:800px) {
+  .two-col, .three-col, .mi-grid, .stat-grid { grid-template-columns:1fr; }
+  .evo-track { flex-direction:column; }
+  .evo-step::after { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lb-overlay" id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
+
+<!-- ===== DECK ===== -->
+<div class="deck" id="deck">
+
+<!-- ======== SLIDE 01 — COVER ======== -->
+<section class="slide" id="s01">
+  <div class="cover-bg"></div>
+  <div class="cover-content">
+    <div class="cover-tag anim"><i class="ph-duotone ph-code"></i> Prompt Engineering × AI Output</div>
+    <h1 class="cover-hero anim d1">마크다운을 버려라<br><span class="hl">AI 출력의 진화 법칙</span></h1>
+    <p class="slide-sub anim d2" style="margin-top:16px;">Anthropic 엔지니어 Thariq Shihipar와 Andrej Karpathy가 선언한<br>'HTML은 AI가 인간에게 쓰는 새로운 언어'</p>
+    <div class="cover-credit anim d3">
+      <span><i class="ph-duotone ph-user-circle"></i> Thariq Shihipar (Anthropic · Claude Code)</span>
+      <span><i class="ph-duotone ph-user-circle"></i> Andrej Karpathy (前 Tesla AI)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 02 — THE PROBLEM ======== -->
+<section class="slide" id="s02">
+  <div class="two-col">
+    <div>
+      <p class="slide-sub anim" style="margin-bottom:8px; font-size:.82rem; color:var(--accent);"><i class="ph-duotone ph-warning-circle"></i> THE PROBLEM</p>
+      <h2 class="slide-title anim d1">100줄 마크다운,<br><span class="kwdanger">본인도 안 읽는다</span></h2>
+      <p class="slide-sub anim d2">Anthropic Claude Code 팀 엔지니어 Thariq Shihipar는 고백합니다 — "100줄 넘는 마크다운 파일은 <span class="kwdanger">나도 안 읽는다</span>. 회사 다른 사람한테 읽으라고 시키는 건 거의 불가능하다."</p>
+      <p class="slide-sub anim d3" style="margin-top:14px;">클로드가 <span class="mono">Markdown</span> 안에서 색을 표현하려고 유니코드 문자를 동원하는 장면을 목격해 보셨나요? <span class="kwdanger">도구의 한계</span> 안에서 발버둥 치는 것입니다.</p>
+    </div>
+    <div class="card card-glow anim d2" style="text-align:center; padding:40px;">
+      <i class="ph-duotone ph-file-text" style="font-size:64px; color:var(--danger); opacity:.5;"></i>
+      <p style="margin-top:18px; font-size:1.1rem; font-weight:600; color:var(--danger);">Markdown ≠ 인간의 언어</p>
+      <p style="margin-top:8px; font-size:.84rem; color:var(--text-dim); line-height:1.6;">사람이 사람에게 쓰던 2000년대 포맷.<br>AI가 쓰기에는 <strong>1차선 국도</strong>와 같다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 03 — 5 STRENGTHS ======== -->
+<section class="slide" id="s03">
+  <div style="max-width:1100px; width:100%;">
+    <p class="slide-sub anim" style="margin-bottom:6px; font-size:.82rem; color:var(--accent);"><i class="ph-duotone ph-lightning"></i> THE SOLUTION</p>
+    <h2 class="slide-title anim d1">HTML의 <span class="kw">5가지 압도적 강점</span></h2>
+    <div class="scenario-list anim d2" style="margin-top:16px;">
+      <div class="scenario-item">
+        <div class="icon-circle" style="background:var(--accent-dim); color:var(--accent);"><i class="ph-duotone ph-chart-bar"></i></div>
+        <div><h4>1. 정보 밀도</h4><p>색상, 도표, SVG, 일러스트, 인터랙티브 버튼 — 마크다운이 죽어도 못 하는 것을 HTML은 자유롭게 표현합니다.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="icon-circle" style="background:var(--accent-2-dim); color:var(--accent-2);"><i class="ph-duotone ph-eye"></i></div>
+        <div><h4>2. 시각적 명확성</h4><p>탭 구분, 모바일 최적화, 일러스트 삽입 — 사람이 끝까지 읽을 확률이 완전히 달라집니다.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="icon-circle" style="background:var(--accent-3-dim); color:var(--accent-3);"><i class="ph-duotone ph-share-network"></i></div>
+        <div><h4>3. 공유 용이성</h4><p>S3에 올리고 링크 하나 던지면 끝. 브라우저에서 바로 열리는 유니버설 포맷.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="icon-circle" style="background:var(--danger-dim); color:var(--danger);"><i class="ph-duotone ph-arrows-left-right"></i></div>
+        <div><h4>4. 양방향 인터랙션</h4><p>슬라이더·버튼으로 파라미터를 직접 조작하고, 결과를 Copy → 프롬프트로 다시 AI에게. 마크다운에서는 불가능한 피드백 루프.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="icon-circle" style="background:var(--accent-dim); color:var(--accent);"><i class="ph-duotone ph-plugs-connected"></i></div>
+        <div><h4>5. 컨텍스트 시각화</h4><p>로컬 파일, MCP, Slack, Linear 등 외부 데이터를 HTML 한 페이지로 통합 시각화하는 것은 Claude Code만의 무기.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 04 — KARPATHY'S EVOLUTION LAW ======== -->
+<section class="slide" id="s04">
+  <div style="max-width:1100px; width:100%;">
+    <p class="slide-sub anim" style="margin-bottom:6px; font-size:.82rem; color:var(--accent-2);"><i class="ph-duotone ph-dna"></i> EVOLUTION LAW</p>
+    <h2 class="slide-title anim d1">Karpathy의 <span class="kw2">AI 출력 진화 법칙</span></h2>
+    <p class="slide-sub anim d2" style="margin-bottom:28px;">"이건 단순 취향이 아니라 <span class="kw2">AI 진화 법칙</span>이다." — 카파시가 바로 다음 날 날린 동조 트윗.</p>
+    <div class="evo-track anim d3">
+      <div class="evo-step">
+        <div class="evo-num">1</div>
+        <div class="evo-label">Plain Text</div>
+        <div class="evo-desc">읽기 힘든<br>단순 텍스트</div>
+      </div>
+      <div class="evo-step">
+        <div class="evo-num">2</div>
+        <div class="evo-label">Markdown</div>
+        <div class="evo-desc">헤더·굵기 표현<br>조금 나아졌으나…</div>
+      </div>
+      <div class="evo-step current">
+        <div class="evo-num">3</div>
+        <div class="evo-label" style="color:var(--accent);">HTML</div>
+        <div class="evo-desc" style="color:var(--text);">그래픽 + 인터랙션<br><strong>지금의 새 디폴트</strong></div>
+      </div>
+      <div class="evo-step">
+        <div class="evo-num">4</div>
+        <div class="evo-label">Interactive Video</div>
+        <div class="evo-desc">AI가 영상을<br>즉석 생성하여 전달</div>
+      </div>
+    </div>
+    <div class="stat-grid anim d4" style="margin-top:28px;">
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--accent);">⅓</div>
+        <div class="stat-label">인간 뇌의 시각 처리 영역</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--accent-2);">10차선</div>
+        <div class="stat-label">시각은 뇌의 고속도로</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--accent-3);">1줄</div>
+        <div class="stat-label">"HTML로 만들어줘"로 충분</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 05 — HOW TO START ======== -->
+<section class="slide" id="s05">
+  <div class="two-col">
+    <div>
+      <p class="slide-sub anim" style="margin-bottom:6px; font-size:.82rem; color:var(--accent-3);"><i class="ph-duotone ph-rocket-launch"></i> HOW TO START</p>
+      <h2 class="slide-title anim d1">프롬프트 끝에<br><span class="kw3">단 한 줄</span>이면 된다</h2>
+      <p class="slide-sub anim d2">"사람들이 /html 같은 스킬을 만들까 봐 걱정된다. 그렇게까지 안 해도 된다. <span class="kw3">그냥 시키면 된다</span>."</p>
+      <p class="slide-sub anim d3" style="margin-top:12px; font-size:.82rem;">— Thariq Shihipar</p>
+    </div>
+    <div class="card card-glow anim d2" style="font-family:'JetBrains Mono',monospace; font-size:clamp(.82rem,1.2vw,1rem); line-height:2; padding:clamp(20px,3vw,40px);">
+      <span style="color:var(--text-dim);">// 기존</span><br>
+      <span style="color:var(--text);">스펙 정리해 줘</span><br><br>
+      <span style="color:var(--text-dim);">// 변환</span><br>
+      <span style="color:var(--text);">스펙 정리해 줘.</span><br>
+      <span style="color:var(--accent); font-weight:700;">HTML 파일로 만들어줘</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 06 — 5 SCENARIOS ======== -->
+<section class="slide" id="s06">
+  <div style="max-width:1100px; width:100%;">
+    <p class="slide-sub anim" style="margin-bottom:6px; font-size:.82rem; color:var(--accent);"><i class="ph-duotone ph-browsers"></i> 5 SCENARIOS</p>
+    <h2 class="slide-title anim d1"><span class="kw">5대 활용 시나리오</span></h2>
+    <div class="scenario-list anim d2">
+      <div class="scenario-item">
+        <div class="num">1</div>
+        <div><h4>스펙 & 계획</h4><p>디자인 옵션 6개를 그리드로 나란히 비교. 트레이드오프 라벨링까지 한 페이지에.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="num">2</div>
+        <div><h4>코드 리뷰 (PR)</h4><p>Diff 옆에 위험도별 색상 주석. 동료에게 PR 전달 시 리뷰 수락률이 완전히 달라진다.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="num">3</div>
+        <div><h4>디자인 프로토타입</h4><p>슬라이더로 애니메이션 파라미터를 직접 튜닝 → 마음에 드는 값을 Copy as Prompt로 추출.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="num">4</div>
+        <div><h4>리포트 & 리서치</h4><p>코드 베이스의 인증 로직을 SVG 다이어그램 포함 HTML 설명서로 즉시 생성. 인수인계에 최적.</p></div>
+      </div>
+      <div class="scenario-item">
+        <div class="num">5</div>
+        <div><h4>일회용 커스텀 에디터</h4><p>Linear 티켓 30개를 NOW·NEXT·LATER·CUT 4칸 드래그 앤 드롭 칸반으로 5분 만에 생성.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 07 — DISPOSABLE EDITOR ======== -->
+<section class="slide" id="s07">
+  <div class="two-col">
+    <div>
+      <p class="slide-sub anim" style="margin-bottom:6px; font-size:.82rem; color:var(--accent-2);"><i class="ph-duotone ph-timer"></i> DISPOSABLE EDITOR ERA</p>
+      <h2 class="slide-title anim d1"><span class="kw2">30분짜리 작업</span>을 위해<br>30분짜리 도구를 만드는 시대</h2>
+      <p class="slide-sub anim d2">옛날에는 도구 하나 만들려면 일주일이 걸렸습니다. 지금은 <span class="kw2">도구 만드는 게 작업보다 빠릅니다</span>.</p>
+      <p class="slide-sub anim d3" style="margin-top:12px;">SaaS 구독료를 결제하거나 내부 개발 리소스를 투입할 필요 없이, 프롬프트를 통해 즉석에서 생성하고 쓰고 버리는 <span class="kw2">Disposable Tools</span>의 시대.</p>
+    </div>
+    <div class="anim d2" style="display:flex; flex-direction:column; gap:14px;">
+      <div class="card" style="border-left:3px solid var(--accent-2);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <i class="ph-duotone ph-kanban" style="font-size:22px; color:var(--accent-2);"></i>
+          <span style="font-weight:600;">칸반 보드</span>
+        </div>
+        <p style="font-size:.82rem; color:var(--text-dim);">30개 티켓을 4칸 드래그 앤 드롭. 정리 후 Copy as Markdown으로 추출.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <i class="ph-duotone ph-sliders-horizontal" style="font-size:22px; color:var(--accent);"></i>
+          <span style="font-weight:600;">파라미터 튜너</span>
+        </div>
+        <p style="font-size:.82rem; color:var(--text-dim);">속도·색상·두께 슬라이더로 최적값을 탐색. 값을 프롬프트로 재전송.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent-3);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <i class="ph-duotone ph-git-diff" style="font-size:22px; color:var(--accent-3);"></i>
+          <span style="font-weight:600;">PR 리뷰어</span>
+        </div>
+        <p style="font-size:.82rem; color:var(--text-dim);">Diff + 위험도 색상 + 주석이 결합된 인터랙티브 코드 리뷰 시트.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 08 — THARIQ QUOTE ======== -->
+<section class="slide" id="s08">
+  <div class="center-col">
+    <p class="slide-sub anim" style="margin-bottom:14px; font-size:.82rem; color:var(--accent);"><i class="ph-duotone ph-quotes"></i> CORE INSIGHT</p>
+    <div class="quote-block anim d1" style="max-width:760px;">
+      <p class="quote-text">"예전에는 클로드가 만들어 준 계획을 안 읽기 시작하면서 결국 클로드의 결정을 그냥 따라가게 될 거라고 걱정했었다.<br><br>근데 <span class="kw">HTML로 바꾸고 나서</span> 나는 그 어느 때보다 더 <span class="kw">클로드와 같은 루프 안에 있다</span>."</p>
+      <p class="quote-attr">— Thariq Shihipar, Anthropic Claude Code 팀</p>
+    </div>
+    <div class="anim d2" style="margin-top:32px; display:flex; gap:28px; flex-wrap:wrap; justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:700; color:var(--danger);">Markdown</div>
+        <div style="font-size:.78rem; color:var(--text-dim); margin-top:4px;">사람 → 사람 포맷<br>(2000년대 GitHub)</div>
+      </div>
+      <div style="font-size:2rem; color:var(--text-dim); display:flex; align-items:center;"><i class="ph-duotone ph-arrow-right"></i></div>
+      <div style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent);">HTML</div>
+        <div style="font-size:.78rem; color:var(--text-dim); margin-top:4px;">AI → 사람 포맷<br>(인터랙티브 루프)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 09 — CONCLUSION ======== -->
+<section class="slide" id="s09">
+  <div class="conclusion-bg">
+    <img src="../Assets/Prompt_Dev/마크다운-버리고-HTML로-AI출력의-진화-발표자료_img1.jpg" alt="conclusion bg">
+  </div>
+  <div class="conclusion-content center-col">
+    <i class="ph-duotone ph-terminal-window anim" style="font-size:56px; color:var(--accent); margin-bottom:20px;"></i>
+    <h2 class="conclusion-takeaway anim d1">프롬프트 끝에 <span class="hl">단 한 줄</span>,<br>"HTML로 만들어줘"가<br>협업의 차원을 바꾼다</h2>
+    <p class="slide-sub anim d2" style="margin-top:20px; text-align:center;">AI의 출력을 죽은 텍스트로 두지 마십시오.<br>살아 움직이는 인터랙티브 도구로 변환하여,<br>사용자와 AI가 <span class="kw">하나의 루프 안에서</span> 즉각적으로 소통하십시오.</p>
+    <div class="anim d3" style="margin-top:28px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+      <span class="mono" style="font-size:.84rem;">Thariq Shihipar (Anthropic)</span>
+      <span class="mono" style="font-size:.84rem;">Andrej Karpathy</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======== SLIDE 10 — MORE INSIGHTS ======== -->
+<section class="slide" id="s10">
+  <div class="mi-grid">
+    <div>
+      <div class="mi-section-title anim"><i class="ph-duotone ph-file-text"></i> 위키 원문</div>
+      <a class="mi-wiki-btn anim d1" href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages%2FAI-Biz%2F%E2%9C%85YT-Anthropic-%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EA%B0%80-%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4-%EB%B2%84%EB%A6%B0-5%EA%B0%80%EC%A7%80-%EC%9D%B4%EC%9C%A0-Karpathy-%EC%9D%B4%EA%B1%B4-AI-%EC%A7%84%ED%99%94-%EB%B2%95%EC%B9%99" target="_blank">
+        <span class="btn-label"><i class="ph-duotone ph-file-text" style="color:var(--accent);"></i> 위키 원문 읽기</span>
+        <span class="btn-file">✅YT-Anthropic-엔지니어가-마크다운-버린-5가지-이유-Karpathy-이건-AI-진화-법칙.md</span>
+      </a>
+      <a class="mi-wiki-btn anim d2" href="https://thariqs.github.io/html-effectiveness/" target="_blank" style="margin-top:12px;">
+        <span class="btn-label"><i class="ph-duotone ph-globe" style="color:var(--accent-3);"></i> Thariq 원문 글</span>
+        <span class="btn-file">thariqs.github.io/html-effectiveness/</span>
+      </a>
+      <a class="mi-wiki-btn anim d3" href="https://x.com/karpathy/status/1980397031542989305" target="_blank" style="margin-top:12px;">
+        <span class="btn-label"><i class="ph-duotone ph-x-logo" style="color:var(--accent-2);"></i> Karpathy 트윗</span>
+        <span class="btn-file">x.com/karpathy/status/1980397…</span>
+      </a>
+    </div>
+    <div>
+      <div class="mi-section-title anim"><i class="ph-duotone ph-youtube-logo"></i> 유튜브 영상</div>
+      <a class="yt-card anim d1" href="https://www.youtube.com/watch?v=CLI95vLlkxY" target="_blank">
+        <img src="../Assets/Prompt_Dev/마크다운-버리고-HTML로-AI출력의-진화-발표자료_img2.jpg" alt="YT Thumbnail">
+        <div class="yt-card-info">
+          <h5>Anthropic 엔지니어가 마크다운 버린 5가지 이유 — Karpathy: 이건 AI 진화 법칙</h5>
+          <span>YouTube · 원본 영상</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<!-- ===== HUD ===== -->
+<div class="hud" id="hud">
+  <button class="hud-arrow" onclick="go(-1)"><i class="ph-duotone ph-caret-left"></i></button>
+  <div id="dots"></div>
+  <button class="hud-arrow" onclick="go(1)"><i class="ph-duotone ph-caret-right"></i></button>
+  <span class="hud-counter" id="counter"></span>
+</div>
+
+<script>
+const deck=document.getElementById('deck'),slides=[...document.querySelectorAll('.slide')],dotsC=document.getElementById('dots'),counter=document.getElementById('counter');
+let cur=0,total=slides.length;
+slides.forEach((_,i)=>{const d=document.createElement('span');d.className='dot';d.onclick=()=>goTo(i);dotsC.appendChild(d);});
+function goTo(i){cur=Math.max(0,Math.min(i,total-1));deck.style.transform=`translateX(-${cur*100}vw)`;
+[...dotsC.children].forEach((d,j)=>d.classList.toggle('on',j===cur));
+slides.forEach((s,j)=>s.classList.toggle('active',j===cur));
+counter.textContent=`${cur+1} / ${total}`;}
+function go(d){goTo(cur+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);if(e.key==='Escape')closeLb();});
+goTo(0);
+function openLb(src){const o=document.getElementById('lb');document.getElementById('lb-img').src=src;o.classList.add('show');}
+function closeLb(){document.getElementById('lb').classList.remove('show');}
+document.querySelectorAll('.slide img:not(#lb-img)').forEach(img=>{img.style.cursor='zoom-in';img.addEventListener('click',e=>{e.stopPropagation();openLb(img.src);});});
+</script>
+</body>
+</html>

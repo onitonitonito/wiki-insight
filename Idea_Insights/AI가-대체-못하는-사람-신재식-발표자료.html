@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI가 대체 못하는 사람 — 네스트컴퍼니 신재식 대표</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root{
+  --bg:#0b0f1a;--bg2:#131a2b;--bg3:#1a2338;
+  --accent:#f97316;--accent-dim:rgba(249,115,22,.14);--accent-glow:rgba(249,115,22,.35);
+  --accent2:#a78bfa;--accent2-dim:rgba(167,139,250,.14);
+  --accent3:#34d399;--accent3-dim:rgba(52,211,153,.14);
+  --danger:#fb7185;--danger-dim:rgba(251,113,133,.14);
+  --txt:#e2e8f0;--txtd:#94a3b8;--border:rgba(255,255,255,.06);
+  --glass:rgba(19,26,43,.78);--r:16px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:'Pretendard Variable','Pretendard',system-ui,sans-serif;}
+a{color:var(--accent);text-decoration:none;}
+
+.deck{display:flex;height:100vh;transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform;}
+.slide{flex:0 0 100vw;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,64px);position:relative;overflow:hidden;}
+
+.anim{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease;}
+.slide.active .anim{opacity:1;transform:translateY(0);}
+.slide.active .anim.d1{transition-delay:.12s;}
+.slide.active .anim.d2{transition-delay:.24s;}
+.slide.active .anim.d3{transition-delay:.36s;}
+.slide.active .anim.d4{transition-delay:.48s;}
+.slide.active .anim.d5{transition-delay:.60s;}
+
+.t{font-family:'Space Grotesk','Pretendard Variable',sans-serif;font-size:clamp(1.7rem,3.8vw,3.2rem);font-weight:700;line-height:1.22;letter-spacing:-.02em;margin-bottom:clamp(12px,2vw,28px);}
+.sub{font-size:clamp(.92rem,1.5vw,1.2rem);color:var(--txtd);line-height:1.65;max-width:680px;}
+.kw{color:var(--accent);font-weight:600;}
+.kw2{color:var(--accent2);font-weight:600;}
+.kw3{color:var(--accent3);font-weight:600;}
+.kwx{color:var(--danger);font-weight:600;}
+.mono{font-family:'JetBrains Mono',monospace;font-size:.86em;background:var(--accent-dim);color:var(--accent);padding:2px 7px;border-radius:5px;}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:clamp(16px,2.5vw,32px);}
+.card-glow{box-shadow:0 0 40px var(--accent-dim),inset 0 1px 0 rgba(255,255,255,.04);}
+.ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,48px);align-items:center;max-width:1260px;width:100%;}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2vw,28px);max-width:1260px;width:100%;}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:860px;width:100%;}
+.full{max-width:1100px;width:100%;}
+
+/* HUD */
+.hud{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:900;background:var(--glass);backdrop-filter:blur(14px);padding:8px 18px;border-radius:40px;border:1px solid var(--border);}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--accent);box-shadow:0 0 8px var(--accent-glow);transform:scale(1.25);}
+.hc{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--txtd);margin-left:6px;white-space:nowrap;}
+.ha{background:none;border:none;color:var(--txtd);font-size:18px;cursor:pointer;padding:2px 6px;transition:color .2s;}
+.ha:hover{color:var(--accent);}
+
+/* LB */
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;cursor:zoom-out;}
+.lb.show{display:flex;}
+.lb img{max-width:92vw;max-height:88vh;border-radius:10px;box-shadow:0 0 60px rgba(0,0,0,.6);}
+
+/* COVER */
+.cv-bg{position:absolute;inset:0;z-index:0;}
+.cv-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--bg) 0%,rgba(11,15,26,.55) 50%,var(--bg) 100%);z-index:1;}
+.cv-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 68% 38%,var(--accent-dim) 0%,transparent 62%);z-index:2;}
+.cv{position:relative;z-index:3;max-width:860px;}
+.cv-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-dim);color:var(--accent);font-size:.82rem;font-weight:600;padding:6px 16px;border-radius:40px;margin-bottom:18px;}
+.cv-hero{font-family:'Space Grotesk','Pretendard Variable',sans-serif;font-size:clamp(2rem,5vw,4.2rem);font-weight:700;line-height:1.15;letter-spacing:-.03em;}
+.cv-hero .hl{background:linear-gradient(90deg,var(--accent),#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.cv-credit{margin-top:28px;font-size:.88rem;color:var(--txtd);display:flex;flex-wrap:wrap;gap:6px 20px;}
+.cv-credit span{display:inline-flex;align-items:center;gap:5px;}
+
+/* ITEMS */
+.si{display:flex;align-items:flex-start;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;transition:border-color .3s,box-shadow .3s;}
+.si:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-dim);}
+.si .num{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--bg);background:var(--accent);width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;margin-top:2px;}
+.si h4{font-size:.98rem;font-weight:600;margin-bottom:4px;}
+.si p{font-size:.82rem;color:var(--txtd);line-height:1.55;}
+
+/* QUOTE */
+.qb{border-left:3px solid var(--accent);padding:20px 24px;background:var(--accent-dim);border-radius:0 12px 12px 0;}
+.qt{font-size:clamp(1rem,1.6vw,1.28rem);font-style:italic;line-height:1.65;}
+.qa{margin-top:10px;font-size:.82rem;color:var(--accent);font-weight:600;}
+
+/* CONCLUSION */
+.cn-bg{position:absolute;inset:0;z-index:0;}
+.cn-bg img{width:100%;height:100%;object-fit:cover;opacity:.1;}
+.cn{position:relative;z-index:2;}
+.cn-t{font-size:clamp(1.3rem,2.8vw,2.2rem);font-weight:700;line-height:1.35;max-width:720px;text-align:center;}
+.cn-t .hl{background:linear-gradient(90deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* MI */
+.mi{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3vw,40px);max-width:1100px;width:100%;align-items:start;}
+.mi-st{font-size:.82rem;font-weight:600;color:var(--txtd);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.mi-btn{display:flex;flex-direction:column;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px 24px;color:var(--txt);transition:border-color .3s,box-shadow .3s;}
+.mi-btn:hover{border-color:var(--accent);box-shadow:0 0 24px var(--accent-dim);}
+.mi-btn .bl{font-size:1rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+.mi-btn .bf{font-size:.72rem;color:var(--txtd);font-family:'JetBrains Mono',monospace;word-break:break-all;}
+.ytc{display:flex;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--txt);transition:border-color .3s;}
+.ytc:hover{border-color:var(--danger);}
+.ytc img{width:140px;height:80px;border-radius:8px;object-fit:cover;flex-shrink:0;}
+.ytc-i{display:flex;flex-direction:column;justify-content:center;}
+.ytc-i h5{font-size:.84rem;font-weight:600;line-height:1.4;margin-bottom:4px;}
+.ytc-i span{font-size:.72rem;color:var(--txtd);}
+
+/* Stat */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;}
+.sb{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.sn{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,2.5vw,2.4rem);font-weight:700;}
+.sl{font-size:.76rem;color:var(--txtd);margin-top:4px;}
+
+/* WORKFLOW DIAGRAM */
+.wf{display:flex;align-items:center;gap:0;width:100%;flex-wrap:wrap;justify-content:center;}
+.wf-step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 12px;flex:0 0 auto;}
+.wf-step .wf-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:8px;}
+.wf-step .wf-l{font-size:.82rem;font-weight:600;}
+.wf-step .wf-d{font-size:.68rem;color:var(--txtd);margin-top:2px;max-width:110px;}
+.wf-arr{font-size:24px;color:var(--accent);margin:0 4px;opacity:.5;}
+
+@media(max-width:800px){.two,.three,.mi,.sg{grid-template-columns:1fr;}.wf{flex-direction:column;}.wf-arr{transform:rotate(90deg);}}
+</style>
+</head>
+<body>
+
+<div class="lb" id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
+
+<div class="deck" id="deck">
+
+<!-- S01 COVER -->
+<section class="slide" id="s01">
+  <div class="cv-bg"></div>
+  <div class="cv">
+    <div class="cv-tag anim"><i class="ph-duotone ph-user-focus"></i> AI 시대 × 커리어 전략</div>
+    <h1 class="cv-hero anim d1">이런 사람은<br><span class="hl">AI가 대체 못해요</span></h1>
+    <p class="sub anim d2" style="margin-top:16px;">데일리호텔 600억 매각, 네스트컴퍼니 신재식 대표가 밝히는<br>AI 시대 몸값이 폭등하는 인재의 3가지 조건</p>
+    <div class="cv-credit anim d3">
+      <span><i class="ph-duotone ph-microphone-stage"></i> 신재식 대표 (네스트컴퍼니)</span>
+      <span><i class="ph-duotone ph-youtube-logo"></i> 커리어데이 채널</span>
+    </div>
+  </div>
+</section>
+
+<!-- S02 PROBLEM -->
+<section class="slide" id="s02">
+  <div class="two">
+    <div>
+      <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--danger);"><i class="ph-duotone ph-warning-circle"></i> THE END OF AN ERA</p>
+      <h2 class="t anim d1">"제 감으로는요…"<br>이 말이 <span class="kwx">가장 위험한</span> 이유</h2>
+      <p class="sub anim d2">"<span class="kwx">믿어 주십시오, 열심히 해보겠습니다</span>"가 과거의 설득 방식이었다면, AI 시대에는 데이터로 증명하지 못하는 순간 당신의 몸값은 언제든 추락할 수 있습니다.</p>
+      <p class="sub anim d3" style="margin-top:12px;font-size:.86rem;">— 신재식 대표</p>
+    </div>
+    <div class="anim d2" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card" style="border-left:3px solid var(--danger);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <i class="ph-duotone ph-prohibit" style="font-size:22px;color:var(--danger);"></i>
+          <span style="font-weight:600;color:var(--danger);">과거</span>
+        </div>
+        <p style="font-size:.84rem;color:var(--txtd);line-height:1.55;">"감이 좋다", "경험이 많다"가 그 분야의 경쟁력을 의미했음. 의사결정자의 직관에 전적으로 의존.</p>
+      </div>
+      <div class="card card-glow" style="border-left:3px solid var(--accent3);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <i class="ph-duotone ph-check-circle" style="font-size:22px;color:var(--accent3);"></i>
+          <span style="font-weight:600;color:var(--accent3);">AI 시대</span>
+        </div>
+        <p style="font-size:.84rem;color:var(--txtd);line-height:1.55;">"이 기간 동안 이만큼 변화시켰습니다. 앞으로 이 성장세를 유지할 수 있습니다." — <strong>데이터 기반 반복 증명</strong>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S03 3 CONDITIONS -->
+<section class="slide" id="s03">
+  <div class="full">
+    <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--accent);"><i class="ph-duotone ph-trophy"></i> 3 CONDITIONS</p>
+    <h2 class="t anim d1">AI가 <span class="kw">대체할 수 없는</span> 인재의 조건</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+      <div class="si anim d2">
+        <div class="ic" style="background:var(--accent-dim);color:var(--accent);"><i class="ph-duotone ph-chart-line-up"></i></div>
+        <div><h4>1. 데이터 기반의 증명력</h4><p>'감'에 의존하던 의사결정을 버리고, 타인과 기계가 모두 납득할 합리적 데이터로 가치를 입증. 반복적 데이터 축적이 폭발적 성장(기계 학습)의 토대가 된다.</p></div>
+      </div>
+      <div class="si anim d3">
+        <div class="ic" style="background:var(--accent2-dim);color:var(--accent2);"><i class="ph-duotone ph-magnifying-glass"></i></div>
+        <div><h4>2. 오타쿠적 컴플라이언스</h4><p>방대한 지식은 AI에게 맡기고, AI가 내놓은 소수의 오류를 식별해 내는 깊고 좁은 도메인 전문성 확보. "빈틈을 채우는 사람"이 진정한 전문가.</p></div>
+      </div>
+      <div class="si anim d4">
+        <div class="ic" style="background:var(--accent3-dim);color:var(--accent3);"><i class="ph-duotone ph-arrows-out"></i></div>
+        <div><h4>3. 안전지대(Safety Zone)의 파괴</h4><p>익숙하지 않은 도구(클로드 등)와 타 부서와의 협업 등 불편함과 호기심에 적극 노출. 세계관을 넓히는 실행력만이 거대한 기회를 잡는다.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S04 WORKFLOW ORCHESTRATION -->
+<section class="slide" id="s04">
+  <div class="full">
+    <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--accent2);"><i class="ph-duotone ph-flow-arrow"></i> WORKFLOW ORCHESTRATION</p>
+    <h2 class="t anim d1">'일 잘하는 사람'에서<br><span class="kw2">일 잘 시키는 사람</span>으로</h2>
+    <p class="sub anim d2" style="margin-bottom:28px;">"시키는 일을 잘하는 사람이 살아남기 힘든 시대. 이제는 <span class="kw2">거대한 덩어리를 작게 자르고, 연속적으로 배치</span>할 수 있어야 한다."</p>
+    <div class="wf anim d3">
+      <div class="wf-step"><div class="wf-ic" style="background:var(--accent-dim);color:var(--accent);"><i class="ph-duotone ph-target"></i></div><div class="wf-l">목표 설정</div><div class="wf-d">뚜렷한 목적 의식</div></div>
+      <div class="wf-arr"><i class="ph-duotone ph-arrow-right"></i></div>
+      <div class="wf-step"><div class="wf-ic" style="background:var(--accent2-dim);color:var(--accent2);"><i class="ph-duotone ph-scissors"></i></div><div class="wf-l">업무 분해</div><div class="wf-d">작은 워크플로우로 쪼개기</div></div>
+      <div class="wf-arr"><i class="ph-duotone ph-arrow-right"></i></div>
+      <div class="wf-step"><div class="wf-ic" style="background:var(--accent3-dim);color:var(--accent3);"><i class="ph-duotone ph-robot"></i></div><div class="wf-l">AI 배치</div><div class="wf-d">에이전트에게 지시</div></div>
+      <div class="wf-arr"><i class="ph-duotone ph-arrow-right"></i></div>
+      <div class="wf-step"><div class="wf-ic" style="background:var(--danger-dim);color:var(--danger);"><i class="ph-duotone ph-shield-check"></i></div><div class="wf-l">검증</div><div class="wf-d">컴플라이언스 체크</div></div>
+      <div class="wf-arr"><i class="ph-duotone ph-arrow-right"></i></div>
+      <div class="wf-step"><div class="wf-ic" style="background:var(--accent-dim);color:var(--accent);"><i class="ph-duotone ph-trend-up"></i></div><div class="wf-l">데이터 축적</div><div class="wf-d">반복 → 폭발적 성장</div></div>
+    </div>
+    <div class="sg anim d4">
+      <div class="sb"><div class="sn" style="color:var(--accent);">100→10억</div><div class="sl">AI로 학습 비용 1/10 절감</div></div>
+      <div class="sb"><div class="sn" style="color:var(--accent2);">5년→1년</div><div class="sl">지식 습득 기간의 압축</div></div>
+      <div class="sb"><div class="sn" style="color:var(--accent3);">~40%</div><div class="sl">오케스트레이터 도입 시 외주비 절감</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- S05 OTAKU & COMPLIANCE -->
+<section class="slide" id="s05">
+  <div class="two">
+    <div>
+      <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--accent2);"><i class="ph-duotone ph-detective"></i> OTAKU COMPLIANCE</p>
+      <h2 class="t anim d1"><span class="kw2">오타쿠</span>가 되어<br>AI의 <span class="kw2">빈틈</span>을 채워라</h2>
+      <p class="sub anim d2">AI는 웹의 수많은 정보 중 "가장 정답에 가깝다"고 판단한 것을 제시할 뿐입니다. <span class="kw2">가깝다는 것은 오답일 가능성을 내포</span>합니다.</p>
+      <p class="sub anim d3" style="margin-top:14px;">법률 전문가의 사례: 단순 법률 지식은 AI가 제공하지만, <span class="kw2">내 케이스에 적용하는 디테일과 리스크 판단</span>은 여전히 전문가의 영역.</p>
+    </div>
+    <div class="card card-glow anim d2" style="text-align:center;padding:36px;">
+      <i class="ph-duotone ph-brain" style="font-size:56px;color:var(--accent2);opacity:.6;"></i>
+      <p style="margin-top:16px;font-size:1.1rem;font-weight:600;">컴플라이언스 = 진짜 경쟁력</p>
+      <p style="margin-top:8px;font-size:.84rem;color:var(--txtd);line-height:1.6;">내가 잘 아는 핵심 분야의 전문성으로<br>AI가 만들어낸 <strong style="color:var(--danger);">소수의 오류</strong>를 잡아내는 것.<br><br>넓은 영역은 AI가, <strong style="color:var(--accent2);">좁고 깊은 검증</strong>은 인간이.</p>
+    </div>
+  </div>
+</section>
+
+<!-- S06 TROUBLE MAKER -->
+<section class="slide" id="s06">
+  <div class="two">
+    <div>
+      <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--accent);"><i class="ph-duotone ph-fire"></i> TROUBLE MAKERS</p>
+      <h2 class="t anim d1">과거의 <span class="kw">문제아</span>가<br>미래의 <span class="kw">혁신가</span></h2>
+      <p class="sub anim d2">보수적 조직에서 "트러블 메이커"로 불리던 에너지 기반 실행가들 — 상사가 불편해 할 행동들을 주저 없이 시도하고, 자기만의 방식으로 빠르게 성과를 낸 사람들.</p>
+      <p class="sub anim d3" style="margin-top:14px;">"과거에는 그런 분이 성과를 증명하려면 <span class="kwx">6개월과 10명의 팀</span>이 필요했다. 지금은 <span class="kw">1~2달, 1~2명</span>이면 결과가 나온다."</p>
+    </div>
+    <div class="anim d2" style="display:flex;flex-direction:column;gap:14px;">
+      <div class="card" style="border-left:3px solid var(--accent);">
+        <p style="font-size:.86rem;line-height:1.6;"><i class="ph-duotone ph-lightning" style="color:var(--accent);margin-right:6px;"></i><strong>에너지 기반 사고</strong> — 가르쳐준 방식을 흡수한 뒤, 자기만의 방식으로 일을 빠르게 바꾸는 적응력.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent2);">
+        <p style="font-size:.86rem;line-height:1.6;"><i class="ph-duotone ph-handshake" style="color:var(--accent2);margin-right:6px;"></i><strong>비업무적 교류</strong> — 파트너사에 적극적으로 연락하고 찾아가고, 신뢰를 빠르게 쌓는 네트워킹.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent3);">
+        <p style="font-size:.86rem;line-height:1.6;"><i class="ph-duotone ph-currency-circle-dollar" style="color:var(--accent3);margin-right:6px;"></i><strong>이윤 중심 판단</strong> — 경쟁사 대비 우리 회사의 이윤이 되는 의사결정을 감각적으로, 그러나 데이터 기반으로 수행.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S07 SAFETY ZONE -->
+<section class="slide" id="s07">
+  <div class="center">
+    <p class="sub anim" style="margin-bottom:6px;font-size:.82rem;color:var(--accent3);"><i class="ph-duotone ph-compass"></i> EXPAND YOUR SAFETY ZONE</p>
+    <h2 class="t anim d1" style="text-align:center;">불편함은 <span class="kw3">호기심</span>이다</h2>
+    <p class="sub anim d2" style="text-align:center;margin-bottom:28px;">"어린이의 눈으로 세상을 바라보면 모든 것은 불편한 곳이다. 근데 많은 어린이들이 세상을 그렇게 보나요? <span class="kw3">세상을 호기심과 탐구의 영역으로 본다</span>."</p>
+    <div class="three anim d3">
+      <div class="card" style="text-align:center;">
+        <i class="ph-duotone ph-shield-warning" style="font-size:36px;color:var(--danger);"></i>
+        <p style="font-size:.92rem;font-weight:600;margin-top:10px;">Safety Zone = 1</p>
+        <p style="font-size:.78rem;color:var(--txtd);margin-top:6px;">심리적 안정감의 범위.<br>여기에 머물면 AI에 침범당한다.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <i class="ph-duotone ph-arrows-out-cardinal" style="font-size:36px;color:var(--accent);"></i>
+        <p style="font-size:.92rem;font-weight:600;margin-top:10px;">불편함에 노출</p>
+        <p style="font-size:.78rem;color:var(--txtd);margin-top:6px;">옆 부서 협업, 낯선 도구,<br>불편한 상사 — 세계관의 확장.</p>
+      </div>
+      <div class="card card-glow" style="text-align:center;">
+        <i class="ph-duotone ph-globe-hemisphere-east" style="font-size:36px;color:var(--accent3);"></i>
+        <p style="font-size:.92rem;font-weight:600;margin-top:10px;color:var(--accent3);">기회의 안목</p>
+        <p style="font-size:.78rem;color:var(--txtd);margin-top:6px;">한국이 아닌 세계, 우리 회사가<br>아닌 산업 전체를 바라보는 시야.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S08 KEY QUOTE -->
+<section class="slide" id="s08">
+  <div class="center">
+    <p class="sub anim" style="margin-bottom:14px;font-size:.82rem;color:var(--accent);"><i class="ph-duotone ph-quotes"></i> CORE MESSAGE</p>
+    <div class="qb anim d1" style="max-width:760px;">
+      <p class="qt">"내가 더 주도적으로 나서서 내 스스로의 몸값을 높이지 못하면,<br><span class="kw">내 몸값이 언제 낮아져도 이상하지 않은</span><br>그런 시대가 되고 있다."</p>
+      <p class="qa">— 신재식 대표, 네스트컴퍼니</p>
+    </div>
+    <div class="anim d2" style="margin-top:32px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+      <div class="card" style="padding:14px 20px;text-align:center;min-width:160px;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--accent);">$200/월</div>
+        <div style="font-size:.72rem;color:var(--txtd);margin-top:4px;">클로드 AI 비용<br>"우리에겐 낼 수 있는 돈"</div>
+      </div>
+      <div class="card" style="padding:14px 20px;text-align:center;min-width:160px;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--danger);">= 1개월 월급</div>
+        <div style="font-size:.72rem;color:var(--txtd);margin-top:4px;">동남아 근로자에겐<br>"생존의 위협"</div>
+      </div>
+      <div class="card" style="padding:14px 20px;text-align:center;min-width:160px;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--accent3);">= 기회</div>
+        <div style="font-size:.72rem;color:var(--txtd);margin-top:4px;">시야를 넓히면<br>"성장의 트리거"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S09 CONCLUSION -->
+<section class="slide" id="s09">
+  <div class="cn-bg"><img src="../Assets/Idea_Insights/AI가-대체-못하는-사람-신재식-발표자료_img1.jpg" alt="Orchestration"></div>
+  <div class="cn center">
+    <i class="ph-duotone ph-crown anim" style="font-size:56px;color:var(--accent);margin-bottom:20px;"></i>
+    <h2 class="cn-t anim d1">도구의 노예가 아닌<br><span class="hl">워크플로우의 지휘자</span>가 되어라</h2>
+    <p class="sub anim d2" style="margin-top:20px;text-align:center;">AI가 개별 업무를 압도하는 시대,<br>당신의 가치는 <span class="kw">목표 설정, 오류 검증,<br>이기종 에이전트 간의 조율(Orchestration)</span> 능력에서 결정됩니다.</p>
+    <div class="anim d3" style="margin-top:24px;">
+      <span class="mono" style="font-size:.84rem;">신재식 · 네스트컴퍼니 · 데일리호텔 창업자</span>
+    </div>
+  </div>
+</section>
+
+<!-- S10 MORE INSIGHTS -->
+<section class="slide" id="s10">
+  <div class="mi">
+    <div>
+      <div class="mi-st anim"><i class="ph-duotone ph-file-text"></i> 위키 원문</div>
+      <a class="mi-btn anim d1" href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages%2FAI-Biz%2F%E2%9C%85YT-%EC%9D%B4%EB%9F%B0-%EC%82%AC%EB%9E%8C%EC%9D%80-AI%EA%B0%80-%EB%8C%80%EC%B2%B4-%EB%AA%BB%ED%95%B4%EC%9A%94-%EB%84%A4%EC%8A%A4%ED%8A%B8%EC%BB%B4%ED%8D%BC%EB%8B%88-%EC%8B%A0%EC%9E%AC%EC%8B%9D-%EB%8C%80%ED%91%9C" target="_blank">
+        <span class="bl"><i class="ph-duotone ph-file-text" style="color:var(--accent);"></i> 위키 원문 읽기</span>
+        <span class="bf">✅YT-이런-사람은-AI가-대체-못해요-네스트컴퍼니-신재식-대표.md</span>
+      </a>
+    </div>
+    <div>
+      <div class="mi-st anim"><i class="ph-duotone ph-youtube-logo"></i> 유튜브 영상</div>
+      <a class="ytc anim d1" href="https://www.youtube.com/watch?v=u5qW7vhPnVA" target="_blank">
+        <img src="../Assets/Idea_Insights/AI가-대체-못하는-사람-신재식-발표자료_img2.jpg" alt="YT Thumbnail">
+        <div class="ytc-i">
+          <h5>이런 사람은 AI가 대체 못해요 — 네스트컴퍼니 신재식 대표</h5>
+          <span>YouTube · 커리어데이 채널</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="hud" id="hud">
+  <button class="ha" onclick="go(-1)"><i class="ph-duotone ph-caret-left"></i></button>
+  <div id="dots"></div>
+  <button class="ha" onclick="go(1)"><i class="ph-duotone ph-caret-right"></i></button>
+  <span class="hc" id="counter"></span>
+</div>
+
+<script>
+const dk=document.getElementById('deck'),ss=[...document.querySelectorAll('.slide')],dc=document.getElementById('dots'),ct=document.getElementById('counter');
+let c=0,tt=ss.length;
+ss.forEach((_,i)=>{const d=document.createElement('span');d.className='dot';d.onclick=()=>gT(i);dc.appendChild(d);});
+function gT(i){c=Math.max(0,Math.min(i,tt-1));dk.style.transform=`translateX(-${c*100}vw)`;
+[...dc.children].forEach((d,j)=>d.classList.toggle('on',j===c));
+ss.forEach((s,j)=>s.classList.toggle('active',j===c));
+ct.textContent=`${c+1} / ${tt}`;}
+function go(d){gT(c+d);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);if(e.key==='Escape')closeLb();});
+gT(0);
+function openLb(s){document.getElementById('lb-img').src=s;document.getElementById('lb').classList.add('show');}
+function closeLb(){document.getElementById('lb').classList.remove('show');}
+document.querySelectorAll('.slide img:not(#lb-img)').forEach(img=>{img.style.cursor='zoom-in';img.addEventListener('click',e=>{e.stopPropagation();openLb(img.src);});});
+</script>
+</body>
+</html>

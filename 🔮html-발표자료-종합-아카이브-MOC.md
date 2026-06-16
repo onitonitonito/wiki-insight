@@ -28,6 +28,7 @@ description: 옵시디언에서 직접 인식되지 않는 HTML 기반 발표자
 - [퍼거슨-리더십-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Business_Models/퍼거슨-리더십-발표자료.html)
 - [스크럽대디-5000억-부활의-비밀-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Business_Models/스크럽대디-5000억-부활의-비밀-발표자료.html)
 - [그리스-디자이너와-할머니-추억을-압착한-올리브유-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Business_Models/그리스-디자이너와-할머니-추억을-압착한-올리브유-발표자료.html)
+- [1인-개발자-성공법칙-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Business_Models/1%EC%9D%B8-%EA%B0%9C%EB%B0%9C%EC%9E%90-%EC%84%B1%EA%B3%B5%EB%B2%95%EC%B9%99-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
 
 
 ## 💡 아이디어 & 인사이트 (Idea & Insights)
@@ -35,7 +36,12 @@ description: 옵시디언에서 직접 인식되지 않는 HTML 기반 발표자
 - [안유진-멀티페르소나-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Idea_Insights/안유진-멀티페르소나-발표자료.html)
 - [안드레-카파시-인물-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Idea_Insights/안드레-카파시-인물-발표자료.html)
 - [가브리엘-피터슨-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Idea_Insights/가브리엘-피터슨-발표자료.html)
+- [AI가-대체-못하는-사람-신재식-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Idea_Insights/AI%EA%B0%80-%EB%8C%80%EC%B2%B4-%EB%AA%BB%ED%95%98%EB%8A%94-%EC%82%AC%EB%9E%8C-%EC%8B%A0%EC%9E%AC%EC%8B%9D-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
 
+
+## 📝 프롬프트 & 개발 (Prompt & Dev)
+- [마크다운-버리고-HTML로-AI출력의-진화-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Prompt_Dev/%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4-%EB%B2%84%EB%A6%AC%EA%B3%A0-HTML%EB%A1%9C-AI%EC%B6%9C%EB%A0%A5%EC%9D%98-%EC%A7%84%ED%99%94-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
+- [클로드-코드-800시간-핵심스킬-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Prompt_Dev/%ED%81%B4%EB%A1%9C%EB%93%9C-%EC%BD%94%EB%93%9C-800%EC%8B%9C%EA%B0%84-%ED%95%B5%EC%8B%AC%EC%8A%A4%ED%82%AC-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
 
 ## ⚙️ 기술 및 인프라 (Tech & Infra)
 - [안드레-카파시-에이전트-엔지니어링-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Tech_Infra/안드레-카파시-에이전트-엔지니어링-발표자료.html)
