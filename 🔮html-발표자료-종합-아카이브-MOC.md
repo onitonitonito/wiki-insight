@@ -37,6 +37,7 @@ description: 옵시디언에서 직접 인식되지 않는 HTML 기반 발표자
 - [안드레-카파시-인물-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Idea_Insights/안드레-카파시-인물-발표자료.html)
 - [가브리엘-피터슨-발표자료](file:///c:/Users/USER/Documents/Obsidian-Work-LLM-Wiki-Vault/Wiki-Insight/Idea_Insights/가브리엘-피터슨-발표자료.html)
 - [AI가-대체-못하는-사람-신재식-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Idea_Insights/AI%EA%B0%80-%EB%8C%80%EC%B2%B4-%EB%AA%BB%ED%95%98%EB%8A%94-%EC%82%AC%EB%9E%8C-%EC%8B%A0%EC%9E%AC%EC%8B%9D-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
+- [1965년에-예측한-2000년대-이정문-화백-발표자료](file:///D:/My%20Documents/Obsidian-Work-LLN-Wiki-Vault/Wiki-Insight/Idea_Insights/1965%EB%85%84%EC%97%90-%EC%98%88%EC%B8%A1%ED%95%9C-2000%EB%85%84%EB%8C%80-%EC%9D%B4%EC%A0%95%EB%AC%B8-%ED%99%94%EB%B0%B1-%EB%B0%9C%ED%91%9C%EC%9E%90%EB%A3%8C.html)
 
 
 ## 📝 프롬프트 & 개발 (Prompt & Dev)

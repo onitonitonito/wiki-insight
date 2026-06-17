@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이정문 화백 — 1965년에 예측한 2000년대</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .slide {
+            min-width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5rem 10%;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.6s ease;
+            transform: translateY(20px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.3;
+            filter: grayscale(80%) blur(4px);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.9) 100%);
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', 'Pretendard', serif;
+            font-size: clamp(3rem, 5vw, 6rem);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 3vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        p {
+            font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+            line-height: 1.6;
+            color: var(--text-muted);
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .text-left { text-align: left; }
+        
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card p {
+            color: var(--text-color);
+            text-align: left;
+            margin-bottom: 0.5rem;
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        /* Conclusion specific */
+        .conclusion-slide h1 {
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* More Insights specific */
+        .link-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .link-button i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .youtube-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .youtube-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .youtube-card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .youtube-card .info {
+            padding: 1rem;
+        }
+
+        .youtube-card .info h3 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .youtube-card .info p {
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .counter {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            z-index: 100;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.8rem;
+            text-align: left;
+            color: var(--text-color);
+        }
+        
+        th {
+            color: var(--accent);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container" id="slideContainer">
+        
+        <!-- Slide 1: Cover -->
+        <div class="slide active">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img1.webp" alt="Background" style="filter: brightness(0.3) blur(10px);">
+            <div class="slide-overlay" style="background: radial-gradient(circle at center, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.95) 100%);"></div>
+            
+            <div style="position: relative; max-width: 1400px; width: 100%; height: 85vh; display: flex; align-items: center; justify-content: space-between; z-index: 10; padding: 0 2rem; margin: 0 auto;">
+                
+                <!-- Text Content (Left) -->
+                <div style="flex: 1; text-align: left; padding-right: 4rem;">
+                    <div style="display: inline-block; padding: 0.6rem 1.2rem; border-radius: 2rem; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 2rem; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);">
+                        Visionary Archive
+                    </div>
+                    <h1 style="font-size: 4.8rem; line-height: 1.15; margin-bottom: 1rem; background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.03em;">
+                        1965년에 예측한<br>2000년대
+                    </h1>
+                    <p style="font-size: 2.2rem; color: var(--accent); margin-bottom: 2.5rem; font-weight: 300; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.2);">이정문 화백의 예견</p>
+                    <p style="font-size: 1.25rem; line-height: 1.7; color: #94a3b8; margin-bottom: 3.5rem; max-width: 500px;">
+                        한국 SF 만화의 거장이 그려낸 정확한 미래.<br>
+                        <strong style="color: #ffffff; font-weight: 500;">그의 상상력은 어떻게 현실이 되었는가?</strong>
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <div style="width: 60px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent);"></div>
+                        <i class="ph-duotone ph-arrow-right" style="font-size: 2.5rem; color: var(--accent); animation: pulse 2s infinite;"></i>
+                    </div>
+                </div>
+
+                <!-- Image Showcase (Right) -->
+                <div style="flex: 1.2; position: relative; display: flex; justify-content: flex-end; align-items: center;">
+                    <!-- Decorative Glow -->
+                    <div style="position: absolute; width: 90%; height: 90%; background: var(--accent); filter: blur(140px); opacity: 0.2; border-radius: 50%; z-index: 1;"></div>
+                    
+                    <!-- Main Image with 3D Tilt -->
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img2.webp" 
+                         alt="1965년 예측 만화 컬러 복원판" 
+                         style="position: relative; z-index: 2; width: 100%; max-width: 800px; border-radius: 1.5rem; box-shadow: -20px 30px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.15); transform: perspective(1200px) rotateY(-8deg) rotateX(2deg); background: #ffffff;">
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Slide 2: 서막 -->
+        <div class="slide">
+            <h2>1부. 서막 — 폐허 위에서 연필을 든 소년</h2>
+            <div class="grid-2">
+                <div class="card text-left">
+                    <i class="ph-duotone ph-buildings" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <p><span class="badge">1941년 출생</span> 일제강점기 말 어느 가난한 집에 태어나, 6.25 전쟁으로 서울이 잿더미가 된 시절을 겪음.</p>
+                    <p><span class="badge">생존과 배움</span> 생계를 위해 구두닦이를 하면서도 밤마다 야간학교를 다님. 집요한 배움의 의지로 1959년 경희대 입학.</p>
+                    <p><span class="badge">만화 데뷔</span> 그의 진짜 관심사는 숫자가 아닌 미래를 상상하는 것. 1959년 잡지 '아리랑'에 만화를 투고하며 데뷔.</p>
+                </div>
+                <div>
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img3.jpg" alt="젊은 이정문" style="width: 100%; border-radius: 1rem; border: 1px solid var(--border-color);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: 1965년 -->
+        <div class="slide">
+            <h2>2부. 1965년 — 24세 청년의 의뢰 한 장</h2>
+            <p>당시 1인당 국민소득 105달러. 라디오조차 귀했던 시절에 그려낸 35년 뒤의 미래상.</p>
+            <div class="card text-left" style="max-width: 900px; width: 100%; margin: 0 auto; padding: 1.5rem;">
+                <table style="width: 100%; font-size: 1.1rem;">
+                    <tr><th>예언 항목</th><th>설명</th><th>상태</th></tr>
+                    <tr><td>태양열 집</td><td>지붕의 태양 전지판으로 동력 생산</td><td><span class="badge">✅ 상용화</span></td></tr>
+                    <tr><td>소형 TV 전화기</td><td>스마트폰 및 영상 통화의 완벽한 예견</td><td><span class="badge">✅ 상용화</span></td></tr>
+                    <tr><td>원격 진료 & 교육</td><td>병원과 학교에 가지 않고 집에서 해결</td><td><span class="badge">✅ 상용화</span></td></tr>
+                    <tr><td>전기 자동차</td><td>공해 없는 자동차</td><td><span class="badge">✅ 상용화</span></td></tr>
+                    <tr><td>로봇 청소기</td><td>스스로 바닥을 청소하는 움직이는 로봇</td><td><span class="badge">✅ 상용화</span></td></tr>
+                    <tr><td>달나라 수학여행</td><td>우주 관광</td><td><span class="badge" style="background: rgba(250, 204, 21, 0.2); color: #facc15;">⏳ 진행중</span></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 4: 냉소의 시대 -->
+        <div class="slide">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="Background">
+            <div class="slide-overlay"></div>
+            <h2>3부. 냉소의 시대 — 묻힌 예언과 스크랩북</h2>
+            <div class="grid-2" style="max-width: 1200px; width: 100%; align-items: center; gap: 2rem;">
+                <div>
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="50년치 신문 스크랩북" style="width: 100%; max-height: 55vh; object-fit: contain; border-radius: 1rem; border: 1px solid var(--border-color);">
+                </div>
+                <div class="card text-left">
+                    <h3 style="color: var(--accent); margin-bottom: 1rem;">불굴의 자존심, 그리고 50년의 기록</h3>
+                    <p style="margin-bottom: 1rem;"><span class="badge">SF의 선구자</span> '설인, 알파칸', 순수 한국형 로봇 <b>'철인, 캉타우'</b>, '심술통' 등을 통해 시대를 앞선 세계관과 통찰력을 선보였습니다.</p>
+                    <p style="margin-bottom: 1rem;"><span class="badge">50년 아날로그 DB</span> 냉소 속에서도 <b>50년 넘게 매일 신문을 읽고 스크랩하는 습관</b>을 지켰습니다. 작업실을 가득 메운 수만 장의 스크랩 더미는 미래를 내다본 거대한 아날로그 데이터베이스였습니다.</p>
+                    <p style="border-left: 4px solid var(--accent); padding-left: 1rem; margin-top: 1.5rem; font-style: italic; color: #e5e7eb;">"세상에 허무맹랑한 상상은 없습니다. 언젠가 작은 통신기기가 나올 거라고 확신했죠. 모든 것은 현실의 집요한 관찰에서 시작됩니다."</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 상상력의 해부 -->
+        <div class="slide">
+            <h2>4부. 상상력의 해부 — 약한 신호의 포착</h2>
+            <p>미래학의 본질: 현재의 사소한 변화나 단서가 거대한 메가트렌드를 형성한다.</p>
+            <div class="grid-2">
+                <div class="card text-left">
+                    <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="ph-duotone ph-brain"></i> 예측의 5단계</h3>
+                    <p>1. <b>단서 관찰:</b> 무전기를 멘 미군, 태양광 뉴스</p>
+                    <p>2. <b>결핍 인식:</b> 가난과 불편함의 체감</p>
+                    <p>3. <b>가설 설정:</b> "이것들이 대중화된다면?"</p>
+                    <p>4. <b>상상 증폭:</b> 만화적 과장과 융합</p>
+                    <p>5. <b>시각적 예언:</b> 생활 속 장면으로 구체화</p>
+                </div>
+                <div class="card text-left">
+                    <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="ph-duotone ph-users-three"></i> 타 미래학자와의 비교</h3>
+                    <p>토플러, 커즈와일 등 학자들의 거시적/데이터 기반 접근과 달리, 이정문 화백은 <b>'생활인의 결핍'</b>과 <b>'미시적 욕구'</b>에 기반하여 유사한 수준(약 86%)의 높은 적중률을 달성함.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 미래학자 비교 분석 -->
+        <div class="slide">
+            <h2>심층 분석 — 비학술적 예언자의 재평가</h2>
+            <p>이정문 화백의 예측 방법론을 서구의 대표 미래학자 3인과 비교 분석</p>
+            <div class="card text-left" style="max-width: 1000px; width: 100%;">
+                <table>
+                    <tr>
+                        <th>구분</th>
+                        <th>토플러 / 나이스비트</th>
+                        <th>레이 커즈와일</th>
+                        <th style="color: #facc15;">이정문 화백</th>
+                    </tr>
+                    <tr>
+                        <td><b>예측 방법론</b></td>
+                        <td>거시적 콘텐츠 분석 (신문/문헌)</td>
+                        <td>수확 가속의 법칙 (데이터 외삽)</td>
+                        <td style="color: #facc15;">물리적 원리 + 일상적 결핍 인식</td>
+                    </tr>
+                    <tr>
+                        <td><b>예측 적중률</b></td>
+                        <td>약 86% 내외</td>
+                        <td>약 86% 내외 (연도별)</td>
+                        <td style="color: #facc15;">약 50~90% (매체/기준별 상이)</td>
+                    </tr>
+                    <tr>
+                        <td><b>관찰 단위</b></td>
+                        <td>국가, 경제, 사회 구조</td>
+                        <td>컴퓨팅 연산력, 나노 기술</td>
+                        <td style="color: #facc15;">가정, 개인의 생활상 (미시적)</td>
+                    </tr>
+                    <tr>
+                        <td><b>핵심 시사점</b></td>
+                        <td colspan="3">막대한 자원이 투입된 거시적/데이터 예측과 <b>단일 개인의 비체계적 직관(약한 신호 포착)</b>이 장기 예측에서 동등한 수준의 정확도를 보여준다는 점은 사회학적으로 유의미한 연구 가설을 제공함.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 7: 재발견 -->
+        <div class="slide">
+            <h2>5부. 재발견 — 역사가 그를 부르다</h2>
+            <div class="card text-left" style="max-width: 800px; width: 100%;">
+                <p><span class="badge">2005년</span> 인터넷 커뮤니티 재조명 "이게 1965년 만화라고?"</p>
+                <p><span class="badge">2014년</span> 한국전력 의뢰로 <b>'2050년의 변화된 세상'</b> 발표 (무선 송전, 웨어러블, 탄소 포집 예측)</p>
+                <p><span class="badge">2015년</span> 한국공학한림원 창립 20주년 기념행사 초청장 표지로 선정. 학계의 공식적 헌사.</p>
+                <p><span class="badge">2020년</span> 부천 국제만화축제(BICOF) 포럼에서 그의 혜안이 집중 논의됨.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Conclusion -->
+        <div class="slide conclusion-slide">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="Scrapbook">
+            <div class="slide-overlay"></div>
+            <h1>기록이 만든 미래</h1>
+            <p style="font-size: 1.5rem; color: #fff; max-width: 900px; margin-top: 2rem;">
+                "50년간 하루도 빠지지 않고 스크랩한 신문이 상상력의 원천입니다."<br><br>
+                결국 가장 위대한 예측은 화려한 알고리즘이 아닌,<br>매일매일 세계를 관찰하고 기록한 <b>집요한 인간의 호기심</b>에서 태어납니다.
+            </p>
+        </div>
+
+        <!-- Slide 8: More Insights -->
+        <div class="slide">
+            <h2>MORE INSIGHTS</h2>
+            <p>원본 문서를 읽거나 관련 자료를 확인하세요.</p>
+            <div class="grid-2" style="align-items: center;">
+                <a href="obsidian://open?vault=Obsidian-Work-LLN-Wiki-Vault&file=Wiki-Pages%2FAI-Biz%2F%E2%9C%851965%EB%85%84%EC%97%90%20%EC%98%88%EC%B8%A1%ED%95%9C%202000%EB%85%84%EB%8C%80%20-%20%EC%9D%B4%EC%A0%95%EB%AC%B8%20%ED%99%94%EB%B0%B1" class="link-button">
+                    <i class="ph-duotone ph-file-text"></i>
+                    <div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">위키 원문 읽기</div>
+                        <div>✅1965년에 예측한 2000년대 - 이정문 화백</div>
+                    </div>
+                </a>
+                
+                <!-- 유튜브 케이스 -->
+                <a href="https://www.youtube.com/watch?v=gKoyNzav77I" target="_blank" class="youtube-card">
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img5.jpg" alt="YouTube Thumbnail">
+                    <div class="info">
+                        <h3>이정문 화백, 상상력이 현실이 되다</h3>
+                        <p>YouTube 비디오 (클릭하여 시청)</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation HUD -->
+    <div class="nav-dots" id="navDots"></div>
+    <div class="counter" id="counter">1 / 9</div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slideContainer');
+        const dotsContainer = document.getElementById('navDots');
+        const counter = document.getElementById('counter');
+        let currentSlide = 0;
+
+        // Initialize dots
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${i === 0 ? 'active' : ''}`;
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.dot');
+
+        function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            
+            currentSlide = index;
+            
+            container.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            counter.innerText = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+    </script>
+</body>
+</html>
