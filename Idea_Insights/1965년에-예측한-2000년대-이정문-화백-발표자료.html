@@ -36,12 +36,14 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            height: 100dvh;
         }
 
         .slide-container {
             position: relative;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -49,6 +51,7 @@
         .slide {
             min-width: 100vw;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -276,6 +279,93 @@
             color: var(--accent);
             font-weight: 600;
         }
+        
+        /* Navigation Arrows */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+        .nav-arrow:hover {
+            background: var(--accent);
+            color: var(--bg-color);
+        }
+        .prev-arrow {
+            left: 1rem;
+        }
+        .next-arrow {
+            right: 1rem;
+        }
+
+        /* Mobile/iPad Optimization */
+        @media (max-width: 1024px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            h1 {
+                font-size: clamp(2.5rem, 8vw, 4rem) !important;
+            }
+            h2 {
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
+            }
+            p {
+                font-size: 1rem;
+            }
+            .slide {
+                padding: 4rem 5%;
+                overflow-y: auto;
+                justify-content: flex-start;
+            }
+            .slide-container {
+                align-items: flex-start;
+            }
+            
+            /* Slide 1 Cover Adjustments */
+            .cover-layout {
+                flex-direction: column !important;
+                height: auto !important;
+                padding: 2rem 1rem !important;
+                justify-content: center !important;
+                margin-top: 2rem !important;
+            }
+            .cover-text {
+                padding-right: 0 !important;
+                text-align: center !important;
+                margin-bottom: 2rem;
+            }
+            .cover-text p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .cover-text .flex-row {
+                justify-content: center !important;
+            }
+            .cover-image {
+                justify-content: center !important;
+                margin-top: 1rem;
+            }
+            
+            /* Adjust arrows for mobile */
+            .nav-arrow {
+                top: auto;
+                bottom: 5rem;
+                transform: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -284,13 +374,13 @@
         
         <!-- Slide 1: Cover -->
         <div class="slide active">
-            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img1.webp" alt="Background" style="filter: brightness(0.3) blur(10px);">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img1.webp" alt="Background" style="filter: brightness(0.3) blur(10px);">
             <div class="slide-overlay" style="background: radial-gradient(circle at center, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.95) 100%);"></div>
             
-            <div style="position: relative; max-width: 1400px; width: 100%; height: 85vh; display: flex; align-items: center; justify-content: space-between; z-index: 10; padding: 0 2rem; margin: 0 auto;">
+            <div class="cover-layout" style="position: relative; max-width: 1400px; width: 100%; height: 85vh; display: flex; align-items: center; justify-content: space-between; z-index: 10; padding: 0 2rem; margin: 0 auto;">
                 
                 <!-- Text Content (Left) -->
-                <div style="flex: 1; text-align: left; padding-right: 4rem;">
+                <div class="cover-text" style="flex: 1; text-align: left; padding-right: 4rem;">
                     <div style="display: inline-block; padding: 0.6rem 1.2rem; border-radius: 2rem; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent); font-weight: 600; font-size: 0.95rem; margin-bottom: 2rem; letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);">
                         Visionary Archive
                     </div>
@@ -302,19 +392,19 @@
                         한국 SF 만화의 거장이 그려낸 정확한 미래.<br>
                         <strong style="color: #ffffff; font-weight: 500;">그의 상상력은 어떻게 현실이 되었는가?</strong>
                     </p>
-                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div class="flex-row" style="display: flex; align-items: center; gap: 1.5rem;">
                         <div style="width: 60px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent);"></div>
                         <i class="ph-duotone ph-arrow-right" style="font-size: 2.5rem; color: var(--accent); animation: pulse 2s infinite;"></i>
                     </div>
                 </div>
 
                 <!-- Image Showcase (Right) -->
-                <div style="flex: 1.2; position: relative; display: flex; justify-content: flex-end; align-items: center;">
+                <div class="cover-image" style="flex: 1.2; position: relative; display: flex; justify-content: flex-end; align-items: center;">
                     <!-- Decorative Glow -->
                     <div style="position: absolute; width: 90%; height: 90%; background: var(--accent); filter: blur(140px); opacity: 0.2; border-radius: 50%; z-index: 1;"></div>
                     
                     <!-- Main Image with 3D Tilt -->
-                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img2.webp" 
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img2.webp" 
                          alt="1965년 예측 만화 컬러 복원판" 
                          style="position: relative; z-index: 2; width: 100%; max-width: 800px; border-radius: 1.5rem; box-shadow: -20px 30px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.15); transform: perspective(1200px) rotateY(-8deg) rotateX(2deg); background: #ffffff;">
                 </div>
@@ -333,7 +423,7 @@
                     <p><span class="badge">만화 데뷔</span> 그의 진짜 관심사는 숫자가 아닌 미래를 상상하는 것. 1959년 잡지 '아리랑'에 만화를 투고하며 데뷔.</p>
                 </div>
                 <div>
-                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img3.jpg" alt="젊은 이정문" style="width: 100%; border-radius: 1rem; border: 1px solid var(--border-color);">
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img3.jpg" alt="젊은 이정문" style="width: 100%; border-radius: 1rem; border: 1px solid var(--border-color);">
                 </div>
             </div>
         </div>
@@ -357,12 +447,12 @@
 
         <!-- Slide 4: 냉소의 시대 -->
         <div class="slide">
-            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="Background">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img4.jpg" alt="Background">
             <div class="slide-overlay"></div>
             <h2>3부. 냉소의 시대 — 묻힌 예언과 스크랩북</h2>
             <div class="grid-2" style="max-width: 1200px; width: 100%; align-items: center; gap: 2rem;">
                 <div>
-                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="50년치 신문 스크랩북" style="width: 100%; max-height: 55vh; object-fit: contain; border-radius: 1rem; border: 1px solid var(--border-color);">
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img4.jpg" alt="50년치 신문 스크랩북" style="width: 100%; max-height: 55vh; object-fit: contain; border-radius: 1rem; border: 1px solid var(--border-color);">
                 </div>
                 <div class="card text-left">
                     <h3 style="color: var(--accent); margin-bottom: 1rem;">불굴의 자존심, 그리고 50년의 기록</h3>
@@ -444,7 +534,7 @@
 
         <!-- Slide 7: Conclusion -->
         <div class="slide conclusion-slide">
-            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img4.jpg" alt="Scrapbook">
+            <img class="slide-bg" src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img4.jpg" alt="Scrapbook">
             <div class="slide-overlay"></div>
             <h1>기록이 만든 미래</h1>
             <p style="font-size: 1.5rem; color: #fff; max-width: 900px; margin-top: 2rem;">
@@ -468,7 +558,7 @@
                 
                 <!-- 유튜브 케이스 -->
                 <a href="https://www.youtube.com/watch?v=gKoyNzav77I" target="_blank" class="youtube-card">
-                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료_img5.jpg" alt="YouTube Thumbnail">
+                    <img src="../Assets/Idea_Insights/1965년에-예측한-2000년대-이정문-화백-발표자료-img5.jpg" alt="YouTube Thumbnail">
                     <div class="info">
                         <h3>이정문 화백, 상상력이 현실이 되다</h3>
                         <p>YouTube 비디오 (클릭하여 시청)</p>
@@ -480,6 +570,8 @@
     </div>
 
     <!-- Navigation HUD -->
+    <button class="nav-arrow prev-arrow" onclick="goToSlide(currentSlide - 1)"><i class="ph-bold ph-caret-left"></i></button>
+    <button class="nav-arrow next-arrow" onclick="goToSlide(currentSlide + 1)"><i class="ph-bold ph-caret-right"></i></button>
     <div class="nav-dots" id="navDots"></div>
     <div class="counter" id="counter">1 / 9</div>
 
@@ -519,6 +611,29 @@
             if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
             if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
         });
+
+        // Swipe navigation for Mobile/Tablet
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        container.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        container.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const threshold = 50; // minimum distance to be considered a swipe
+            if (touchEndX < touchStartX - threshold) {
+                goToSlide(currentSlide + 1);
+            }
+            if (touchEndX > touchStartX + threshold) {
+                goToSlide(currentSlide - 1);
+            }
+        }
     </script>
 </body>
 </html>

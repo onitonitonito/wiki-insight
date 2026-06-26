@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>백성동 - 롱런의 기술</title>
+  <style>
+    :root{
+      --bg:#f6f1e8;
+      --paper:#fbf7f0;
+      --ink:#161616;
+      --muted:#6b655d;
+      --line:#ddd3c4;
+      --accent:#1f6b52;
+      --accent-2:#b7791f;
+      --shadow:0 10px 30px rgba(0,0,0,0.08);
+      --radius:22px;
+      --maxw:1280px;
+    }
+
+    *{box-sizing:border-box;}
+    html,body{
+      margin:0;
+      padding:0;
+      width:100%;
+      height:100%;
+      background:linear-gradient(180deg,#f7f2ea 0%, #efe7da 100%);
+      color:var(--ink);
+      font-family:
+        "Pretendard Variable","Pretendard",
+        "Noto Sans KR","Apple SD Gothic Neo",
+        "Malgun Gothic",system-ui,sans-serif;
+      overflow:hidden;
+    }
+
+    a{color:inherit;text-decoration:none;}
+
+    .deck{
+      position:relative;
+      width:100%;
+      height:100vh;
+      overflow:hidden;
+    }
+
+    .slides{
+      width:100%;
+      height:100%;
+      position:relative;
+    }
+
+    .slide{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transform:translateX(40px) scale(0.985);
+      transition:all .45s ease;
+      pointer-events:none;
+      padding:40px 32px 92px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .slide.active{
+      opacity:1;
+      transform:translateX(0) scale(1);
+      pointer-events:auto;
+    }
+
+    .card{
+      width:min(100%, var(--maxw));
+      height:min(100%, 860px);
+      background:rgba(251,247,240,0.92);
+      backdrop-filter:blur(4px);
+      border:1px solid rgba(221,211,196,.9);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:38px 42px;
+      display:grid;
+      gap:24px;
+      overflow:hidden;
+    }
+
+    .hero{
+      grid-template-columns:1.08fr 0.92fr;
+      align-items:center;
+    }
+
+    .two-col{
+      grid-template-columns:1fr 1fr;
+      align-items:center;
+    }
+
+    .one-col{
+      grid-template-columns:1fr;
+      align-items:start;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:14px;
+      color:var(--accent);
+      font-weight:700;
+      letter-spacing:.02em;
+      margin-bottom:10px;
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--accent);
+      display:inline-block;
+    }
+
+    h1,h2,h3,p,ul{margin:0;}
+    h1{
+      font-size:56px;
+      line-height:1.08;
+      letter-spacing:-0.03em;
+    }
+    h2{
+      font-size:38px;
+      line-height:1.15;
+      letter-spacing:-0.025em;
+    }
+    h3{
+      font-size:24px;
+      line-height:1.25;
+      letter-spacing:-0.02em;
+    }
+    p{
+      font-size:20px;
+      line-height:1.7;
+      color:#2c2a27;
+    }
+    .small{
+      font-size:16px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .lead{
+      font-size:24px;
+      color:#252320;
+      line-height:1.65;
+      max-width:850px;
+    }
+
+    .highlight{
+      color:var(--accent);
+      font-weight:800;
+    }
+
+    .em{
+      color:var(--accent-2);
+      font-weight:800;
+    }
+
+    .quote{
+      border-left:4px solid var(--accent);
+      padding-left:18px;
+      font-size:26px;
+      line-height:1.7;
+      color:#1e1d1b;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+
+    .panel{
+      background:rgba(255,255,255,0.55);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:20px 20px;
+    }
+
+    .panel h3{
+      margin-bottom:10px;
+      font-size:22px;
+    }
+
+    .panel p, .panel li{
+      font-size:18px;
+      line-height:1.7;
+    }
+
+    ul.clean{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:10px;
+    }
+
+    ul.clean li{
+      position:relative;
+      padding-left:18px;
+      font-size:20px;
+      line-height:1.65;
+    }
+
+    ul.clean li::before{
+      content:"•";
+      position:absolute;
+      left:0;
+      top:0;
+      color:var(--accent);
+      font-weight:800;
+    }
+
+    .stat{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-start;
+      gap:4px;
+      padding:18px 20px;
+      border-radius:18px;
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .stat strong{
+      font-size:40px;
+      line-height:1;
+      color:var(--accent);
+      letter-spacing:-0.03em;
+    }
+
+    .stat span{
+      font-size:16px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .timeline{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .step{
+      padding:18px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      min-height:154px;
+    }
+
+    .step .num{
+      display:inline-flex;
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      align-items:center;
+      justify-content:center;
+      background:var(--accent);
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      margin-bottom:10px;
+    }
+
+    .img-wrap{
+      width:100%;
+      height:100%;
+      min-height:280px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:20px;
+      background:#e9e0d2;
+      border:1px solid var(--line);
+      cursor:pointer;
+      position:relative;
+    }
+
+    .img-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition:transform .35s ease, filter .35s ease;
+    }
+
+    .img-wrap:hover img{
+      transform:scale(1.02);
+      filter:contrast(1.03);
+    }
+
+    .img-caption{
+      margin-top:10px;
+      font-size:14px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .footer-note{
+      margin-top:auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      color:var(--muted);
+      font-size:14px;
+      border-top:1px solid var(--line);
+      padding-top:14px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--line);
+      font-size:14px;
+      color:#3c3935;
+    }
+
+    .nav-btn{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:50;
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,255,255,.82);
+      color:#111;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      font-size:22px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all .2s ease;
+    }
+
+    .nav-btn:hover{
+      background:#fff;
+      transform:translateY(-50%) scale(1.04);
+    }
+
+    .nav-btn.prev{left:18px;}
+    .nav-btn.next{right:18px;}
+
+    .bottom-ui{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      z-index:40;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      background:rgba(255,255,255,.72);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(221,211,196,.85);
+      box-shadow:var(--shadow);
+      border-radius:999px;
+      padding:10px 16px;
+    }
+
+    .dots{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#d1c7b8;
+      cursor:pointer;
+      transition:all .2s ease;
+    }
+
+    .dot.active{
+      width:28px;
+      border-radius:999px;
+      background:var(--accent);
+    }
+
+    .counter{
+      font-size:14px;
+      color:#4e4a44;
+      min-width:60px;
+      text-align:center;
+      font-weight:700;
+    }
+
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.82);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      padding:30px;
+    }
+
+    .lightbox.active{
+      display:flex;
+    }
+
+    .lightbox-inner{
+      width:min(92vw, 1200px);
+      height:min(88vh, 880px);
+      display:grid;
+      grid-template-rows:1fr auto;
+      gap:14px;
+    }
+
+    .lightbox-image-wrap{
+      width:100%;
+      height:100%;
+      background:#111;
+      border-radius:18px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+
+    .lightbox-image-wrap img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+
+    .lightbox-caption{
+      color:#f5f5f5;
+      font-size:16px;
+      line-height:1.7;
+      text-align:center;
+      padding:0 12px;
+    }
+
+    .lb-btn{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      font-size:24px;
+      backdrop-filter:blur(6px);
+    }
+
+    .lb-btn:hover{
+      background:rgba(255,255,255,.22);
+    }
+
+    .lb-prev{left:16px;}
+    .lb-next{right:16px;}
+
+    .lb-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:46px;
+      height:46px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      cursor:pointer;
+      font-size:20px;
+      backdrop-filter:blur(6px);
+    }
+
+    .source-link{
+      word-break:break-all;
+    }
+
+    @media (max-width: 1100px){
+      .hero,.two-col,.grid-2,.grid-3,.timeline{
+        grid-template-columns:1fr;
+      }
+      .card{
+        height:auto;
+        max-height:calc(100vh - 132px);
+        overflow:auto;
+      }
+      h1{font-size:42px;}
+      h2{font-size:30px;}
+      p,.lead{font-size:19px;}
+    }
+
+    @media (max-width: 720px){
+      .slide{padding:18px 14px 90px;}
+      .card{padding:24px 20px;}
+      h1{font-size:34px;}
+      h2{font-size:26px;}
+      h3{font-size:20px;}
+      p,.lead{font-size:17px;}
+      .nav-btn{display:none;}
+      .bottom-ui{bottom:12px; padding:10px 12px;}
+      .dot.active{width:20px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="slides">
+
+      <!-- Slide 1 -->
+      <section class="slide active">
+        <div class="card hero">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">프로의 삶 / Long Run Principles</div>
+            <h1>백성동,<br>오래 달리는 사람의 기술</h1>
+            <p class="lead">
+              15년째 현역 축구선수로 살아남은 사람은
+              재능보다 <span class="highlight">기본기</span>,
+              의지보다 <span class="highlight">환경 설계</span>,
+              자신감보다 <span class="highlight">빈 잔의 태도</span>를 말한다.
+            </p>
+            <div class="grid-3">
+              <div class="stat">
+                <strong>15년+</strong>
+                <span>현역으로 버틴 시간</span>
+              </div>
+              <div class="stat">
+                <strong>루틴</strong>
+                <span>흔들릴수록 기본으로 복귀</span>
+              </div>
+              <div class="stat">
+                <strong>시스템</strong>
+                <span>의지 대신 구조를 만든다</span>
+              </div>
+            </div>
+            <div class="footer-note">
+              <span>주제: 축구선수 백성동이 말하는 롱런의 원칙</span>
+              <span class="pill">HTML Presentation</span>
+            </div>
+          </div>
+          <div>
+            <div class="img-wrap" data-index="0">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_01.webp" alt="백성동 이미지 1">
+            </div>
+            <div class="img-caption">클릭하면 확대해서 볼 수 있습니다.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 2 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">왜 백성동인가</div>
+            <h2>롱런은 한 번의 전성기가 아니라,<br>매일 무너지지 않는 기술이다</h2>
+            <p>
+              운동선수의 커리어는 짧고, 경쟁은 잔인합니다.
+              이 세계에서 오래 살아남는 사람은 보통
+              화려한 순간보다 <span class="highlight">무너지지 않는 일상</span>을 먼저 관리합니다.
+            </p>
+            <ul class="clean">
+              <li>컨디션이 좋을 때만 잘하는 사람은 오래가지 못한다</li>
+              <li>불규칙성보다 반복 가능한 구조가 중요하다</li>
+              <li>자기 자신을 아는 사람이 자기 경력을 길게 만든다</li>
+            </ul>
+          </div>
+          <div>
+            <div class="panel">
+              <h3>핵심 질문</h3>
+              <p>
+                “어떻게 해야 오늘도 훈련하고, 내일도 회복하고,
+                몇 년 뒤에도 같은 기준으로 스스로를 관리할 수 있을까?”
+              </p>
+            </div>
+            <div style="height:16px;"></div>
+            <div class="img-wrap" data-index="1">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_02.webp" alt="백성동 이미지 2">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">핵심 원칙 1</div>
+          <h2>기본기는 화려하지 않지만,<br>커리어의 천장을 결정한다</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>백성동의 관점</h3>
+              <p>
+                결국 남는 것은 기본기입니다.
+                몸이 무겁고 멘탈이 흔들리는 날에도
+                다시 기댈 수 있는 건 화려한 기술이 아니라
+                <span class="highlight">반복해 둔 기본 동작과 생활 루틴</span>입니다.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>실무적 해석</h3>
+              <ul class="clean">
+                <li>성과는 스퍼트보다 재현성에서 나온다</li>
+                <li>기본은 위기 시 복구 속도를 높인다</li>
+                <li>기본기의 수준이 커리어의 하한선을 올린다</li>
+              </ul>
+            </div>
+          </div>
+          <div class="quote">
+            오래 가는 사람은 특별한 날의 퍼포먼스가 아니라,
+            평범한 날의 기준이 높다.
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div>
+            <div class="img-wrap" data-index="2">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_03.webp" alt="백성동 이미지 3">
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">핵심 원칙 2</div>
+            <h2>의지력은 소모품,<br>그래서 환경을 먼저 설계한다</h2>
+            <p>
+              장기 성과는 “마음먹기”보다
+              <span class="highlight">흔들려도 지킬 수 있는 구조</span>에 더 크게 좌우됩니다.
+              유혹을 이기려 하지 말고,
+              유혹이 덜 작동하도록 환경을 바꾸는 것입니다.
+            </p>
+            <div class="grid-2">
+              <div class="panel">
+                <h3>Nudge</h3>
+                <p>좋은 선택이 기본값이 되게 만든다</p>
+              </div>
+              <div class="panel">
+                <h3>Friction</h3>
+                <p>나쁜 습관에는 번거로움을 추가한다</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 5 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">행동경제학으로 읽는 루틴</div>
+          <h2>좋은 습관은 결심이 아니라,<br>설계된 기본값에서 나온다</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>넛지 Nudge</h3>
+              <p>건강한 행동을 더 쉽고 자연스럽게 만든다</p>
+            </div>
+            <div class="panel">
+              <h3>프레이밍 Framing</h3>
+              <p>훈련을 “의무”가 아닌 “투자”로 해석한다</p>
+            </div>
+            <div class="panel">
+              <h3>손실 회피 Loss Aversion</h3>
+              <p>루틴을 깨는 비용을 명확히 인식한다</p>
+            </div>
+          </div>
+          <div class="quote">
+            “오늘 하루쯤 괜찮겠지”라는 생각이,
+            장기적으로 가장 비싼 선택일 수 있다.
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 6 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">핵심 원칙 3</div>
+            <h2>읽는 사람은<br>자기 확신에 덜 갇힌다</h2>
+            <p>
+              독서는 단순한 취미가 아니라
+              <span class="highlight">판단력과 관점의 훈련</span>입니다.
+              오래 일하는 사람일수록 자기 방식에 갇힐 위험이 크기 때문에,
+              외부의 생각을 받아들이는 통로가 필요합니다.
+            </p>
+            <ul class="clean">
+              <li>확증 편향을 줄인다</li>
+              <li>낯선 관점에 익숙해진다</li>
+              <li>자기 방식이 항상 정답은 아님을 배운다</li>
+            </ul>
+          </div>
+          <div>
+            <div class="img-wrap" data-index="3">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_04.webp" alt="백성동 이미지 4">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 7 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">빈 잔의 태도</div>
+          <h2>롱런의 반대말은 실패가 아니라,<br>익숙함에 안주하는 것이다</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>국내에 남는 안정</h3>
+              <p>
+                익숙한 환경은 편안하지만,
+                그만큼 학습과 긴장도는 낮아질 수 있습니다.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>해외 도전의 선택</h3>
+              <p>
+                새로운 무대는 불편하고 낯설지만,
+                다시 배우는 사람으로 자신을 되돌립니다.
+              </p>
+            </div>
+          </div>
+          <div class="quote">
+            실력이 쌓일수록 더 비워야 한다.
+            그래야 다음 단계의 배움이 들어온다.
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 8 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div>
+            <div class="img-wrap" data-index="4">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_05.webp" alt="백성동 이미지 5">
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">커리어 전략</div>
+            <h2>성장은 때로,<br>안정을 떠나는 결정에서 시작된다</h2>
+            <p>
+              백성동의 선택은 단순한 이적이 아니라
+              “나는 아직 배울 것이 있다”는 선언에 가깝습니다.
+              이 태도는 선수뿐 아니라 관리자, 창업가, 실무자에게도 그대로 적용됩니다.
+            </p>
+            <div class="panel">
+              <h3>실무 적용</h3>
+              <ul class="clean">
+                <li>익숙한 강점만 반복하면 성장은 정체된다</li>
+                <li>주기적으로 자신을 낯선 환경에 놓을 필요가 있다</li>
+                <li>배움의 밀도를 유지하는 선택이 장기 경쟁력을 만든다</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 9 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">수면 = 훈련</div>
+          <h2>회복은 남는 시간에 하는 것이 아니라,<br>경기력의 일부로 관리해야 한다</h2>
+          <div class="timeline">
+            <div class="step">
+              <div class="num">21:00</div>
+              <h3>전자기기 OFF</h3>
+              <p class="small">블루라이트와 과도한 자극을 차단</p>
+            </div>
+            <div class="step">
+              <div class="num">21:10</div>
+              <h3>차분한 전환</h3>
+              <p class="small">블루라이트 차단 안경, 조도 낮추기</p>
+            </div>
+            <div class="step">
+              <div class="num">22:00</div>
+              <h3>정시 취침</h3>
+              <p class="small">수면을 우선순위로 고정</p>
+            </div>
+            <div class="step">
+              <div class="num">05:30</div>
+              <h3>자연광 기상</h3>
+              <p class="small">생체 리듬을 일정하게 유지</p>
+            </div>
+          </div>
+          <div class="quote">
+            수면은 회복 행위가 아니라,
+            다음 날의 퍼포먼스를 준비하는 선행 훈련이다.
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 10 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">환경 디테일</div>
+            <h2>좋은 잠은 노력보다,<br>잠들기 쉬운 조건에서 나온다</h2>
+            <ul class="clean">
+              <li>침실 온도는 약 <span class="highlight">18°C</span>로 유지</li>
+              <li><span class="highlight">암막 커튼</span>으로 빛을 차단</li>
+              <li>전자기기는 침실 밖으로 분리</li>
+              <li>기상은 알람보다 <span class="highlight">자연광</span>에 맞춘다</li>
+            </ul>
+            <div class="panel">
+              <h3>실무 포인트</h3>
+              <p>
+                중요한 것은 “나는 의지가 강하다”가 아니라
+                “내 방은 좋은 수면에 유리하게 설계되어 있다”입니다.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="img-wrap" data-index="5">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_06.webp" alt="백성동 이미지 6">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 11 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div>
+            <div class="img-wrap" data-index="6">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_07.webp" alt="백성동 이미지 7">
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">일관성의 힘</div>
+            <h2>선수 생명을 늘리는 것은,<br>극단적 관리가 아니라 반복 가능한 관리다</h2>
+            <p>
+              멋진 한 번보다 지루한 백 번이 강합니다.
+              컨디션이 좋을 때만 유지되는 계획은 습관이 아닙니다.
+              오래 가는 사람은 <span class="highlight">언제든 다시 돌아갈 수 있는 기준선</span>을 갖고 있습니다.
+            </p>
+            <div class="panel">
+              <h3>핵심 메시지</h3>
+              <p>“특별한 루틴”보다 “지속 가능한 루틴”이 중요하다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 12 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">심리 + 환경 설계</div>
+          <h2>의지력을 보호하는 시스템을 만들면,<br>장기 퍼포먼스가 훨씬 안정된다</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>유혹 최소화</h3>
+              <p>스마트폰, 야식, 늦은 일정 등 방해 요소를 구조적으로 줄인다</p>
+            </div>
+            <div class="panel">
+              <h3>선택 자동화</h3>
+              <p>반복되는 결정은 미리 정해두어 판단 피로를 줄인다</p>
+            </div>
+            <div class="panel">
+              <h3>회복 우선순위</h3>
+              <p>훈련량만이 아니라 회복의 질까지 관리 대상에 넣는다</p>
+            </div>
+          </div>
+          <div class="quote">
+            강한 사람은 유혹을 다 이기는 사람이 아니라,
+            유혹이 덜 작동하는 환경을 가진 사람이다.
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 13 -->
+      <section class="slide">
+        <div class="card two-col">
+          <div style="display:flex; flex-direction:column; gap:18px;">
+            <div class="eyebrow">독서와 자기 규율</div>
+            <h2>몸을 단련하듯,<br>생각도 훈련해야 오래 간다</h2>
+            <p>
+              롱런은 체력만의 문제가 아닙니다.
+              자신을 객관화하고, 확신을 의심하고, 배움을 계속 받아들이는
+              <span class="highlight">인지적 유연성</span>이 필요합니다.
+            </p>
+            <ul class="clean">
+              <li>독서는 사고의 근육을 키운다</li>
+              <li>낯선 문장은 새로운 해석을 허용한다</li>
+              <li>자기 규율은 몸과 생각을 함께 관리한다</li>
+            </ul>
+          </div>
+          <div>
+            <div class="img-wrap" data-index="7">
+              <img src="https://c.longblack.co/image/note/body/2024/1_백성동_08.webp" alt="백성동 이미지 8">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 14 -->
+      <section class="slide">
+        <div class="card one-col">
+          <div class="eyebrow">결론</div>
+          <h2>롱런은 재능의 문제가 아니라,<br>자기 인식과 설계의 문제다</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>백성동의 롱런 공식</h3>
+              <ul class="clean">
+                <li><span class="highlight">자기 인식</span> — 내 약점과 흔들림을 안다</li>
+                <li><span class="highlight">환경 설계</span> — 약점이 개입하기 어렵게 만든다</li>
+                <li><span class="highlight">지적 겸손</span> — 계속 배우는 빈 잔을 유지한다</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>한 문장 요약</h3>
+              <p class="quote" style="font-size:24px; border-left:none; padding-left:0;">
+                약점을 없애려 하지 말고,<br>
+                약점이 작동할 수 없는 루틴을 설계하라.
+              </p>
+            </div>
+          </div>
+          <div class="footer-note">
+            <span class="source-link">
+              원문 링크:
+              <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages%2FLongblack-Coffee-Insight%2F%E2%9C%85%EB%B0%B1%EC%84%B1%EB%8F%99-15%EB%85%84%EC%A7%B8-%ED%98%84%EC%97%AD%EC%B6%95%EA%B5%AC%EC%84%A0%EC%88%98%EA%B0%80-%EB%A7%90%ED%95%98%EB%8A%94-%EB%A1%B1%EB%9F%B1%EC%9D%98%EA%B8%B0%EC%88%A0.md">
+                Obsidian 원문 열기
+              </a>
+            </span>
+            <span class="pill">END</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <button class="nav-btn prev" id="prevBtn" aria-label="이전 슬라이드">‹</button>
+    <button class="nav-btn next" id="nextBtn" aria-label="다음 슬라이드">›</button>
+
+    <div class="bottom-ui">
+      <div class="counter" id="counter">1 / 14</div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <div class="lightbox-image-wrap" id="lightboxImageWrap">
+        <button class="lb-close" id="lbClose" aria-label="닫기">✕</button>
+        <button class="lb-btn lb-prev" id="lbPrev" aria-label="이전 이미지">‹</button>
+        <img id="lightboxImage" src="" alt="확대 이미지">
+        <button class="lb-btn lb-next" id="lbNext" aria-label="다음 이미지">›</button>
+      </div>
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsWrap = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentSlide = 0;
+
+    function createDots() {
+      slides.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.className = 'dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `${idx + 1}번 슬라이드로 이동`);
+        dot.addEventListener('click', () => goToSlide(idx));
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function updateUI() {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentSlide);
+      });
+
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlide);
+      });
+
+      counter.textContent = `${currentSlide + 1} / ${slides.length}`;
+    }
+
+    function goToSlide(index) {
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+      currentSlide = index;
+      updateUI();
+    }
+
+    function nextSlide() {
+      goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      goToSlide(currentSlide - 1);
+    }
+
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') showLightboxImage(currentImageIndex + 1);
+        if (e.key === 'ArrowLeft') showLightboxImage(currentImageIndex - 1);
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      }
+
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    let wheelLock = false;
+    document.addEventListener('wheel', (e) => {
+      if (lightbox.classList.contains('active')) return;
+      if (wheelLock) return;
+      wheelLock = true;
+
+      if (Math.abs(e.deltaY) > 10) {
+        if (e.deltaY > 0) nextSlide();
+        else prevSlide();
+      }
+
+      setTimeout(() => wheelLock = false, 500);
+    }, { passive: true });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (lightbox.classList.contains('active')) return;
+
+      const dx = e.changedTouches[0].screenX - touchStartX;
+      const dy = e.changedTouches[0].screenY - touchStartY;
+
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    createDots();
+    updateUI();
+
+    // Lightbox
+    const imageElements = Array.from(document.querySelectorAll('.img-wrap img'));
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const lbClose = document.getElementById('lbClose');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+
+    let currentImageIndex = 0;
+
+    const customDescriptions = {
+      "1_백성동_01.webp": "백성동의 커리어를 상징하는 대표 이미지. 이 발표의 주제인 ‘오래 달리는 사람의 기술’을 여는 장면입니다.",
+      "1_백성동_02.webp": "한 명의 선수로 오래 살아남는다는 것이 얼마나 높은 자기 관리 역량을 요구하는지 보여주는 이미지입니다.",
+      "1_백성동_03.webp": "기본기와 반복 훈련의 중요성을 환기하는 장면. 화려함보다 재현성이 롱런을 만듭니다.",
+      "1_백성동_04.webp": "독서와 자기 성찰, 그리고 관점을 넓히는 훈련의 중요성을 연결하는 이미지입니다.",
+      "1_백성동_05.webp": "익숙한 환경을 벗어나 다시 배우는 사람으로 서는 것, 즉 해외 도전과 빈 잔의 태도를 상징합니다.",
+      "1_백성동_06.webp": "수면과 회복을 경기력의 일부로 관리하는 백성동의 태도를 설명하는 이미지입니다.",
+      "1_백성동_07.webp": "극단적 한 번보다 반복 가능한 루틴이 선수 생명을 늘린다는 메시지를 담고 있습니다.",
+      "1_백성동_08.webp": "생각의 근육을 기르는 독서와 자기 규율, 인지적 유연성을 상징하는 이미지입니다.",
+      "1_백성동_09.webp": "환경 설계와 자기 관리가 장기 퍼포먼스를 만든다는 메시지와 연결되는 이미지입니다.",
+      "1_백성동_10.webp": "훈련, 회복, 수면, 태도까지 모두가 하나의 시스템이라는 점을 보여주는 보조 이미지입니다.",
+      "1_백성동_11.webp": "발표의 결론과 연결되는 이미지. 약점을 인정하고 루틴으로 보완하는 롱런의 철학을 상징합니다."
+    };
+
+    function getDescription(src) {
+      const fileName = src.split('/').pop();
+      return customDescriptions[fileName] || "백성동의 롱런 철학과 관련된 참고 이미지입니다.";
+    }
+
+    function showLightboxImage(index) {
+      if (index < 0) index = imageElements.length - 1;
+      if (index >= imageElements.length) index = 0;
+      currentImageIndex = index;
+
+      const img = imageElements[currentImageIndex];
+      lightboxImage.src = img.src;
+      lightboxImage.alt = img.alt || "확대 이미지";
+      lightboxCaption.textContent = getDescription(img.src);
+    }
+
+    function openLightbox(index) {
+      showLightboxImage(index);
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    imageElements.forEach((img, idx) => {
+      img.addEventListener('click', () => openLightbox(idx));
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', () => showLightboxImage(currentImageIndex - 1));
+    lbNext.addEventListener('click', () => showLightboxImage(currentImageIndex + 1));
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    // Lightbox touch
+    let lbTouchStartX = 0;
+    let lbTouchStartY = 0;
+
+    lightbox.addEventListener('touchstart', (e) => {
+      lbTouchStartX = e.changedTouches[0].screenX;
+      lbTouchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].screenX - lbTouchStartX;
+      const dy = e.changedTouches[0].screenY - lbTouchStartY;
+
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) showLightboxImage(currentImageIndex + 1);
+        else showLightboxImage(currentImageIndex - 1);
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코스피 9000 반도체 편중 미래 시나리오</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #e6edf3;
+            --accent-color: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.4);
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --font-main: 'Pretendard', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .deck {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide {
+            min-width: 100vw;
+            height: 100vh;
+            padding: clamp(2rem, 5vw, 4rem) clamp(3rem, 8vw, 6rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .slide.active .slide-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-family: var(--font-serif);
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: clamp(1.4rem, 2vw, 1.8rem);
+            margin-bottom: 1rem;
+            color: #8b949e;
+        }
+
+        p, li {
+            font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #c9d1d9;
+        }
+
+        ul {
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .glass-card {
+            background: rgba(22, 27, 34, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* HUD & Navigation */
+        .hud {
+            position: fixed;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 clamp(2rem, 5vw, 4rem);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .counter {
+            font-family: var(--font-main);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #8b949e;
+            letter-spacing: 2px;
+        }
+
+        .dot-bar {
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+            transform: scale(1.3);
+        }
+
+        /* Icons */
+        i.ph-duotone {
+            color: var(--accent-color);
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        /* Conclusion Slide */
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+            z-index: -1;
+            filter: grayscale(80%) sepia(20%) hue-rotate(180deg);
+        }
+
+        /* More Insights Layout */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            height: 60vh;
+        }
+
+        .link-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .link-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateY(-5px);
+        }
+
+        .link-card i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            align-content: start;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        .lightbox-topbar {
+            position: absolute;
+            top: 2rem; 
+            left: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lightbox-close {
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .lightbox-nav {
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 1rem;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            transition: background 0.3s ease;
+        }
+        .lightbox-nav:hover {
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--accent-color);
+        }
+        .lightbox-prev { left: 2rem; }
+        .lightbox-next { right: 2rem; }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="deck" id="deck">
+
+        <!-- Slide 1: Cover -->
+        <div class="slide">
+            <div class="slide-content" style="display: flex; align-items: center; justify-content: center;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; width: 100%;">
+                    <div>
+                        <i class="ph-duotone ph-chart-line-up" style="font-size: 5rem; margin-bottom: 1.5rem; color: var(--accent-color);"></i>
+                        <h1 style="font-size: 3.5rem; line-height: 1.2; margin-bottom: 1rem;">코스피 9,000<br>시대의 명암</h1>
+                        <h3 style="font-size: 1.5rem; font-weight: 300;">반도체 편중과 퓨처캐스트 2070</h3>
+                        <p style="margin-top: 2rem; color: #8b949e; font-size: 1.2rem;">AI 인프라 자산 독점의 빛과 그림자</p>
+                    </div>
+                    <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img1.png" alt="미래 시나리오 종합 시각화 맵" style="width: 100%; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: 핵심 Takeaway -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-lightbulb"></i> 핵심 Takeaway</h2>
+                <div class="glass-card">
+                    <p class="highlight" style="font-size: 1.4rem;">
+                        코스피 9,000 시대는 국가 경제 전체의 성장이 아닌,<br>
+                        '글로벌 AI 인프라 자산(반도체)'의 독점에 의한 착시 현상입니다.
+                    </p>
+                    <p style="margin-top: 1.5rem;">
+                        극단적인 K자형 양극화를 극복하기 위해 기술 의존성을 분산하고,<br>
+                        AI 기술을 통해 소외된 전통 산업을 고도화하는 등 이종 산업 간 연결 및<br>
+                        수익화 시나리오(Viability) 발굴이 시급합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: 정치 & 경제 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-scales"></i> 정치 및 경제의 붕괴적 재편</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="glass-card">
+                        <h3>🏛️ 정치: 실리콘 거버넌스</h3>
+                        <p>국가의 경제 통제력 상실과 거대 기술 기업(Big Tech) 종속 심화.</p>
+                        <p>소수 반도체 기업의 흥망이 곧 국가 안보 및 정치 생명을 좌우하게 됩니다.</p>
+                        <span style="color: var(--accent-color); font-size: 0.9rem;">[검증된 추세]</span>
+                    </div>
+                    <div class="glass-card">
+                        <h3>💰 경제: 자금 블랙홀 현상</h3>
+                        <p>K자형 양극화 고착. 반도체 생태계 밖의 내수·전통 산업은 만성적 자본 고갈에 시달립니다.</p>
+                        <p>'주식 시장 내 빈민촌'으로 전락하는 현상이 발생합니다.</p>
+                        <span style="color: var(--accent-color); font-size: 0.9rem;">[검증된 추세]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 사회 & 문화 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-users-three"></i> 사회 및 문화적 단층</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="glass-card">
+                        <h3>👥 사회: 부의 계급화 (Capital Caste)</h3>
+                        <p>초저출산 위기와 맞물려 주도주를 선점한 'AI 자산가' 계층과 배제된 계층 간 갈등 폭발.</p>
+                        <span style="color: var(--accent-color); font-size: 0.9rem;">[합리적 추론]</span>
+                    </div>
+                    <div class="glass-card">
+                        <h3>🎭 문화: 기술 종교화</h3>
+                        <p>주식 투자가 종교적 신념이자 팬덤 문화로 변질. 기술 낙관주의가 지배하며 일상적 노동의 가치가 경시됨.</p>
+                        <span style="color: var(--accent-color); font-size: 0.9rem;">[합리적 추론]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 시대별 시나리오 2026 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-clock"></i> 2026년: 세계 6위 증시와 그림자</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                    <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img2.jpg" alt="2026년 코스피 9000" style="width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                    <div class="glass-card">
+                        <p class="highlight" style="font-size: 1.3rem; margin-bottom: 1rem;">여의도 전광판 'KOSPI 9,000' 돌파, 합산 시가총액 8,220조 원</p>
+                        <ul>
+                            <li>반도체 투톱 글로벌 시총 1조 달러 클럽 가입</li>
+                            <li>대만, 인도 추월하여 세계 6위 규모 증시 도약</li>
+                            <li>대형 기술주 상위 5개가 시가총액의 75% 싹쓸이</li>
+                            <li>80%의 내수·전통 기업 붕괴, 극단적 소외감과 FOMO 확산</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 시대별 시나리오 2045 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-cpu"></i> 2045년: 실리콘 네이션 (Silicon Nation)</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                    <div class="glass-card">
+                        <p class="highlight" style="font-size: 1.3rem; margin-bottom: 1rem;">나스닥과 0.01초 오차 없이 연동되는 완벽한 프록시 시장</p>
+                        <ul>
+                            <li>미국 실리콘밸 거인들의 '하드웨어 병참기지'로 전락한 국가 경제</li>
+                            <li>내수 침체 구제를 위해 반도체 세수 기반 'AI-로봇 보편적 기본소득(UBI)' 실험 강행</li>
+                            <li>거대 기술주 지분 상속 계급 vs 기본소득 의존 잉여 계급의 완벽한 양분화</li>
+                        </ul>
+                    </div>
+                    <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img3.jpg" alt="2045년 실리콘 네이션" style="width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: 시대별 시나리오 2070 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-atom"></i> 2070년: 글로벌 양자 AI 자산 시장</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                    <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img4.jpg" alt="2070년 양자 AI" style="width: 100%; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                    <div class="glass-card">
+                        <p class="highlight" style="font-size: 1.3rem; margin-bottom: 1rem;">물리적 국가 경계 해체, '통합 컴퓨팅 지분 네트워크' 통폐합</p>
+                        <ul>
+                            <li>과거의 반도체 기업은 전 세계 AI 기초 대사를 담당하는 무형의 유틸리티 프로토콜로 진화</li>
+                            <li>더 이상 기업이 아닌, 양자 서버 네트워크의 '초전도 연산 효율' 지표에 투자</li>
+                            <li>지능 인프라 지분이 인류의 새로운 금본위제로 정착</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 시나리오 밸런스 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-scales"></i> 시나리오 밸런스 점검</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="glass-card" style="border-top: 4px solid #3fb950;">
+                        <h3>☀️ 유토피아적 관점</h3>
+                        <p>막대한 자본이 보편적 기술 복지로 활용. 한국이 글로벌 AI 생태계의 심장부로 영구적 경제 안정을 누리는 낙관적 미래.</p>
+                    </div>
+                    <div class="glass-card" style="border-top: 4px solid #f85149;">
+                        <h3>⛈️ 디스토피아적 관점</h3>
+                        <p>주도주 쏠림 임계점 돌파로 타 생태계 고사. 단 한 번의 지정학적 위기 시 완충 지대 없는 국가 경제 전체의 붕괴 우려.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: 최종 액션 플랜 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-target"></i> 통섭 인사이트 및 최종 액션 플랜</h2>
+                <div class="glass-card">
+                    <ol style="padding-left: 1.5rem;">
+                        <li style="margin-bottom: 1.5rem;">
+                            <strong style="color: var(--accent-color);">1. 이종 산업 간 기술 융합 모델링 (Opportunities)</strong><br>
+                            반도체와 로보틱스로 집중된 막대한 자본과 기술적 수혜를 농업, 의료, 전통 제조업 등 소외된 전통 섹터에 주입하여 새로운 부가가치를 창출하는 Viability 시나리오 기획
+                        </li>
+                        <li>
+                            <strong style="color: var(--accent-color);">2. 글로벌 리스크 헤징 포트폴리오 구축 (Risk Management)</strong><br>
+                            미국 증시 완벽 동조화에 따른 주권 리스크 방어. 샌드박스 규제와 함께 양자컴퓨팅, 합성생물학 등 차세대 패러다임으로 국가 자원 분산 투자
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: CONCLUSION -->
+        <div class="slide">
+            <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img1.png" alt="코스피 9000 배경" class="bg-image" onerror="this.style.display='none'">
+            <div class="slide-content flex-center glass-card" style="background: rgba(13, 17, 23, 0.85); padding: 4rem;">
+                <h1 style="color: var(--accent-color);">CONCLUSION</h1>
+                <p style="font-size: 1.5rem; max-width: 800px; margin: 2rem auto;">
+                    소수 거대 기술 산업에 집중된 주식 시장의 기형적 팽창은 곧 <strong>국가 경제의 체질 변화</strong>를 의미합니다.<br><br>
+                    우리는 기술 종속을 넘어 새로운 가치 창출의 분산 네트워크를 구축해야만 K자형 붕괴를 막을 수 있습니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 11: MORE INSIGHTS -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="ph-duotone ph-magnifying-glass-plus"></i> MORE INSIGHTS</h2>
+                <div class="insights-grid">
+                    <!-- Case B: 위키 원문 딥링크 -->
+                    <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Insight%2FIdea_Insights%2F%E2%9C%85%EC%BD%94%EC%8A%A4%ED%94%BC-9000-%EB%B0%98%EB%8F%84%EC%B2%B4-%ED%8E%B8%EC%A4%91-%EB%AF%B8%EB%9E%98-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4.md" class="link-card glass-card">
+                        <i class="ph-duotone ph-file-text"></i>
+                        <h3>위키 원문 읽기</h3>
+                        <p style="font-size: 1rem;">✅코스피-9000-반도체-편중-미래-시나리오.md</p>
+                    </a>
+
+                    <!-- Case B: 이미지 라이트박스 갤러리 -->
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1.5rem;"><i class="ph-duotone ph-image"></i> 이미지 아카이브 <span style="font-size:1rem; font-weight:normal;">(클릭하여 확대)</span></h3>
+                        <div class="gallery">
+                            <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img2.jpg" alt="2026년 KOSPI 9000" data-caption="[2026년 KOSPI 9000] 반도체 투톱의 시총 1조 달러 클럽 가입으로 KOSPI가 9,000을 돌파하며 세계 6위 증시로 도약한 화려한 이면을 담았습니다. 상위 5개 기술주가 시가총액의 75%를 독식하는 반면, 내수·전통 기업의 80%는 붕괴 위기에 처하게 됩니다. 화려한 지수 상승과 대비되는 극단적 소외감과 FOMO가 사회 전반에 확산되며, 대한민국 자본시장의 거대한 K자형 양극화가 시작되는 초기 시나리오를 시각화했습니다.">
+                            <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img3.jpg" alt="2045년 실리콘 네이션" data-caption="[2045년 실리콘 네이션] 나스닥과 0.01초 오차 없이 연동되며 미국 빅테크의 '하드웨어 병참기지'로 전락한 미래 국가 경제의 디스토피아적 풍경입니다. 내수 침체를 막기 위해 반도체 세수를 재원으로 한 'AI 보편적 기본소득(UBI)'이 도입되지만, 이는 거대 기술주 지분을 상속받은 극소수의 자본 계급과 기본소득에만 의존하는 다수의 잉여 계급으로 사회 구조를 완벽하게 양분화시키는 결과를 낳게 됩니다.">
+                            <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img4.jpg" alt="2070년 양자 AI 네이션" data-caption="[2070년 양자 AI 자산 시장] 물리적 국가 경계가 해체되고 전 세계가 '통합 컴퓨팅 지분 네트워크'로 통폐합된 초거대 AI 문명의 최종 진화 단계입니다. 과거의 반도체 기업들은 인류의 지능 대사를 담당하는 무형의 유틸리티 프로토콜로 승화되었으며, 투자의 패러다임은 기업 분석이 아닌 양자 네트워크의 '초전도 연산 효율' 지표 투자로 전환되었습니다. 지능 인프라 지분이 곧 인류의 새로운 금본위제가 된 초월적 시대를 보여줍니다.">
+                            <img src="../Assets/Idea_Insights/코스피-9000-반도체-편중-미래-시나리오-발표자료-img1.png" alt="미래 시나리오 비주얼라이징" data-caption="[미래 시나리오 맵] 2026년의 극단적 자본 양극화에서 출발해 2045년 실리콘 네이션 체제를 거쳐 2070년 글로벌 양자 AI 인프라망으로 흡수되기까지의 거시적인 붕괴와 재편 흐름을 한눈에 조망하는 인사이트 다이어그램입니다. 특정 산업에 대한 과도한 기술 의존성이 어떻게 국가 경제 패러다임의 근본적이고 비가역적인 전환을 초래하는지, 그 단계별 인과관계와 미래 자본 시장의 변화 궤적을 구조적으로 요약하여 제시합니다.">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HUD -->
+    <div class="hud">
+        <div class="dot-bar" id="dot-bar"></div>
+        <div class="counter" id="counter">1 / 11</div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-topbar">
+            <span id="lightbox-counter" style="color: white; font-size: 1.2rem; font-family: var(--font-main);"></span>
+            <i class="ph-duotone ph-x lightbox-close" onclick="closeLightbox()"></i>
+        </div>
+        <i class="ph-duotone ph-caret-left lightbox-nav lightbox-prev" onclick="prevLightboxImage(event)"></i>
+        <img id="lightbox-img" src="" alt="확대 이미지" onclick="event.stopPropagation()">
+        <i class="ph-duotone ph-caret-right lightbox-nav lightbox-next" onclick="nextLightboxImage(event)"></i>
+        <div id="lightbox-caption" style="position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%); color: white; width: 85%; max-width: 900px; text-align: left; background: rgba(0,0,0,0.75); padding: 1.5rem 2rem; border-radius: 12px; font-size: 1.05rem; line-height: 1.7; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);"></div>
+    </div>
+
+    <script>
+        const deck = document.getElementById('deck');
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('counter');
+        const dotBar = document.getElementById('dot-bar');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        // Initialize dots
+        for(let i=0; i<totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            dotBar.appendChild(dot);
+        }
+        const dots = document.querySelectorAll('.dot');
+
+        function updateSlide() {
+            deck.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            counter.innerText = `${currentSlide + 1} / ${totalSlides}`;
+            
+            slides.forEach((s, i) => {
+                s.classList.toggle('active', i === currentSlide);
+                dots[i].classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function goToSlide(index) {
+            if(index >= 0 && index < totalSlides) {
+                currentSlide = index;
+                updateSlide();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(lightbox.classList.contains('active')) {
+                if(e.key === 'Escape') closeLightbox();
+                if(e.key === 'ArrowRight') nextLightboxImage();
+                if(e.key === 'ArrowLeft') prevLightboxImage();
+                return;
+            }
+            if(e.key === 'ArrowRight' || e.key === 'Space') {
+                goToSlide(currentSlide + 1);
+            } else if(e.key === 'ArrowLeft') {
+                goToSlide(currentSlide - 1);
+            }
+        });
+
+        // Initialize first slide animation
+        setTimeout(() => slides[0].classList.add('active'), 100);
+
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const galleryImgs = document.querySelectorAll('.gallery img');
+        
+        const galleryData = Array.from(galleryImgs).map(img => ({
+            src: img.src,
+            caption: img.getAttribute('data-caption') || img.alt
+        }));
+        
+        let currentLightboxIndex = 0;
+
+        galleryImgs.forEach((img, idx) => {
+            img.style.cursor = 'pointer';
+            img.onclick = () => openLightbox(idx);
+        });
+
+        function updateLightboxContent() {
+            lightboxImg.src = galleryData[currentLightboxIndex].src;
+            lightboxCaption.innerHTML = galleryData[currentLightboxIndex].caption;
+            lightboxCounter.innerText = `${currentLightboxIndex + 1} / ${galleryData.length}`;
+        }
+
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            updateLightboxContent();
+            lightbox.classList.add('active');
+        }
+
+        function prevLightboxImage(e) {
+            if (e) e.stopPropagation();
+            currentLightboxIndex = (currentLightboxIndex - 1 + galleryData.length) % galleryData.length;
+            updateLightboxContent();
+        }
+
+        function nextLightboxImage(e) {
+            if (e) e.stopPropagation();
+            currentLightboxIndex = (currentLightboxIndex + 1) % galleryData.length;
+            updateLightboxContent();
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            setTimeout(() => lightboxImg.src = '', 300);
+        }
+
+        lightbox.addEventListener('click', (e) => {
+            if(e.target === lightbox) closeLightbox();
+        });
+    </script>
+</body>
+</html>

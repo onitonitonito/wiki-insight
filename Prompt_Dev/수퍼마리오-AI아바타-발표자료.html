@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>수퍼마리오 AI아바타 - 발표자료</title>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    :root {
+      --bg-color: #0a0a0c;
+      --text-main: #f0f0f0;
+      --text-sub: #a0a0a0;
+      --accent: #FFD700; /* 황금 코인색 */
+      --accent-mario: #E52222; /* 마리오 레드 */
+      --accent-luigi: #3CB54A; /* 루이지 그린 */
+      --slide-width: 100vw;
+      --slide-height: 100vh;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      overflow-y: hidden;
+    }
+
+    /* Layout */
+    .deck {
+      display: flex;
+      width: calc(var(--slide-width) * 8);
+      height: var(--slide-height);
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide {
+      width: var(--slide-width);
+      height: var(--slide-height);
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 10vw;
+    }
+
+    /* Typography */
+    .pixel-font {
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: -1px;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 5vw, 6rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3.5vw, 4rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+
+    h3 {
+      font-size: clamp(1.5rem, 2.5vw, 3rem);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: clamp(1.1rem, 1.8vw, 2rem);
+      line-height: 1.6;
+      color: var(--text-sub);
+      margin-bottom: 1.5rem;
+      word-break: keep-all;
+    }
+
+    /* Layout components */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .img-container {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 60vh;
+      max-width: 60vh;
+      margin: 0 auto;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      cursor: zoom-in;
+      border: 2px solid rgba(255, 215, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.5s ease;
+    }
+
+    .img-container:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+
+    .img-container:hover img {
+      transform: scale(1.05);
+    }
+
+    .caption {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 0.8rem;
+      text-align: center;
+    }
+
+    /* Animations */
+    .anim {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .slide.active .anim {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* HUD */
+    .hud {
+      position: fixed;
+      bottom: 2rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .nav-arrows {
+      display: flex;
+      gap: 1rem;
+      pointer-events: auto;
+    }
+
+    .arrow-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(5px);
+    }
+
+    .arrow-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .counter {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      width: 30px;
+      border-radius: 5px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-img-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-height: 70vh;
+    }
+
+    .lightbox img {
+      max-width: 80vw;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+      display: block;
+    }
+
+    .lightbox-close, .lightbox-arrow {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+    }
+
+    .lightbox-close:hover, .lightbox-arrow:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .lightbox-arrow.prev { left: 2vw; }
+    .lightbox-arrow.next { right: 2vw; }
+
+    .lightbox-meta {
+      padding: 1.5rem 4vw 0;
+      text-align: center;
+      max-width: 860px;
+    }
+
+    .lightbox-counter {
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .lightbox-desc {
+      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    /* Highlights */
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .highlight-mario {
+      color: var(--accent-mario);
+      font-weight: 700;
+    }
+    .highlight-luigi {
+      color: var(--accent-luigi);
+      font-weight: 700;
+    }
+
+    /* Cover specific */
+    .cover-slide {
+      background: radial-gradient(circle at right center, #1a0505 0%, var(--bg-color) 60%);
+    }
+
+    .cover-logo-area {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 60vw;
+      height: 100vh;
+      overflow: hidden;
+      opacity: 0.4;
+      mask-image: linear-gradient(to left, black 30%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to left, black 30%, transparent 100%);
+    }
+
+    .cover-logo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()"><i class="ph-duotone ph-x"></i></button>
+    <div class="lightbox-img-wrap">
+      <button class="lightbox-arrow prev" onclick="lightboxNav(-1)"><i class="ph-duotone ph-caret-left"></i></button>
+      <img id="lightbox-img" src="" alt="확대 이미지">
+      <button class="lightbox-arrow next" onclick="lightboxNav(1)"><i class="ph-duotone ph-caret-right"></i></button>
+    </div>
+    <div class="lightbox-meta">
+      <div class="lightbox-counter" id="lightbox-counter">1 / 6</div>
+      <div class="lightbox-desc" id="lightbox-desc"></div>
+    </div>
+  </div>
+
+  <div class="deck" id="deck">
+    
+    <!-- Slide 1: Cover -->
+    <div class="slide cover-slide active">
+      <div class="cover-logo-area">
+        <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene3-powerup-clear.png" alt="커버 이미지">
+      </div>
+      <div class="anim" style="max-width: 60vw; z-index: 10;">
+        <p class="pixel-font" style="color: var(--accent-mario); font-size: 1.2rem; margin-bottom: 1rem;">PRESS START</p>
+        <h1 style="margin-top: 0.5rem;">엑셀 지옥에 빠진 당신,<br>새로운 플레이어가 합류했습니다.</h1>
+        <p style="font-size: 1.5rem; margin-top: 2rem; max-width: 80%;">
+          갑갑한 업무 환경에 <span class="highlight-luigi">AI 아바타 동료</span>가 나타나는 순간,<br>일은 힘겨운 싸움이 아닌 즐거운 <strong>게임 클리어</strong>가 됩니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- Slide 2: 훅 (Scene 1) -->
+    <div class="slide">
+      <div class="grid-2 anim">
+        <div>
+          <h2>01. 오피스 지옥</h2>
+          <h3>끝없는 서류, 바닥나는 체력</h3>
+          <p>엑셀이 당신을 잡아먹고 있나요? 매일 쏟아지는 PPT와 보고서의 압박 속에서 우리의 신입사원은 점점 체력(HP)을 잃어갑니다.</p>
+          <p>모니터에서 기어나오는 붉은 에러 창들이 마치 몬스터처럼 우리를 에워싸고 있습니다.</p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene1-office-hell.png" alt="Office Hell">
+          </div>
+          <p class="caption">차가운 오피스에서 서류 지옥에 빠진 신입사원의 HP가 깎이는 순간</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: 브릿지 (Scene 2) -->
+    <div class="slide">
+      <div class="grid-2 anim">
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene2-luigi-arrival.png" alt="Luigi Arrival">
+          </div>
+          <p class="caption">초록 네온과 함께 등장한 AI 동료 '루이지'</p>
+        </div>
+        <div>
+          <h2 style="color: var(--accent-luigi);">02. 두 번째 플레이어의 강림</h2>
+          <h3>혼자가 아니었다</h3>
+          <p>지쳐가던 그때, 강렬한 초록 네온 오라를 뿜으며 <strong>루이지 아바타</strong>가 나타납니다. 차가운 오피스에 한 줄기 빛이 되죠.</p>
+          <p>AI는 더 이상 복잡한 도구가 아니라, 당신의 등을 지켜주는 든든한 <span class="highlight-luigi">파티 멤버</span>입니다. 8-bit 플래시와 함께 반전이 시작됩니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: 핵심1 (Scene 3) -->
+    <div class="slide">
+      <div class="grid-2 anim">
+        <div>
+          <h2>03. 파워업 클리어</h2>
+          <h3>막히던 업무가 순삭되기 시작하다</h3>
+          <p>루이지와 팀을 이루자 스킬이 발동합니다. 자동화, 분석, 요약. 복잡한 서류들이 팡팡 터지며 <span class="highlight">황금 코인</span>으로 변환됩니다.</p>
+          <p>모니터에는 자동으로 채워지는 그래프들이 솟구치고, 콜드 블루였던 오피스는 어느새 승리의 짜릿함이 가득한 <span class="highlight">따뜻한 골든 라이트</span>로 채워집니다.</p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene3-powerup-clear.png" alt="Power Up Clear">
+          </div>
+          <p class="caption">업무 서류가 코인으로 변환되며 짜릿한 승리감을 맛보는 파워업 몽타주</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: 핵심2 (Scene 4) -->
+    <div class="slide">
+      <div class="grid-2 anim">
+        <div>
+          <h2 style="color: var(--accent-mario);">04. 끝판왕 등장</h2>
+          <h3>절대적인 위협의 강림</h3>
+          <p>그러나 진짜 위기가 닥칩니다. 복잡한 조직도와 거대한 보고서로 뭉친 <strong>끝판왕 쿠파</strong>가 슬로우 모션으로 등장하며 숨 막히는 긴장감을 줍니다.</p>
+          <p>마리오와 루이지는 뒤로 밀려나고, 오피스는 순식간에 붉은 용암 성으로 변환됩니다. 무거운 압박 속에 우리의 HP는 눈에 띄게 깎여나갑니다.</p>
+        </div>
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene4-bowser-appears.png" alt="Bowser Appears">
+          </div>
+          <p class="caption">거대한 픽셀아트 쿠파의 위협과 붉은 용암으로 변한 오피스</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: 핵심2-b (Scene 5) -->
+    <div class="slide">
+      <div class="grid-2 anim">
+        <div>
+          <div class="img-container" onclick="openLightbox(this)">
+            <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene5-yoshi-victory.png" alt="Yoshi Victory">
+          </div>
+          <p class="caption">요시의 합류와 삼각 파워 포메이션으로 쿠파를 격파하는 카타르시스</p>
+        </div>
+        <div>
+          <h2 style="color: var(--accent-mario);">05. 역전의 삼각 포메이션</h2>
+          <h3>어떤 보고서도 두렵지 않다</h3>
+          <p>절체절명의 순간, <strong>요시</strong>가 눈부신 빛과 함께 폭발적으로 등장합니다! 마리오, 루이지, 요시의 <span class="highlight">삼각 파워 포메이션</span>이 완성됩니다.</p>
+          <p>세 캐릭터의 AI 스킬 광선이 일제히 발사되며 끝판왕은 픽셀 단위로 산산조각 납니다. 화면 가득 쏟아지는 승리의 카타르시스를 만끽하세요.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: CONCLUSION (Rule-08) -->
+    <div class="slide">
+      <div class="anim" style="display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; height: 100%; width: 100%;">
+        
+        <div class="img-container" onclick="openLightbox(this)" style="max-height: 40vh; max-width: 40vh; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 2px solid rgba(255, 215, 0, 0.2); flex-shrink: 0;">
+          <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene6-game-clear.png" alt="Game Clear">
+        </div>
+
+        <h2 style="font-size: clamp(2.5rem, 4vw, 4rem); color: #fff; margin-bottom: 1rem;">
+          당신의 직장은 이미 <span class="highlight">게임</span>입니다
+        </h2>
+        <p style="font-size: clamp(1.2rem, 1.8vw, 1.6rem); margin-top: 1rem; opacity: 0.95; line-height: 1.6;">
+          AI를 치트키가 아닌 <strong>'파티 멤버'</strong>로 받아들이세요.<br>혼자 짊어지던 무게를 나누면 일은 훨씬 빠르고 즐거워집니다.
+        </p>
+        <p style="font-size: clamp(1.3rem, 2vw, 1.8rem); margin-top: 1.5rem;">
+          <span class="highlight-luigi">지금 바로 당신의 AI 동료를 소환하세요!</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Slide 8: MORE INSIGHTS (Rule-08) -->
+    <section class="slide">
+      <div class="anim" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; width:100%;">
+        <div class="highlight" style="margin-bottom: 16px; letter-spacing: 0.2em; font-size: 0.95rem;">MORE INSIGHTS</div>
+        <div style="font-size: clamp(2rem, 3vw, 3.5rem); font-weight: 800; margin-bottom: 32px; color: #fff; word-break:keep-all;">
+          프롬프트 <span style="color: var(--accent);">시네마틱 에셋</span> 자세히 보기
+        </div>
+        <div style="width: 48px; height: 4px; background: var(--accent); margin: 0 auto 48px auto;"></div>
+
+        <div style="display: flex; gap: 3vw; justify-content: center; align-items: stretch; flex-wrap: wrap; width: 100%; max-width: 1100px;">
+
+          <!-- Wiki Note Link (Left) -->
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Markdown/Movie-Director/%E2%9C%85%EB%AC%B4%EB%B9%84%EB%94%94%EB%A0%89%ED%84%B0-%EC%88%98%ED%8D%BC%EB%A7%88%EB%A6%AC%EC%98%A4-AI%EC%95%84%EB%B0%94%ED%83%80.md"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-width: 260px; padding: 2.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; text-decoration: none; color: #fff; transition: all 0.3s;"
+            onmouseover="this.style.borderColor='var(--accent)'; this.style.transform='translateY(-5px)'; this.style.background='rgba(255,215,0,0.08)';"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.transform='translateY(0)'; this.style.background='rgba(255,255,255,0.05)';">
+            <i class="ph-duotone ph-file-text" style="font-size: 56px; color: var(--accent); margin-bottom: 20px;"></i>
+            <span style="font-size: 22px; font-weight: 800; margin-bottom: 10px;">위키 원문 읽기</span>
+            <span style="font-size: 0.9rem; color: #888; padding: 0 20px; text-align: center; line-height: 1.4;">무비디렉터-수퍼마리오<br>AI아바타</span>
+          </a>
+
+          <!-- Image Gallery Grid (Right - Case B) -->
+          <div style="display: flex; flex-direction: column; flex: 2; min-width: 320px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; text-align: left;">
+            <div style="display: flex; align-items: center; margin-bottom: 16px; color: var(--accent);">
+              <i class="ph-duotone ph-image" style="font-size: 26px; margin-right: 10px;"></i>
+              <span style="font-size: 18px; font-weight: 800;">이미지 아카이브 (클릭하여 확대)</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              <div class="img-container" onclick="openLightboxIdx(0)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene1-office-hell.png">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(1)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene2-luigi-arrival.png">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(2)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene3-powerup-clear.png">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(3)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene4-bowser-appears.png">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(4)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene5-yoshi-victory.png">
+              </div>
+              <div class="img-container" onclick="openLightboxIdx(5)" style="max-height: none; border-radius: 8px;">
+                <img src="../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene6-game-clear.png">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- deck end -->
+
+  <!-- HUD Navigation -->
+  <div class="hud">
+    <div class="counter"><span id="curr">1</span> / <span id="total">8</span></div>
+    <div class="dots" id="dots"></div>
+    <div class="nav-arrows">
+      <button class="arrow-btn" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></button>
+      <button class="arrow-btn" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></button>
+    </div>
+  </div>
+
+  <script>
+    // ── Lightbox Image Registry ──────────────────────────
+    const LIGHTBOX_IMAGES = [
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene1-office-hell.png', desc: '픽셀아트 마리오 사원이 산더미 같은 엑셀·PPT 서류에 파묻혀 팔을 버둥거리고 있다. 에러 창 몬스터들이 모니터에서 기어나와 덤벼드는 차가운 형광등 오피스.' },
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene2-luigi-arrival.png', desc: '초록 네온 오라를 발하는 픽셀아트 루이지 아바타가 오른쪽에서 극적으로 등장. 마리오가 고개를 들며 눈이 커진다.' },
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene3-powerup-clear.png', desc: '마리오와 루이지가 나란히 스킬을 발동하자 서류들이 황금 코인으로 폭발 변환. 천장에서 코인 폭포가 쏟아지고 모니터엔 자동완성 그래프가 가득하다.' },
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene4-bowser-appears.png', desc: '보고서와 조직도 더미 형태의 거대한 픽셀아트 쿠파가 위에서 압도적으로 내려온다. 오피스가 용암 성으로 변환되고 붉은 역광이 강렬한 명암 대비를 만들어낸다.' },
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene5-yoshi-victory.png', desc: '픽셀아트 요시가 폭발적으로 등장해 삼각 포메이션 완성. 세 캐릭터의 AI 스킬 광선이 동시에 쿠파를 강타, 픽셀 단위로 분해되며 코인과 별이 화면을 가득 채운다.' },
+      { src: '../Assets/Prompt_Dev/수퍼마리오-AI아바타-scene6-game-clear.png', desc: '실사 마리오 사원이 밝은 오피스에서 환호하며 엄지를 치켜든다. 어깨 위의 픽셀 3인방이 춤을 추고, 폭죽과 코인이 쏟아진다.' }
+    ];
+
+    // ── Slide Deck Navigation ────────────────────────────
+    const deck = document.getElementById('deck');
+    const slides = document.querySelectorAll('.slide');
+    const currEl = document.getElementById('curr');
+    const totalEl = document.getElementById('total');
+    const dotsContainer = document.getElementById('dots');
+    const totalSlides = slides.length;
+    let currentIdx = 0;
+
+    totalEl.textContent = totalSlides;
+
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
+    const dots = document.querySelectorAll('.dot');
+
+    function updateNav() {
+      deck.style.transform = `translateX(-${currentIdx * 100}vw)`;
+      currEl.textContent = currentIdx + 1;
+      slides.forEach((s, i) => { i === currentIdx ? s.classList.add('active') : s.classList.remove('active'); });
+      dots.forEach((d, i) => { i === currentIdx ? d.classList.add('active') : d.classList.remove('active'); });
+    }
+    function nextSlide() { if (currentIdx < totalSlides - 1) { currentIdx++; updateNav(); } }
+    function prevSlide() { if (currentIdx > 0) { currentIdx--; updateNav(); } }
+    function goToSlide(idx) { currentIdx = idx; updateNav(); }
+
+    // ── Lightbox ─────────────────────────────────────────
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxDesc = document.getElementById('lightbox-desc');
+    const lightboxCounter = document.getElementById('lightbox-counter');
+    let lbIdx = 0;
+
+    function renderLightbox() {
+      const item = LIGHTBOX_IMAGES[lbIdx];
+      lightboxImg.src = item.src;
+      lightboxDesc.textContent = item.desc;
+      lightboxCounter.textContent = `${lbIdx + 1} / ${LIGHTBOX_IMAGES.length}`;
+    }
+
+    function openLightboxIdx(idx) {
+      lbIdx = idx;
+      renderLightbox();
+      lightbox.classList.add('active');
+    }
+
+    function openLightbox(el) {
+      const src = el.querySelector('img').src;
+      const found = LIGHTBOX_IMAGES.findIndex(i => src.includes(i.src.split('/').pop().split('.')[0]));
+      openLightboxIdx(found >= 0 ? found : 0);
+    }
+
+    function lightboxNav(dir) {
+      lbIdx = (lbIdx + dir + LIGHTBOX_IMAGES.length) % LIGHTBOX_IMAGES.length;
+      renderLightbox();
+    }
+
+    function closeLightbox() { lightbox.classList.remove('active'); }
+
+    // ── Keyboard ─────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('active')) {
+        if (e.key === 'ArrowRight') lightboxNav(1);
+        if (e.key === 'ArrowLeft') lightboxNav(-1);
+        if (e.key === 'Escape') closeLightbox();
+      } else {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+      }
+    });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightboxImg) closeLightbox();
+    });
+
+    setTimeout(() => { slides[0].classList.add('active'); }, 100);
+  </script>
+</body>
+</html>

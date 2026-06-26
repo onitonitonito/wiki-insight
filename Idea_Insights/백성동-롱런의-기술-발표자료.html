@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>백성동 15년 롱런의 기술 — 위대한 평범함</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+  :root {
+    --black: #121212;
+    --accent: #E63946; /* Energetic Red */
+    --accent-light: #F4A261;
+    --white: #F8F9FA;
+    --gray: #ADB5BD;
+    --gray-dark: #343A40;
+    --bg-dark: #1A1A1D; /* Pitch dark with slight tint */
+    --bg-card: rgba(255, 255, 255, 0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: #000;
+    color: var(--white);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* 4:3 Container */
+  .deck-container {
+    width: 100%;
+    height: 100%;
+    max-width: 133.33vh; /* 4:3 aspect ratio max based on height */
+    max-height: 75vw;    /* 4:3 aspect ratio max based on width */
+    aspect-ratio: 4 / 3;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-dark);
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  }
+
+  .deck {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ─── SLIDE NAVIGATION ─── */
+  .nav-bar {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    z-index: 999;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  .nav-bar:hover { opacity: 1; }
+  
+  .nav-num {
+    font-size: 14px;
+    color: var(--gray);
+    margin: 0 4px;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gray-dark); cursor: pointer; transition: all 0.3s;
+    border: none;
+  }
+  .nav-dot:hover { background: var(--gray); }
+  .nav-dot.active { 
+    background: var(--accent); 
+    width: 24px; height: 8px; border-radius: 4px;
+  }
+
+  .nav-arrows {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 998;
+    transform: translateY(-50%);
+  }
+  .nav-arrow {
+    pointer-events: auto;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    opacity: 0;
+  }
+  .deck-container:hover .nav-arrow { opacity: 0.5; }
+  .nav-arrow:hover { opacity: 1 !important; background: var(--accent); }
+
+  /* ─── TYPOGRAPHY ─── */
+  .section-tag {
+    font-size: clamp(12px, 1.5vw, 16px);
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 2vh;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .big-headline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(32px, 5.5vw, 64px);
+    font-weight: 900;
+    line-height: 1.3;
+    color: var(--white);
+    word-break: keep-all;
+  }
+  .big-headline .accent { color: var(--accent); }
+  .big-headline .light { color: var(--accent-light); }
+  
+  .slide-divider {
+    width: 60px; height: 4px;
+    background: var(--accent);
+    margin: 3vh 0;
+  }
+  .body-text {
+    font-size: clamp(16px, 2.5vw, 22px);
+    line-height: 1.6;
+    color: #D1D5DB;
+    word-break: keep-all;
+  }
+  .body-text strong {
+    color: var(--white);
+    box-shadow: inset 0 -10px 0 rgba(230,57,70,0.4);
+  }
+
+  /* ─── LAYOUT UTILS ─── */
+  .content-wrapper {
+    padding: 8% 10%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .two-col-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  .col-text { flex: 1.2; display: flex; flex-direction: column; justify-content: center; }
+  .col-img { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  
+  .col-img img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .col-img img:hover { transform: scale(1.03); }
+  .img-caption {
+    margin-top: 1.5vh;
+    font-size: clamp(11px, 1.5vw, 14px);
+    color: var(--gray);
+    text-align: center;
+    word-break: keep-all;
+    line-height: 1.4;
+  }
+
+  /* ─── BULLET LISTS & CARDS ─── */
+  .info-list {
+    list-style: none;
+    margin-top: 3vh;
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+  }
+  .info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: clamp(15px, 2.2vw, 20px);
+    color: #E5E7EB;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+  .info-list i {
+    color: var(--accent);
+    font-size: 1.2em;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2vh;
+    margin-top: 4vh;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 3vh 2vw;
+    border-left: 4px solid var(--accent);
+    backdrop-filter: blur(10px);
+  }
+  .stat-card h4 {
+    font-size: clamp(14px, 2vw, 18px);
+    color: var(--gray);
+    margin-bottom: 1vh;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat-card p {
+    font-size: clamp(16px, 2.2vw, 20px);
+    font-weight: 700;
+    color: var(--white);
+    word-break: keep-all;
+  }
+
+  /* ─── SPECIFIC SLIDES ─── */
+  .cover-slide {
+    background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(26,26,29,0.9) 100%), url('https://c.longblack.co/image/note/260624/260624-190931-544070ea.webp') center/cover;
+  }
+  .cover-slide::before {
+    content: ''; position: absolute; inset: 0; background: radial-gradient(circle at right, transparent 0%, var(--bg-dark) 70%);
+  }
+  .cover-slide .content-wrapper { position: relative; z-index: 2; }
+  
+  .conclusion-slide {
+    background: linear-gradient(to top, rgba(26,26,29,1) 0%, rgba(26,26,29,0.4) 100%), url('https://c.longblack.co/image/note/260624/260624-191140-88a2a08c.webp') center/cover;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .conclusion-slide .big-headline { font-size: clamp(40px, 6.5vw, 72px); text-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+
+  /* ─── MORE INSIGHTS ─── */
+  .insight-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    color: var(--white);
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    transition: all 0.3s;
+    margin-top: 4vh;
+  }
+  .insight-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5vh;
+    width: 100%;
+  }
+  .gallery-grid img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0.8;
+  }
+  .gallery-grid img:hover {
+    transform: scale(1.05);
+    opacity: 1;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .anim {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .slide.active .anim {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .delay-1 { transition-delay: 0.2s; }
+  .delay-2 { transition-delay: 0.4s; }
+  .delay-3 { transition-delay: 0.6s; }
+
+  /* ─── LIGHTBOX ─── */
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .lightbox.active {
+    opacity: 1;
+  }
+  .lightbox-content {
+    position: relative;
+    max-width: 90%; 
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lightbox-content img {
+    max-width: 100%; max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: zoomIn 0.3s ease;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 30px; right: 40px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 10001;
+  }
+  .lightbox-close:hover { color: var(--accent); }
+  .lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 50px;
+    cursor: pointer;
+    padding: 20px;
+    transition: 0.3s;
+    z-index: 10001;
+  }
+  .lightbox-arrow:hover { color: var(--accent); transform: translateY(-50%) scale(1.1); }
+  .lb-prev { left: 20px; }
+  .lb-next { right: 20px; }
+  #lightbox-caption {
+    margin-top: 15px;
+    color: var(--white);
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  #lightbox-counter {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--gray);
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+</style>
+</head>
+<body>
+
+<div class="deck-container">
+  <div class="nav-arrows">
+    <button class="nav-arrow prev-arrow" onclick="prevSlide()"><i class="ph-duotone ph-caret-left"></i></button>
+    <button class="nav-arrow next-arrow" onclick="nextSlide()"><i class="ph-duotone ph-caret-right"></i></button>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- 1. COVER -->
+    <div class="slide cover-slide">
+      <div class="content-wrapper">
+        <div class="section-tag anim"><i class="ph-duotone ph-soccer-ball"></i> LONG-RUN STRATEGY</div>
+        <h1 class="big-headline anim delay-1">백성동 15년<br><span class="accent">롱런의 기술</span></h1>
+        <div class="slide-divider anim delay-2"></div>
+        <p class="body-text anim delay-2">위대한 평범함이 만들어낸 기적.<br>신체적 한계와 절망을 디딤판 삼아 베테랑으로 성장한<br>프로 축구선수의 강력한 <strong>회복탄력성과 마인드셋 분석</strong></p>
+      </div>
+    </div>
+
+    <!-- 2. BACKGROUND / PROBLEM -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim"><i class="ph-duotone ph-warning-circle"></i> Trauma & Resilience</div>
+          <h2 class="big-headline anim delay-1">절망을 성장의<br><span class="light">디딤판</span>으로</h2>
+          <div class="slide-divider anim delay-2"></div>
+          <p class="body-text anim delay-2">
+            런던 올림픽 영웅에게 찾아온 전방십자인대 파열. 이는 단순한 부상이 아닌 <strong>선수 생명을 건 심리적 사형선고</strong>와 같았습니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-brain"></i> 인지적 재구조화: 부상을 위협이 아닌 '내 몸을 이해하는 계기'로 재해석.</li>
+            <li><i class="ph-duotone ph-trend-up"></i> 막연한 열정을 버리고, 웜업의 온도까지 통제하는 <strong>자기 인식(Self-Awareness)</strong> 획득.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191136-a76bb1d6.webp" onclick="openLightbox(this)" alt="백성동 그라운드">
+          <div class="img-caption">좌절을 딛고 15년 차 현역으로 달리는 백성동 선수</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. STRATEGY 1 -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim"><i class="ph-duotone ph-wall"></i> CHOICE ARCHITECTURE</div>
+          <h2 class="big-headline anim delay-1">의지 대신<br><span class="accent">환경을 설계</span>하라</h2>
+          <div class="slide-divider anim delay-2"></div>
+          <p class="body-text anim delay-2">
+            "과자가 10개 있으면 결국 다 먹게 된다." 백 선수는 자신의 <strong>나약한 의지를 불신</strong>했습니다.
+          </p>
+          <div class="stat-grid anim delay-3">
+            <div class="stat-card">
+              <h4><i class="ph-duotone ph-battery-warning"></i> 자아 고갈(Ego Depletion)</h4>
+              <p>의지력은 소모되는 배터리.<br>참는 행위 자체가 에너지 낭비.</p>
+            </div>
+            <div class="stat-card">
+              <h4><i class="ph-duotone ph-bed"></i> 수면과 빛 통제</h4>
+              <p>유혹과 싸울 필요조차 없는<br>강제적 환경 시스템 구축.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191138-db13a3e5.webp" onclick="openLightbox(this)" alt="챔피언의 마인드">
+          <div class="img-caption">불안과 집중력을 훈련하며 습관의 메커니즘을 통제했다</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. STRATEGY 2 -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim"><i class="ph-duotone ph-coffee"></i> INTELLECTUAL HUMILITY</div>
+          <h2 class="big-headline anim delay-1">지적 겸손과<br><span class="light">'빈 잔'</span> 마인드</h2>
+          <div class="slide-divider anim delay-2"></div>
+          <p class="body-text anim delay-2">
+            30대 중반의 베테랑임에도 <strong>"나는 모르는 게 많다"</strong>고 고백합니다. 과거의 성공 방정식(확증 편향)에 갇히지 않은 것이 진화의 비결입니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-arrows-split"></i> 역할 변환(Role Transition): 직접 득점에서 동료를 위한 <strong>공간 창출자</strong>로 시야 확장.</li>
+            <li><i class="ph-duotone ph-users-three"></i> 내가 빛나기보다 팀 전체의 퍼포먼스를 극대화하는 성숙한 이타성.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260625/260625-105442-9276d49f.webp" onclick="openLightbox(this)" alt="독서하는 백성동">
+          <div class="img-caption">책을 통해 끊임없이 자신을 비워내는 지적 겸손함</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. CLIPPING 1: ADAPTABILITY -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim"><i class="ph-duotone ph-globe-hemisphere-east"></i> ADAPTABILITY & CAREER</div>
+          <h2 class="big-headline anim delay-1">잦은 이적은<br><span class="accent">적응력</span>의 증거</h2>
+          <div class="slide-divider anim delay-2"></div>
+          <p class="body-text anim delay-2">
+            <strong>한·일·태 3개국 8개 구단</strong>(주빌로 이와타, 수원FC, 포항 스틸러스 등). 그는 불안정한 무대에서도 항상 주전급 생존력을 입증했습니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-briefcase"></i> 평생직장이 사라진 시대, 다양한 조직에 융화되는 적응력이야말로 최고의 무기.</li>
+            <li><i class="ph-duotone ph-rocket"></i> 35세 베테랑임에도 2026년 태국 아유타야로 향하는 <strong>경계 없는 커리어 확장</strong>.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191135-c0c4b1d1.webp" onclick="openLightbox(this)" alt="아유타야 이적">
+          <div class="img-caption">2026년 태국 아유타야 유나이티드 등번호 10번 입단</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CLIPPING 2: EFFICIENCY -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim"><i class="ph-duotone ph-target"></i> EFFICIENCY & OUTCOME</div>
+          <h2 class="big-headline anim delay-1">결정적 순간에<br><span class="light">자원을 집중</span>하라</h2>
+          <div class="slide-divider anim delay-2"></div>
+          <p class="body-text anim delay-2">
+            2023년 포항 스틸러스 시절, 32세의 나이로 <strong>K리그1 첫 입성 및 코리아컵 우승, 리그 최다 도움상(8도움)</strong> 달성.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-lightning"></i> 38라운드 체제 최소 수치인 8도움. 무의미한 플레이보다 <strong>결정적 순간의 효율</strong>을 극대화.</li>
+            <li><i class="ph-duotone ph-check-circle"></i> Input(양)이 아닌 Outcome(핵심 결과물)을 입증하는 순도 높은 퍼포먼스.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191137-9f9f187a.webp" onclick="openLightbox(this)" alt="도움왕 수상">
+          <div class="img-caption">"동료에게 공을 잘 주는 것도 슈팅이다"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. CONCLUSION -->
+    <div class="slide conclusion-slide">
+      <div class="content-wrapper" style="align-items: center; text-align: center;">
+        <div class="section-tag anim" style="justify-content: center;"><i class="ph-duotone ph-star"></i> CONCLUSION</div>
+        <h2 class="big-headline anim delay-1" style="margin-bottom: 4vh;">"열정만으로는 오래 달릴 수 없다.<br><span class="accent">의지를 불신하고 시스템을 설계하라!</span>"</h2>
+        <p class="body-text anim delay-2" style="max-width: 800px;">
+          단순히 열심히 하는 태도를 넘어, 자신의 나약함을 있는 그대로 인정하십시오.<br>그리고 그 나약함이 개입할 수 없는 당신만의 작은 '루틴'을 세팅하십시오.
+        </p>
+      </div>
+    </div>
+
+    <!-- 9. PART 2 COVER -->
+    <div class="slide cover-slide" style="background: linear-gradient(135deg, rgba(26,26,29,0.9) 0%, rgba(22,33,62,0.95) 100%);">
+      <div class="content-wrapper" style="align-items: center; text-align: center;">
+        <div class="section-tag anim" style="justify-content: center; color: var(--accent-light);"><i class="ph-duotone ph-film-slate"></i> SPIN-OFF : TV DOCUMENTARY</div>
+        <h1 class="big-headline anim delay-1" style="font-size: clamp(32px, 5vw, 54px);">제2부 : 어느 심리학자의 시선<br><span class="light">회복탄력성의 비밀</span></h1>
+        <div class="slide-divider anim delay-2" style="background: var(--accent-light);"></div>
+        <p class="body-text anim delay-2" style="max-width: 700px;">
+          "이것은 단순한 축구 생존기가 아닙니다.<br>인간의 회복탄력성과 자기 통제에 대한 살아있는 심리학 교과서입니다."
+        </p>
+      </div>
+    </div>
+
+    <!-- 10. PSYCHOLOGY 1 -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim" style="color: var(--accent-light);"><i class="ph-duotone ph-brain"></i> COGNITIVE FLEXIBILITY</div>
+          <h2 class="big-headline anim delay-1">절망을 재해석하는<br><span class="light">인지적 유연성</span></h2>
+          <div class="slide-divider anim delay-2" style="background: var(--accent-light);"></div>
+          <p class="body-text anim delay-2">
+            치명적인 부상 앞에서 대다수가 겪는 외상 후 스트레스(PTSD) 대신, 그는 부상을 <strong>'내 몸을 이해하는 계기'</strong>로 받아들였습니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-check-circle" style="color: var(--accent-light);"></i> <strong>인지적 재구조화 (Cognitive Restructuring)</strong>: 위기를 성장의 피드백으로 전환.</li>
+            <li><i class="ph-duotone ph-check-circle" style="color: var(--accent-light);"></i> 15년 롱런을 가능케 한 첫 번째 심리학적 비밀.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191139-4746214a.webp" onclick="openLightbox(this)" alt="재활의 시간">
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. PSYCHOLOGY 2 -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim" style="color: var(--accent-light);"><i class="ph-duotone ph-git-branch"></i> CHOICE ARCHITECTURE</div>
+          <h2 class="big-headline anim delay-1">의지를 불신하는<br><span class="light">완벽한 환경 설계</span></h2>
+          <div class="slide-divider anim delay-2" style="background: var(--accent-light);"></div>
+          <p class="body-text anim delay-2">
+            "과자가 있으면 결국 먹게 된다" — 인간의 의지력은 배터리처럼 소모되는 자원, 즉 <strong>자아 고갈(Ego Depletion)</strong> 상태에 빠지기 쉽습니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-shield-check" style="color: var(--accent-light);"></i> 나약함을 탓하는 대신, 유혹과 싸울 필요조차 없는 <strong>행동경제학적 시스템</strong> 구축.</li>
+            <li><i class="ph-duotone ph-shield-check" style="color: var(--accent-light);"></i> 수면 시간과 빛의 양까지 철저히 통제하여 불필요한 의지 소모 차단.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260624/260624-191140-88a2a08c.webp" onclick="openLightbox(this)" alt="환경 설계">
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. PSYCHOLOGY 3 -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text">
+          <div class="section-tag anim" style="color: var(--accent-light);"><i class="ph-duotone ph-books"></i> INTELLECTUAL HUMILITY</div>
+          <h2 class="big-headline anim delay-1">과거를 지우는<br><span class="light">'빈 잔'의 철학</span></h2>
+          <div class="slide-divider anim delay-2" style="background: var(--accent-light);"></div>
+          <p class="body-text anim delay-2">
+            연차가 쌓일수록 <strong>확증 편향(Confirmation Bias)</strong>에 갇히기 쉬우나, 베테랑 백성동은 "나는 모르는 게 많다"고 고백합니다.
+          </p>
+          <ul class="info-list anim delay-3">
+            <li><i class="ph-duotone ph-users" style="color: var(--accent-light);"></i> 끊임없는 독서와 학습으로 자만을 비워내는 <strong>지적 겸손(Intellectual Humility)</strong>.</li>
+            <li><i class="ph-duotone ph-users" style="color: var(--accent-light);"></i> 나를 비움으로써 팀의 공간을 창출해내는 성숙한 이타주의 완성.</li>
+          </ul>
+        </div>
+        <div class="col-img anim delay-2">
+          <img src="https://c.longblack.co/image/note/260625/260625-104818-1b407eb2.webp" onclick="openLightbox(this)" alt="지적 겸손">
+        </div>
+      </div>
+    </div>
+
+    <!-- 13. PSYCHOLOGY CONCLUSION -->
+    <div class="slide conclusion-slide" style="background: linear-gradient(to top, rgba(22,33,62,1) 0%, rgba(26,26,29,0.8) 100%), url('https://c.longblack.co/image/note/260624/260624-191135-1e72f055.webp') center/cover;">
+      <div class="content-wrapper" style="align-items: center; text-align: center;">
+        <div class="section-tag anim" style="justify-content: center; color: var(--accent-light);"><i class="ph-duotone ph-microphone-stage"></i> PSYCHOLOGIST'S MESSAGE</div>
+        <h2 class="big-headline anim delay-1" style="margin-bottom: 4vh;"><span class="light">당신의 나약함을<br>있는 그대로 인정하십시오.</span></h2>
+        <p class="body-text anim delay-2" style="max-width: 800px; font-size: clamp(18px, 3vw, 24px); line-height: 1.8;">
+          그리고 그 나약함이 결코 개입할 수 없는 당신만의 작은 '루틴'을 설계하십시오.<br>그것이 평범함을 비범한 롱런으로 바꾸는 가장 강력한 무기입니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 14. MORE INSIGHTS (CASE B: Image Gallery) -->
+    <div class="slide bg-dark">
+      <div class="content-wrapper two-col-layout">
+        <div class="col-text anim delay-1">
+          <div class="section-tag"><i class="ph-duotone ph-archive"></i> MORE INSIGHTS</div>
+          <h2 class="big-headline" style="font-size: clamp(28px, 4vw, 48px);">더 깊은 인사이트<br>탐색하기</h2>
+          <div class="slide-divider"></div>
+          <p class="body-text" style="font-size: 16px;">백성동 선수의 심층 분석 전체 내용과<br>참조된 논문, 기사 링크를 원문에서 확인하세요.</p>
+          
+          <a href="obsidian://open?vault=Obsidian-Work-LLM-Wiki-Vault&file=Wiki-Pages%2FLongblack-Coffee-Insight%2F%E2%9C%85%EB%B0%B1%EC%84%B1%EB%8F%99-15%EB%85%84%EC%A7%B8-%ED%98%84%EC%97%AD%EC%B6%95%EA%B5%AC%EC%84%A0%EC%88%98%EA%B0%80-%EB%A7%90%ED%95%98%EB%8A%94-%EB%A1%B1%EB%9F%B0%EC%9D%98%EA%B8%B0%EC%88%A0.md" class="insight-btn">
+            <i class="ph-duotone ph-file-text"></i> 위키 원문 읽기
+          </a>
+        </div>
+        
+        <div class="col-img anim delay-2" style="align-items: flex-start;">
+          <h4 style="margin-bottom: 2vh; color: var(--gray); font-size: 14px;"><i class="ph-duotone ph-images"></i> 아카이브 갤러리 (클릭하여 확대)</h4>
+          <div class="gallery-grid">
+            <img src="https://c.longblack.co/image/note/260624/260624-191136-a76bb1d6.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191139-4746214a.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191140-88a2a08c.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191137-9f9f187a.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191137-4aa48820.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191138-db13a3e5.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260625/260625-105442-9276d49f.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260625/260625-104818-1b407eb2.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191135-c0c4b1d1.webp" onclick="openLightbox(this)">
+            <img src="https://c.longblack.co/image/note/260624/260624-191135-1e72f055.webp" onclick="openLightbox(this)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="nav-bar" id="nav-bar"></div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-arrow lb-prev" onclick="event.stopPropagation(); prevLightboxSlide();"><i class="ph-duotone ph-caret-left"></i></div>
+  <div class="lightbox-arrow lb-next" onclick="event.stopPropagation(); nextLightboxSlide();"><i class="ph-duotone ph-caret-right"></i></div>
+  <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <img id="lightbox-img" src="">
+    <div id="lightbox-caption"></div>
+  </div>
+  <div id="lightbox-counter">1 / 1</div>
+</div>
+
+<script>
+  const deck = document.getElementById('deck');
+  const slides = document.querySelectorAll('.slide');
+  const navBar = document.getElementById('nav-bar');
+  let currentSlide = 0;
+
+  // Init dots and counters
+  navBar.innerHTML = `<span class="nav-num">01</span>`;
+  slides.forEach((_, idx) => {
+    const dot = document.createElement('button');
+    dot.className = `nav-dot ${idx === 0 ? 'active' : ''}`;
+    dot.onclick = () => goToSlide(idx);
+    navBar.appendChild(dot);
+  });
+  navBar.insertAdjacentHTML('beforeend', `<span class="nav-num">${String(slides.length).padStart(2, '0')}</span>`);
+
+  function updateNav() {
+    deck.style.transform = `translateX(-${currentSlide * 100}%)`;
+    const dots = document.querySelectorAll('.nav-dot');
+    dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentSlide));
+    
+    document.querySelector('.nav-num:first-child').textContent = String(currentSlide + 1).padStart(2, '0');
+    
+    // Trigger animations
+    slides.forEach(s => s.classList.remove('active'));
+    setTimeout(() => {
+      slides[currentSlide].classList.add('active');
+    }, 50);
+  }
+  
+  function goToSlide(idx) {
+    currentSlide = idx;
+    updateNav();
+  }
+
+  function nextSlide() {
+    if (currentSlide < slides.length - 1) {
+      currentSlide++;
+      updateNav();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) {
+      currentSlide--;
+      updateNav();
+    }
+  }
+
+  // Lightbox logic
+  let galleryImages = [];
+  let currentLbIdx = 0;
+
+  function openLightbox(imgElement) {
+    const gallery = imgElement.closest('.gallery-grid');
+    if (gallery) {
+      galleryImages = Array.from(gallery.querySelectorAll('img[onclick="openLightbox(this)"]'));
+    } else {
+      galleryImages = [imgElement];
+    }
+    
+    currentLbIdx = galleryImages.indexOf(imgElement);
+    if(currentLbIdx === -1) currentLbIdx = 0; // fallback
+    
+    const prevBtn = document.querySelector('.lb-prev');
+    const nextBtn = document.querySelector('.lb-next');
+    const counterBtn = document.getElementById('lightbox-counter');
+    
+    if (galleryImages.length <= 1) {
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+      counterBtn.style.display = 'none';
+    } else {
+      prevBtn.style.display = 'block';
+      nextBtn.style.display = 'block';
+      counterBtn.style.display = 'block';
+    }
+    
+    updateLightboxContent();
+    
+    const lightbox = document.getElementById('lightbox');
+    lightbox.style.display = 'flex';
+    setTimeout(() => lightbox.classList.add('active'), 10);
+  }
+
+  const customDescriptions = {
+    "a76bb1d6.webp": "2012년 런던 올림픽 동메달리스트로 화려하게 비상했던 백성동 선수는 프로 데뷔 직후 전방십자인대 파열이라는 치명적인 부상을 겪으며 선수 생명의 중대한 위기를 맞았습니다. 대다수의 선수들이 이 과정에서 기량 하락과 외상 후 스트레스(PTSD)를 겪지만, 그는 이 좌절을 '자신의 몸을 깊이 이해하고 한계를 재설정하는 계기'로 삼았습니다. 신체적 고통을 성장의 디딤판으로 바꾸어낸 그의 인지적 재구조화(Cognitive Restructuring)는 15년 차 현역 베테랑으로 롱런할 수 있었던 가장 단단한 기반이 되었습니다.",
+    "4746214a.webp": "십자인대 부상 이후 깊은 슬럼프에 빠진 그를 구한 것은 막연한 열정이 아닌 냉철한 '자기 인식(Self-Awareness)'이었습니다. 과거 천재성에 의존해 그저 열심히 뛰기만 했던 그는, 부상 이후 '나는 공을 잘 뺏기지 않고 일대일로 기회를 만드는 선수'라는 자신의 무기를 명확히 정의했습니다. 훈련 전 근육의 웜업 온도까지 철저히 통제하며 자신의 플레이를 의식적으로 설계하는 역방향 이미지 트레이닝을 도입했고, 이를 통해 우연이 아닌 필연적인 기회를 창출하는 지능적인 플레이어로 거듭나게 되었습니다.",
+    "88a2a08c.webp": "그는 장기적인 퍼포먼스를 유지하기 위해 자신의 나약한 '의지력'을 철저히 불신했습니다. '과자가 눈앞에 있으면 결국 다 먹게 된다'며, 행동경제학의 '선택 설계(Choice Architecture)'처럼 유혹 자체를 원천 차단하는 환경을 구축했습니다. 최상의 컨디션을 위해 취침 2시간 전부터 블루라이트 차단 안경을 착용하고 수면 시간을 엄격히 통제하는 등, 의지력을 소모할 필요가 없는 강제적 루틴 시스템을 완성했습니다. 이 지독한 환경 설계가 2023년 코리아컵 우승이라는 값진 결실로 이어졌습니다.",
+    "9f9f187a.webp": "2023년 32세의 나이로 포항 스틸러스에 합류하며 K리그1 무대에 데뷔한 백성동 선수는 38라운드 체제 최소 수치인 '8도움'만으로 리그 최다 도움상을 거머쥐었습니다. 이는 무의미한 활동량을 줄이고 승부처에서 결정적인 효율을 극대화한 순도 높은 퍼포먼스의 결과입니다. '동료에게 공을 잘 주는 것도 슈팅'이라는 그의 철학처럼, 자신이 직접 빛나려는 욕심을 내려놓고 수비수를 끌어당겨 동료들에게 완벽한 빈 공간을 열어주는 성숙한 이타주의가 낳은 최고의 성과입니다.",
+    "4aa48820.webp": "최고의 자리에 오르고도 그는 한사코 '나는 모르는 게 많은 사람'이라며 자세를 낮춥니다. 연차가 쌓일수록 과거의 영광과 자신의 방식을 고집하는 확증 편향에 빠지기 쉽지만, 백 선수는 오히려 자신을 비워냄으로써 팀 전체의 성과를 극대화하는 성숙한 리더십을 보여주었습니다. K리그 시상식에 선 그의 모습은 화려한 득점왕의 독주가 아니라, 주변을 살리고 조직의 시너지를 이끄는 훌륭한 조력자(Assister)가 조직 내에서 얼마나 거대한 가치를 인정받을 수 있는지를 상징적으로 증명합니다.",
+    "db13a3e5.webp": "30대 중반의 베테랑 백성동을 지탱하는 또 다른 축은 독서를 통한 끊임없는 정신적 수양입니다. 특히 포항 스틸러스 시절 매일 아침 30분씩 스포츠 심리학 서적 『챔피언의 마인드』를 읽으며 마음을 다스렸습니다. 최고의 선수는 자신이 통제할 수 없는 타인의 시선이나 부상 위험에 흔들리지 않고, 오직 자신이 통제할 수 있는 루틴과 태도에 집중한다는 가르침을 실천했습니다. 이 '빈 잔'의 철학적 마인드는 그가 자만하지 않고 매 경기 새로운 각오로 그라운드에 나설 수 있는 원동력이 되었습니다.",
+    "9276d49f.webp": "신체 능력이 정점이었던 시절에는 직접 돌파하고 슈팅을 날리는 데 집중했다면, 베테랑 반열에 오르면서 그는 동료를 활용하고 돕는 공간 창출형 플레이메이커로 진화했습니다. 이는 비즈니스 생태계에서 뛰어난 실무자가 조직을 이끄는 리더로 성장하며 역할 변환(Role Transition)을 이루는 과정과 완벽히 일치합니다. 잦은 이적과 부상 속에서도 그가 한·일·태 3개국 8개 구단에서 살아남을 수 있었던 비결은, 자신의 현 상태를 냉정하게 객관화하고 그에 맞춰 끊임없이 진화하는 유연성에 있습니다.",
+    "1b407eb2.webp": "2026년 1월, 서른다섯의 베테랑 백성동은 안락한 둥지를 떠나 태국 1부 리그 '아유타야 유나이티드 FC'라는 완전히 낯선 무대로 새로운 도전을 감행했습니다. 등번호 10번을 달고 해외 무대에서 뛰는 그의 모습은 '경계 없는 커리어(Boundaryless Career)'의 진수를 보여줍니다. 안정에 머무르지 않고 계속해서 자신을 증명해야 하는 야생의 환경에 스스로를 던짐으로써, 나이와 무관하게 진정한 하이퍼포머(High Performer)는 무대를 가리지 않고 빛난다는 사실을 온몸으로 증명하고 있습니다.",
+    "c0c4b1d1.webp": "백 선수는 '공을 잘 잡고, 잘 주고, 잘 가지고 다니는 기본기가 축구의 전부'라고 단언합니다. 일상에서 아들과 함께 축구를 즐길 때조차 기본적인 컨트롤과 패스, 드리블의 본질에 집중합니다. 1년에 몇 번 오지 않는 화려한 하이라이트 순간을 만들기 위해, 그는 남들이 보지 않는 무대 뒤에서 묵묵히 지루한 기본기 훈련을 견뎌냅니다. 의지를 믿기보다 루틴을 지키고, 최고를 탐하기보다 철저하게 기본에 집착하는 태도가 바로 그를 무너지지 않는 거대한 성벽으로 만들어준 핵심 비결입니다.",
+    "1e72f055.webp": "반짝이는 몇 번의 순간을 더 자주 만들기 위해 나머지 길고 지루한 시간을 기꺼이 인내하는 사람. 백성동 선수의 15년 커리어는 화려한 천재의 독주가 아닌, 부서진 조각들을 모아 더 단단한 성벽을 쌓아 올린 장인의 웅장한 서사입니다. 자신의 약점과 결핍을 숨기지 않고 오히려 집요한 자기 인식과 환경 통제의 수단으로 전환해 낸 그의 회복탄력성은, 예측 불가능한 시대를 살아가는 우리 모두에게 '지속 가능한 롱런'이 무엇인지 일깨워주는 위대한 평범함의 승리입니다."
+  };
+
+  function updateLightboxContent() {
+    const lbImg = document.getElementById('lightbox-img');
+    const lbCounter = document.getElementById('lightbox-counter');
+    const lbCaption = document.getElementById('lightbox-caption');
+    const currentImg = galleryImages[currentLbIdx];
+    
+    lbImg.src = currentImg.src;
+    
+    let captionText = currentImg.alt || "";
+    let detailedDesc = "";
+    const filename = currentImg.src.split('/').pop();
+    
+    // 1. Get Caption
+    if (galleryImages.length === 1) {
+      const captionEl = currentImg.parentElement.querySelector('.img-caption');
+      if (captionEl) captionText = captionEl.textContent;
+    } else {
+      const allOriginals = Array.from(document.querySelectorAll(`img[src="${currentImg.src}"]`));
+      const original = allOriginals.find(img => !img.closest('.gallery-grid'));
+      if (original) {
+        const captionEl = original.parentElement.querySelector('.img-caption');
+        if (captionEl) captionText = captionEl.textContent;
+      }
+    }
+    
+    // 2. Assign custom 300-char detailed descriptions based on image filename
+    const matchKey = Object.keys(customDescriptions).find(k => filename.includes(k));
+    if (matchKey) {
+      detailedDesc = customDescriptions[matchKey];
+    } else {
+      // Fallback text
+      detailedDesc = "지속 가능한 성과를 내기 위해 치명적인 위기를 성장의 디딤판으로 삼는 프로의 자세와 루틴을 보여줍니다.";
+    }
+    
+    lbCaption.innerHTML = `<div style="font-size:18px; font-weight:bold; color:var(--accent); margin-bottom:10px;">${captionText || "아카이브 관련 이미지"}</div>
+                           <div style="font-size:15.5px; color:#e0e0e0; max-width:850px; line-height:1.7; text-align:center; word-break:keep-all; margin:0 auto; letter-spacing:-0.2px;">${detailedDesc}</div>`;
+    
+    lbCounter.textContent = `${currentLbIdx + 1} / ${galleryImages.length}`;
+  }
+
+  function prevLightboxSlide() {
+    if (galleryImages.length === 0) return;
+    currentLbIdx = (currentLbIdx - 1 + galleryImages.length) % galleryImages.length;
+    updateLightboxContent();
+  }
+
+  function nextLightboxSlide() {
+    if (galleryImages.length === 0) return;
+    currentLbIdx = (currentLbIdx + 1) % galleryImages.length;
+    updateLightboxContent();
+  }
+
+  function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    setTimeout(() => {
+      lightbox.style.display = 'none';
+    }, 300);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox.style.display === 'flex' || lightbox.classList.contains('active')) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextLightboxSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevLightboxSlide();
+      return;
+    }
+    
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') prevSlide();
+  });
+
+  let isScrolling = false;
+  window.addEventListener('wheel', (e) => {
+    if (isScrolling) return;
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox.style.display === 'flex' || lightbox.classList.contains('active')) return;
+    
+    if (e.deltaY > 10 || e.deltaX > 10) {
+      isScrolling = true;
+      nextSlide();
+      setTimeout(() => isScrolling = false, 400);
+    } else if (e.deltaY < -10 || e.deltaX < -10) {
+      isScrolling = true;
+      prevSlide();
+      setTimeout(() => isScrolling = false, 400);
+    }
+  });
+
+  // Touch Swipe Support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  window.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, {passive: true});
+  window.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }, {passive: true});
+  
+  function handleSwipe() {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox.style.display === 'flex' || lightbox.classList.contains('active')) {
+      if (touchEndX < touchStartX - 50) nextLightboxSlide();
+      if (touchEndX > touchStartX + 50) prevLightboxSlide();
+      return;
+    }
+    if (touchEndX < touchStartX - 50) nextSlide();
+    if (touchEndX > touchStartX + 50) prevSlide();
+  }
+
+  // Init
+  setTimeout(() => { slides[0].classList.add('active'); }, 100);
+</script>
+</body>
+</html>
